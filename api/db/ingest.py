@@ -14,6 +14,12 @@ from .models import (
     Service,
     Document,
     DocumentChunk,
+    DirectoryCategory,
+    Office,
+    OfficialContactChannel,
+    SourceDocument,
+    SourceEvidence,
+    DepartmentNodalOfficer,
 )
 from rag.pipeline import run_rag_indexing
 
@@ -230,6 +236,72 @@ def ingest_contacts(db: Session) -> int:
     return count
 
 
+def ingest_directory_master_data(db: Session) -> int:
+    # 1. Directory Categories
+    categories = [
+        {"id": "CAT-LEADER", "code": "LEADERSHIP", "name_en": "State Leadership", "name_ta": "மாநில தலைமை", "icon": "Crown", "order": 1},
+        {"id": "CAT-LEG", "code": "LEGISLATURE", "name_en": "Legislature & MPs/MLAs", "name_ta": "சட்டமன்றம் & நாடாளுமன்றம்", "icon": "Landmark", "order": 2},
+        {"id": "CAT-DEPT", "code": "DEPT_ADMIN", "name_en": "Department Administration", "name_ta": "துறை நிர்வாகம்", "icon": "Building2", "order": 3},
+        {"id": "CAT-DIST", "code": "DIST_ADMIN", "name_en": "District Administration", "name_ta": "மாவட்ட நிர்வாகம்", "icon": "MapPin", "order": 4},
+        {"id": "CAT-BOARD", "code": "BOARDS", "name_en": "Boards & Public Undertakings", "name_ta": "வாரியங்கள் & பொதுத்துறை", "icon": "Briefcase", "order": 5},
+        {"id": "CAT-RTI", "code": "CITIZEN_SUPPORT", "name_en": "Citizen Support & RTI Authorities", "name_ta": "தகவல் உரிமை & உதவி மையங்கள்", "icon": "LifeBuoy", "order": 6},
+    ]
+
+    for cat in categories:
+        existing = db.query(DirectoryCategory).filter(DirectoryCategory.category_id == cat["id"]).first()
+        if not existing:
+            existing = DirectoryCategory(
+                category_id=cat["id"],
+                code=cat["code"],
+                name_en=cat["name_en"],
+                name_ta=cat["name_ta"],
+                icon=cat["icon"],
+                sort_order=cat["order"],
+            )
+            db.add(existing)
+
+    # 2. Source Documents (Official Verification Registry)
+    sources = [
+        {
+            "id": "SRC-GAZETTE-2026",
+            "org": "Public (Special.A) Department",
+            "url": "https://www.tn.gov.in/stationery_printing/gazette",
+            "type": "GAZETTE_GO",
+            "category": "IAS Postings & Transfers",
+            "date": "2026-02-15",
+            "owner": "Chief Secretary Secretariat",
+        },
+        {
+            "id": "SRC-PORTAL-DIR",
+            "org": "Tamil Nadu e-Governance Agency (TNeGA)",
+            "url": "https://www.tn.gov.in/contact_directory.php",
+            "type": "GOVERNMENT_WEBPAGE",
+            "category": "Secretariat & Department Contacts",
+            "date": "2026-03-01",
+            "owner": "State Nodal Directory Officer",
+        },
+    ]
+
+    for s in sources:
+        existing_s = db.query(SourceDocument).filter(SourceDocument.source_id == s["id"]).first()
+        if not existing_s:
+            existing_s = SourceDocument(
+                source_id=s["id"],
+                org_name=s["org"],
+                source_url=s["url"],
+                source_type=s["type"],
+                data_category=s["category"],
+                publication_date=s["date"],
+                responsible_owner=s["owner"],
+                verification_status="VERIFIED",
+            )
+            db.add(existing_s)
+
+    db.commit()
+    logger.info("Ingested directory master categories and source registry.")
+    return len(categories)
+
+
 def run_all(db: Session = None):
     close_when_done = False
     if db is None:
@@ -241,8 +313,9 @@ def run_all(db: Session = None):
         s_count = ingest_services(db)
         d_count = ingest_documents(db)
         c_count = ingest_contacts(db)
+        m_count = ingest_directory_master_data(db)
         r_count = run_rag_indexing(db)
-        print(f"Ingestion complete: {s_count} services, {d_count} documents, {c_count} contacts, {r_count} RAG chunks.")
+        print(f"Ingestion complete: {s_count} services, {d_count} documents, {c_count} contacts, {m_count} categories, {r_count} RAG chunks.")
     finally:
         if close_when_done:
             db.close()

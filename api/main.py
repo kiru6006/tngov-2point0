@@ -23,6 +23,7 @@ from db.models import (
 from rag.hybrid_search import HybridSearchService
 from rag.guardrails import RAGGuardrailService
 from rag.pipeline import run_rag_indexing
+from directory.router import router as directory_router
 
 # Auto-create tables if missing
 Base.metadata.create_all(bind=engine)
@@ -32,6 +33,9 @@ app = FastAPI(
     description="Asynchronous REST API Gateway connecting public portal to administrative directories, document intelligence, and e-Sevai status proxies.",
     version="2.0.0",
 )
+
+# Register Directory Router
+app.include_router(directory_router)
 
 # 1. CORS & Security Headers Middleware (GIGW 3.0 / CERT-In / Next.js integration)
 app.add_middleware(
