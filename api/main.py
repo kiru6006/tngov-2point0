@@ -25,6 +25,7 @@ from rag.guardrails import RAGGuardrailService
 from rag.pipeline import run_rag_indexing
 from directory.router import router as directory_router
 from portal.router import router as portal_router
+from ai.router import router as ai_router
 
 # Auto-create tables if missing
 Base.metadata.create_all(bind=engine)
@@ -38,6 +39,7 @@ app = FastAPI(
 # Register Routers
 app.include_router(directory_router)
 app.include_router(portal_router)
+app.include_router(ai_router)
 
 # 1. CORS & Security Headers Middleware (GIGW 3.0 / CERT-In / Next.js integration)
 app.add_middleware(

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import {
@@ -24,7 +24,7 @@ import schemesData from "@/data/schemes.json";
 import documentsData from "@/data/documents.json";
 import contactsData from "@/data/contacts.json";
 
-export default function UnifiedSearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
 
@@ -292,7 +292,7 @@ export default function UnifiedSearchPage() {
                     {lang === "ta" ? doc.subject_ta : doc.subject_en}
                   </h3>
                   <p className="text-xs text-slate-500 mt-0.5">
-                    {doc.department} | Issued: {doc.date}
+                    {lang === "ta" ? doc.dept_ta : doc.dept_en} | Issued: {doc.date}
                   </p>
                 </div>
 
@@ -350,5 +350,13 @@ export default function UnifiedSearchPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function UnifiedSearchPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center p-8 text-slate-500 font-medium">Loading search...</div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

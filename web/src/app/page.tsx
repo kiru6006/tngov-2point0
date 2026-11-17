@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import servicesData from "@/data/services.json";
 import {
   FileText,
@@ -18,6 +19,7 @@ import {
   HelpCircle,
   Building2,
   FileCheck2,
+  Award,
 } from "lucide-react";
 
 const iconMap: Record<string, any> = {
@@ -678,6 +680,11 @@ export default function Home() {
             </div>
           </div>
         </section>
+
+        {/* Section G: Unified Application Tracking */}
+        <section
+          aria-labelledby="tracker-heading"
+          className="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-sm"
         >
           <div className="max-w-2xl mx-auto text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-800 mb-3">
