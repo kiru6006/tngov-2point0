@@ -1,13 +1,20 @@
-"use client";
-
-import { use } from "react";
 import Link from "next/link";
 import servicesData from "@/data/services.json";
-import { ArrowLeft, Clock, Building2, CheckCircle2, FileText, ExternalLink } from "lucide-react";
+import { ArrowLeft, Clock, CheckCircle2, ExternalLink } from "lucide-react";
 
-export default function ServiceDetailPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params);
-  const service = servicesData.find((s) => s.id === resolvedParams.id) || servicesData[0];
+export function generateStaticParams() {
+  return servicesData.map((service) => ({
+    id: service.id,
+  }));
+}
+
+export default async function ServiceDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const service = servicesData.find((s) => s.id === id) || servicesData[0];
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
