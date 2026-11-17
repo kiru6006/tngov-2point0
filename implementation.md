@@ -16,15 +16,15 @@
 - [x] Step 1.2: Next.js citizen homepage (`/`) with 6 Life-Event service cards & SLA badges.
 - [x] Step 1.3: Unified application tracking component with 4-stage review progress bar.
 - [x] Step 1.4: P0 Government Contact Directory view (`/contact-directory`) with 4 interactive tabs.
-- [ ] Step 1.5: Government Document & G.O. Search page (`/documents`) with Year/Department filters.
-- [ ] Step 1.6: Service Details deep-view (`/services/[id]`) mapping statutory requirements & e-Sevai CTA.
+- [x] Step 1.5: Government Document & G.O. Search page (`/documents`) with Year/Department filters.
+- [x] Step 1.6: Service Details deep-view (`/services/[id]`) mapping statutory requirements & e-Sevai CTA.
 
 ### Phase 2: FastAPI Gateway Service (Weeks 5-8)
-- [ ] Step 2.1: Initialize FastAPI project scaffold under `/api` with Poetry / Uvicorn.
-- [ ] Step 2.2: Implement `GET /api/v1/services` and `GET /api/v1/services/{id}` from CSV/DB.
-- [ ] Step 2.3: Implement `GET /api/v1/contacts` supporting filtering by name, cadre, department, district.
-- [ ] Step 2.4: Implement `GET /api/v1/track/{app_id}` simulated proxy contract for TNeGA e-Sevai.
-- [ ] Step 2.5: CORS & security headers configuration (CSP, HSTS, X-Frame-Options).
+- [x] Step 2.1: Initialize FastAPI project scaffold under `/api` with Poetry / Uvicorn.
+- [x] Step 2.2: Implement `GET /api/v1/services` and `GET /api/v1/services/{id}` from CSV/DB.
+- [x] Step 2.3: Implement `GET /api/v1/contacts` supporting filtering by name, cadre, department, district.
+- [x] Step 2.4: Implement `GET /api/v1/track/{app_id}` simulated proxy contract for TNeGA e-Sevai.
+- [x] Step 2.5: CORS & security headers configuration (CSP, HSTS, X-Frame-Options).
 
 ### Phase 3: Relational DB & Master Data Modeling (Weeks 9-12)
 - [ ] Step 3.1: SQLAlchemy / Alembic migration scripts for `positions`, `persons`, `position_assignments`.
