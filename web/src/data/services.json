@@ -1,0 +1,62 @@
+[
+  {
+    "id": "certificates",
+    "title_en": "Certificates & Identity",
+    "title_ta": "சான்றிதழ்கள் மற்றும் அடையாள அட்டை",
+    "icon": "FileText",
+    "dept_en": "Revenue & Disaster Management",
+    "dept_ta": "வருவாய் மற்றும் பேரிடர் மேலாண்மைத் துறை",
+    "sla": "15 Days",
+    "items": ["Community Certificate", "Income Certificate", "Nativity Certificate", "Legal Heir"]
+  },
+  {
+    "id": "agriculture",
+    "title_en": "Agriculture & Farmers",
+    "title_ta": "வேளாண்மை மற்றும் உழவர் நலம்",
+    "icon": "Tractor",
+    "dept_en": "Agriculture and Farmers Welfare",
+    "dept_ta": "வேளாண்மை மற்றும் உழவர் நலத்துறை",
+    "sla": "7 Days",
+    "items": ["Uzhavan App Services", "PM-KISAN Status", "Crop Insurance (PMAY)", "Fertilizer Subsidies"]
+  },
+  {
+    "id": "land",
+    "title_en": "Land & Property Records",
+    "title_ta": "நிலம் மற்றும் சொத்து ஆவணங்கள்",
+    "icon": "MapPin",
+    "dept_en": "Survey and Settlement / Registration",
+    "dept_ta": "நில அளவை மற்றும் பதிவுத் துறை",
+    "sla": "30 Days",
+    "items": ["Patta / Chitta View & Extract", "Encumbrance Certificate (EC)", "Guideline Value Search", "Field Measurement (FMB)"]
+  },
+  {
+    "id": "education",
+    "title_en": "Education & Employment",
+    "title_ta": "கல்வி மற்றும் வேலைவாய்ப்பு",
+    "icon": "GraduationCap",
+    "dept_en": "School & Higher Education / TNPSC",
+    "dept_ta": "பள்ளிக் கல்வி மற்றும் வேலைவாய்ப்புத் துறை",
+    "sla": "Instant / 10 Days",
+    "items": ["Moovalur Ramamirtham Pudhumai Penn", "Pudhumai Penn Scheme", "TNPSC Portal Gateway", "Tamil Nadu Skill Development (TNSDC)"]
+  },
+  {
+    "id": "social-welfare",
+    "title_en": "Social Security & Pensions",
+    "title_ta": "சமூகப் பாதுகாப்பு மற்றும் ஓய்வூதியம்",
+    "icon": "ShieldCheck",
+    "dept_en": "Social Welfare & Women Empowerment",
+    "dept_ta": "சமூக நலம் மற்றும் மகளிர் உரிமைத் துறை",
+    "sla": "21 Days",
+    "items": ["Kalaignar Magalir Urimai Thittam", "Old Age Pension (OAP)", "Differently Abled Welfare Pension", "Widow Welfare Support"]
+  },
+  {
+    "id": "business",
+    "title_en": "Industry & MSME Services",
+    "title_ta": "தொழில் மற்றும் குறு, சிறு நடுத்தர நிறுவனங்கள்",
+    "icon": "Briefcase",
+    "dept_en": "MSME & Industries Department",
+    "dept_ta": "சிறு, குறு மற்றும் நடுத்தரத் தொழில் நிறுவனங்கள் துறை",
+    "sla": "30 Days",
+    "items": ["Single Window Portal 2.0 (Biz Buddy)", "Udyam Facilitation", "Factory License Approvals", "Commercial Tax Clearances"]
+  }
+]

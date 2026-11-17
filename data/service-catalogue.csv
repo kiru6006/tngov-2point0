@@ -1,0 +1,3 @@
+service_id,service_name_en,service_name_ta,department_owner,citizen_category,eligibility_rules,required_docs,statutory_sla_days,service_channel,action_url
+TN-REV-SRV-0014,Community Certificate,சாதிச் சான்றிதழ்,Revenue and Disaster Management,"Students, Job Seekers",Resident of TN; SC/ST/OBC/BC,"Aadhaar, Ration Card, Parent Certificate",15,Online (e-Sevai),https://tnesevai.tn.gov.in/
+TN-REV-SRV-0015,Patta Transfer,பட்டா மாறுதல்,Revenue and Disaster Management,"Property Owners, Farmers",Valid sale deed or legal heir,"Sale deed, Encumbrance certificate",30,Online (e-Sevai),https://eservices.tn.gov.in/
