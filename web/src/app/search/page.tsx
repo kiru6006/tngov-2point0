@@ -28,7 +28,7 @@ function SearchContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
 
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
   const [query, setQuery] = useState(initialQuery);
   const [activeTab, setActiveTab] = useState<
     "ALL" | "SERVICE" | "SCHEME" | "DOCUMENT" | "CONTACT" | "DISTRICT"

@@ -58,7 +58,9 @@ const iconMap: Record<string, any> = {
 };
 
 export default function Home() {
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
+  const [workspace, setWorkspace] = useState<"public" | "official">("public");
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [highContrast, setHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState<"sm" | "base" | "lg">("base");
   const [searchQuery, setSearchQuery] = useState("");

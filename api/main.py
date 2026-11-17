@@ -7,6 +7,7 @@ from typing import Optional, List
 from fastapi import FastAPI, HTTPException, Query, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from db.session import get_db, engine, Base
@@ -210,19 +211,34 @@ def list_contacts(
     department: Optional[str] = None,
     district: Optional[str] = None,
     cadre: Optional[str] = None,
+    limit: Optional[int] = 50,
     db: Session = Depends(get_db),
 ):
     # Relational join enforcing the core invariant:
     # Position exists independently of Person. Transfers update assignments.
-    assignments = (
+    q = (
         db.query(PositionAssignment)
         .filter(PositionAssignment.is_current == True, PositionAssignment.workflow_status == "APPROVED")
         .join(Position, PositionAssignment.position_id == Position.position_id)
         .join(Person, PositionAssignment.person_id == Person.person_id)
         .join(Department, Position.department_id == Department.department_id)
         .join(Jurisdiction, Position.jurisdiction_id == Jurisdiction.jurisdiction_id)
-        .all()
     )
+    if department:
+        q = q.filter(Department.name_en.ilike(f"%{department}%"))
+    if district:
+        q = q.filter(Jurisdiction.district_en.ilike(f"%{district}%"))
+    if cadre:
+        q = q.filter(Position.cadre.ilike(f"%{cadre}%"))
+    if query:
+        q = q.filter(
+            or_(
+                Person.name_en.ilike(f"%{query}%"),
+                Position.title_en.ilike(f"%{query}%"),
+                Department.name_en.ilike(f"%{query}%"),
+            )
+        )
+    assignments = q.order_by(Position.position_id).limit(limit).all()
 
     if assignments:
         officials = []

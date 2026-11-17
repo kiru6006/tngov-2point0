@@ -10,7 +10,7 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ta" className="h-full">
+    <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 antialiased font-sans">
         <a
           href="#main-content"

@@ -85,7 +85,7 @@ const DISTRICT_DETAILS = [
 ];
 
 export default function DistrictsPage() {
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
   const [searchQuery, setSearchQuery] = useState("");
 
   const allDistrictNames = contactsData.districts;

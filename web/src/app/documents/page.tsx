@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 export default function DocumentsPage() {
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
   const [search, setSearch] = useState("");
   const [selectedYear, setSelectedYear] = useState("ALL");
   const [selectedType, setSelectedType] = useState("ALL");

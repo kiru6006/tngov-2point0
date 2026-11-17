@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 
 export default function ContactDirectoryPage() {
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDept, setSelectedDept] = useState("ALL");
   const [selectedDistrict, setSelectedDistrict] = useState("ALL");

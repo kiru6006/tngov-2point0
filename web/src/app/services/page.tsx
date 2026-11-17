@@ -118,7 +118,7 @@ const ALL_SERVICES: ServiceItem[] = [
 ];
 
 export default function ServicesPage() {
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [selectedDept, setSelectedDept] = useState("ALL");

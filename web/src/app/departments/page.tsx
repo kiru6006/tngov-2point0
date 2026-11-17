@@ -110,7 +110,7 @@ const DEPARTMENTS_DATA: DepartmentInfo[] = [
 ];
 
 export default function DepartmentsPage() {
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredDepts = DEPARTMENTS_DATA.filter(

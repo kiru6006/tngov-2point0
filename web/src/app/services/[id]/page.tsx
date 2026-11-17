@@ -51,7 +51,7 @@ export default async function ServiceDetailPage({
 
       {/* Accessible Breadcrumbs */}
       <Breadcrumbs
-        lang="ta"
+        lang="en"
         items={[
           { label_en: "Home", label_ta: "முகப்பு", href: "/" },
           { label_en: "Citizen Services", label_ta: "பொதுமக்கள் சேவைகள்", href: "/services" },

@@ -19,7 +19,7 @@ import {
 } from "lucide-react";
 
 export default function SchemesPage() {
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [selectedScheme, setSelectedScheme] = useState<any | null>(null);

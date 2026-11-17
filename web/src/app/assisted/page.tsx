@@ -21,7 +21,7 @@ import {
 import servicesData from "@/data/services.json";
 
 export default function AssistedAccessPage() {
-  const [lang, setLang] = useState<"ta" | "en">("ta");
+  const [lang, setLang] = useState<"ta" | "en">("en");
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Form states
