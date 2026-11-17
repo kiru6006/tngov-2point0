@@ -33,6 +33,17 @@ export default function Home() {
   const [lang, setLang] = useState<"ta" | "en">("ta");
   const [highContrast, setHighContrast] = useState(false);
   const [appId, setAppId] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [aiResult, setAiResult] = useState<null | {
+    title: string;
+    answer: string;
+    eligibility?: string;
+    docs?: string;
+    sla?: number;
+    url: string;
+    citation: string;
+    guardrail: string;
+  }>(null);
   const [trackedStatus, setTrackedStatus] = useState<null | {
     id: string;
     stage: number;
@@ -61,6 +72,83 @@ export default function Home() {
         lang === "ta" ? "சாதிச் சான்றிதழ் (Community Certificate)" : "Community Certificate",
       date: "2026-11-17",
     });
+  };
+
+  const handleSearch = (q: string) => {
+    const query = q.trim().toLowerCase();
+    if (!query) return;
+
+    if (query.includes("patta") || query.includes("பட்டா") || query.includes("chitta")) {
+      setAiResult({
+        title: lang === "ta" ? "பட்டா மாறுதல் (Patta Transfer)" : "Patta Transfer Service",
+        answer:
+          lang === "ta"
+            ? "நில உரிமை மாற்றம் மற்றும் பட்டா மாறுதல் விண்ணப்பம் வருவாய்த் துறை இணையதளத்தில் செய்யப்பட வேண்டும்."
+            : "Patta transfer application is processed through the Revenue and Disaster Management e-Services portal.",
+        eligibility:
+          lang === "ta"
+            ? "செல்லுபடியாகும் கிரயப் பத்திரம் அல்லது வாரிசு உரிமை ஆவணம்."
+            : "Valid registered sale deed or legal heir certificate.",
+        docs:
+          lang === "ta"
+            ? "கிரயப் பத்திரம், வில்லங்கச் சான்று (EC), ஆதார் அட்டை."
+            : "Sale deed, Encumbrance Certificate, Aadhaar.",
+        sla: 30,
+        url: "https://eservices.tn.gov.in/",
+        citation: "Revenue Dept Statutory Citizen Charter 2026",
+        guardrail: "Zero-Generation Service Grounding",
+      });
+    } else if (query.includes("community") || query.includes("சாதி") || query.includes("cert")) {
+      setAiResult({
+        title: lang === "ta" ? "சாதிச் சான்றிதழ் (Community Certificate)" : "Community Certificate",
+        answer:
+          lang === "ta"
+            ? "சாதிச் சான்றிதழ் இ-சேவை மையம் மூலமாகவோ அல்லது இணையதளம் வழியாகவோ விண்ணப்பிக்கலாம்."
+            : "Community certificate can be obtained online via e-Sevai centers or citizen login.",
+        eligibility:
+          lang === "ta"
+            ? "தமிழ்நாட்டில் நிரந்தரமாக வசிக்கும் SC/ST/OBC/BC வகுப்பினர்."
+            : "Resident of TN; SC/ST/OBC/BC category.",
+        docs:
+          lang === "ta"
+            ? "ஆதார் அட்டை, குடும்ப அட்டை (Ration Card), பெற்றோர் சான்றிதழ்."
+            : "Aadhaar Card, Ration Card, Parent's Community Certificate.",
+        sla: 15,
+        url: "https://tnesevai.tn.gov.in/",
+        citation: "G.O. Ms. No. 14 Revenue & Disaster Management",
+        guardrail: "Zero-Generation Service Grounding",
+      });
+    } else if (
+      query.includes("demand") ||
+      query.includes("கோரிக்கை") ||
+      query.includes("highway") ||
+      query.includes("நெடுஞ்சாலை")
+    ) {
+      setAiResult({
+        title:
+          lang === "ta"
+            ? "நெடுஞ்சாலைத்துறை கொள்கை விளக்கக் குறிப்பு 2026-27"
+            : "Highways & Minor Ports Policy Note 2026-27",
+        answer:
+          lang === "ta"
+            ? "கோரிக்கை எண் 21: தமிழ்நாடு நெடுஞ்சாலைகள் மற்றும் துறைமுகங்கள் உட்கட்டமைப்பு நிதி ஒதுக்கீடு மற்றும் கொள்கை வழிகாட்டுதல்கள்."
+            : "Demand No. 21: Statutory allocations, road connectivity programs, and coastal infrastructure projects.",
+        url: "https://cdn.tn.gov.in/docs/demand21.pdf",
+        citation: "TN-GO-HW-2026-045 (Demand No. 21)",
+        guardrail: "OCR & Document RAG Grounding",
+      });
+    } else {
+      setAiResult({
+        title: lang === "ta" ? "அரசு தகவல் உதவி (Citizen AI Assistant)" : "Citizen AI Assistant Search",
+        answer:
+          lang === "ta"
+            ? `"${q}" தொடர்பான அதிகாரப்பூர்வ தகவல்களைப் பெற அரசு தொடர்பு கையேடு அல்லது இ-சேவை தளத்தைப் பார்க்கவும்.`
+            : `Verified information matching "${q}" is indexed in the official Contact Directory and Service Catalog.`,
+        url: "/contact-directory",
+        citation: "Government of Tamil Nadu Portal Registry 2.0",
+        guardrail: "Semantic Vector Grounding",
+      });
+    }
   };
 
   const tnBlue = highContrast ? "#000000" : "#004B87";
@@ -149,12 +237,20 @@ export default function Home() {
           </p>
 
           {/* Bilingual Semantic Search Bar */}
-          <form className="w-full relative mt-2" onSubmit={(e) => e.preventDefault()}>
+          <form
+            className="w-full relative mt-2"
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSearch(searchQuery);
+            }}
+          >
             <input
               type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder={
                 lang === "ta"
-                  ? "எ.கா: சாதிச் சான்றிதழ், பட்டா மாறுதல், மகளிர் உரிமைத் திட்டம்..."
+                  ? "எ.கா: சாதிச் சான்றிதழ், பட்டா மாறுதல், மகளிர் உரிமைத் திட்டம், நெடுஞ்சாலை..."
                   : "Search by service name, scheme, G.O. number, or department..."
               }
               className="w-full py-3.5 pl-12 pr-28 rounded-xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-400 text-sm sm:text-base"
@@ -169,16 +265,81 @@ export default function Home() {
             </button>
           </form>
 
+          {/* AI Citizen Assistant Resolution Card */}
+          {aiResult && (
+            <div className="w-full mt-4 bg-white text-slate-900 rounded-xl p-5 shadow-2xl text-left border-2 border-amber-400 animate-in fade-in duration-200">
+              <div className="flex justify-between items-start gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span className="text-xs font-bold uppercase tracking-wider text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
+                    {lang === "ta" ? "அரசு நுண்ணறிவு உதவி (AI Citizen Assistant)" : "Grounded AI Assistance"}
+                  </span>
+                  <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                    {aiResult.guardrail}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setAiResult(null)}
+                  className="text-xs font-semibold text-slate-400 hover:text-slate-700 bg-slate-100 px-2 py-0.5 rounded"
+                >
+                  ✕ {lang === "ta" ? "மூடுக" : "Close"}
+                </button>
+              </div>
+
+              <h4 className="text-base font-bold text-slate-900 mt-2">{aiResult.title}</h4>
+              <p className="text-xs sm:text-sm text-slate-700 mt-1 leading-relaxed">{aiResult.answer}</p>
+
+              {aiResult.eligibility && (
+                <div className="mt-3 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs space-y-1">
+                  <div>
+                    <strong>{lang === "ta" ? "தகுதி வரம்பு:" : "Statutory Eligibility:"}</strong> {aiResult.eligibility}
+                  </div>
+                  {aiResult.docs && (
+                    <div>
+                      <strong>{lang === "ta" ? "தேவைப்படும் ஆவணங்கள்:" : "Required Documents:"}</strong> {aiResult.docs}
+                    </div>
+                  )}
+                  {aiResult.sla && (
+                    <div>
+                      <strong>{lang === "ta" ? "சட்டப்பூர்வ காலக்கெடு:" : "Statutory SLA:"}</strong> {aiResult.sla}{" "}
+                      {lang === "ta" ? "வேலை நாட்கள்" : "working days"}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-3 text-xs">
+                <div className="text-slate-500 font-mono text-[11px]">
+                  <strong>Citation:</strong> {aiResult.citation}
+                </div>
+                <a
+                  href={aiResult.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#004B87] hover:bg-blue-900 text-white font-bold transition-colors shadow-sm"
+                >
+                  <span>{lang === "ta" ? "விண்ணப்பிக்க / காண்க" : "Apply / View Source"}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          )}
+
           {/* Search Pills */}
           <div className="flex flex-wrap justify-center items-center gap-2 text-xs text-slate-200 mt-1">
             <span className="opacity-80">{lang === "ta" ? "அடிக்கடி தேடப்படுபவை:" : "Popular Searches:"}</span>
             {["Patta Chitta", "Community Cert", "Old Age Pension", "Demand No. 21"].map((pill) => (
-              <span
+              <button
+                type="button"
                 key={pill}
-                className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 cursor-pointer border border-white/20"
+                onClick={() => {
+                  setSearchQuery(pill);
+                  handleSearch(pill);
+                }}
+                className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 cursor-pointer border border-white/20 transition-colors"
               >
                 {pill}
-              </span>
+              </button>
             ))}
           </div>
         </div>

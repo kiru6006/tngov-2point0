@@ -131,40 +131,37 @@ def ingest_contacts(db: Session) -> int:
         data = json.load(f)
         officials = data.get("officials", [])
 
-    dept_cache = {}
-    jur_cache = {}
+    # Preload caches from DB
+    dept_cache = {d.name_en: d.department_id for d in db.query(Department).all()}
+    jur_cache = {j.district_en: j.jurisdiction_id for j in db.query(Jurisdiction).all()}
     count = 0
 
     for off in officials:
         dept_name_en = off.get("department_en", "Public Department")
         dept_name_ta = off.get("department_ta", dept_name_en)
         if dept_name_en not in dept_cache:
-            dept = db.query(Department).filter(Department.name_en == dept_name_en).first()
-            if not dept:
-                dept_id = f"DEP-{len(dept_cache) + 1:03d}"
-                dept = Department(
-                    department_id=dept_id,
-                    name_en=dept_name_en,
-                    name_ta=dept_name_ta,
-                )
-                db.add(dept)
-                db.flush()
+            dept_id = f"DEP-{len(dept_cache) + 1:04d}"
+            dept = Department(
+                department_id=dept_id,
+                name_en=dept_name_en,
+                name_ta=dept_name_ta,
+            )
+            db.add(dept)
+            db.flush()
             dept_cache[dept_name_en] = dept.department_id
 
         dist_name_en = off.get("district_en", "Chennai")
         dist_name_ta = off.get("district_ta", dist_name_en)
         if dist_name_en not in jur_cache:
-            jur = db.query(Jurisdiction).filter(Jurisdiction.district_en == dist_name_en).first()
-            if not jur:
-                jur_id = f"JUR-{len(jur_cache) + 1:03d}"
-                jur = Jurisdiction(
-                    jurisdiction_id=jur_id,
-                    district_en=dist_name_en,
-                    district_ta=dist_name_ta,
-                    level="District" if dist_name_en != "State Level" else "State",
-                )
-                db.add(jur)
-                db.flush()
+            jur_id = f"JUR-{len(jur_cache) + 1:04d}"
+            jur = Jurisdiction(
+                jurisdiction_id=jur_id,
+                district_en=dist_name_en,
+                district_ta=dist_name_ta,
+                level="District" if dist_name_en != "State Level" else "State",
+            )
+            db.add(jur)
+            db.flush()
             jur_cache[dist_name_en] = jur.jurisdiction_id
 
         # Position

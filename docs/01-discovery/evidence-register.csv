@@ -1,0 +1,7 @@
+evidence_id,source_portal,page_url,feature_audited,finding,status,verified_date
+EVD-TN-01,Tamil Nadu,https://www.tn.gov.in/contact_directory.php,Contact Directory,Static table layout with outdated landlines,VERIFIED,2026-11-17
+EVD-TN-02,Tamil Nadu,https://www.tn.gov.in/minister_list.php,Council of Ministers,Unlinked table without office contact or portfolio search,VERIFIED,2026-11-17
+EVD-TN-03,Tamil Nadu,https://www.tn.gov.in/district_collector.php,District Collectors,District table missing official email and jurisdiction map,VERIFIED,2026-11-17
+EVD-TN-04,Tamil Nadu,https://www.tn.gov.in/go_view,Government Orders,Scanned raster PDFs without OCR machine-readability,VERIFIED,2026-11-17
+EVD-TG-01,Telangana,https://www.telangana.gov.in/services/,MeeSeva Services,Categorized life-stage service taxonomy,OBSERVED,2026-11-17
+EVD-UP-01,Uttar Pradesh,https://up.gov.in/en/page/services,e-District Portal,Citizen persona navigation (Farmer, Student, Entrepreneur),OBSERVED,2026-11-17
