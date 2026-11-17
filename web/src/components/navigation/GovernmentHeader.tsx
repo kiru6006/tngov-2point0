@@ -71,20 +71,24 @@ export default function GovernmentHeader({
     }
   };
 
-  const tnBlue = highContrast ? "#000000" : "#004B87";
+  const navyColor = highContrast ? "#000000" : "#173B63";
+  const tealColor = highContrast ? "#ffff00" : "#087F8C";
 
   return (
     <div ref={headerRef} className="w-full relative bg-white border-b border-slate-200 shadow-xs z-30">
       {/* =========================================================================
-          LAYER B: MAIN HEADER WITH EMBLEM, BILINGUAL TITLES, SEARCH & MENU
+          LAYER B: MAIN HEADER WITH EMBLEM, BILINGUAL TITLES, SEARCH & ALL SERVICES
           ========================================================================= */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
         {/* Government Identity Branding */}
         <div className="flex items-center justify-between w-full md:w-auto gap-3.5">
-          <Link href="/" className="flex items-center gap-3.5 group focus:outline-none focus:ring-2 focus:ring-[#004B87] rounded-lg p-1">
+          <Link
+            href="/"
+            className="flex items-center gap-3.5 group focus:outline-none focus:ring-2 focus:ring-[#173B63] rounded-lg p-1"
+          >
             <div
-              className="w-12 h-12 rounded-full flex items-center justify-center font-black text-white shadow-md text-base shrink-0 tracking-wider transition-transform group-hover:scale-105"
-              style={{ backgroundColor: tnBlue }}
+              className="w-12 h-12 rounded-full flex items-center justify-center font-black text-white shadow-md text-base shrink-0 tracking-wider transition-transform group-hover:scale-105 border border-slate-200"
+              style={{ backgroundColor: navyColor }}
               aria-hidden="true"
             >
               TN
@@ -93,8 +97,8 @@ export default function GovernmentHeader({
               <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-slate-900 leading-tight">
                 {lang === "ta" ? "தமிழ்நாடு அரசு" : "Government of Tamil Nadu"}
               </h1>
-              <p className="text-xs sm:text-sm font-semibold text-[#004B87] leading-snug">
-                {lang === "ta" ? "ஒருங்கிணைந்த டிஜிட்டல் போர்டல் 2.0" : "Digital Portal 2.0"}
+              <p className="text-xs sm:text-sm font-semibold text-[#173B63] leading-snug">
+                {lang === "ta" ? "ஒருங்கிணைந்த டிஜிட்டல் தளம் 2.0" : "Unified Digital Portal 2.0"}
               </p>
               <p className="text-[11px] text-slate-500 font-medium">
                 {lang === "ta" ? "பொதுமக்கள் சேவை & அரசு தொடர்பு கையேடு" : "Citizen Services & Administrative Directory"}
@@ -102,55 +106,74 @@ export default function GovernmentHeader({
             </div>
           </Link>
 
-          {/* Mobile Menu Button with Visible Text Label */}
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden flex items-center gap-1.5 px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#004B87]"
-            aria-expanded={mobileMenuOpen}
-            aria-label={mobileMenuOpen ? "Close Navigation Menu" : "Open Navigation Menu"}
-          >
-            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            <span>{lang === "ta" ? "மெனு" : "Menu"}</span>
-          </button>
+          {/* Mobile Drawer Trigger (Explicitly Labelled Button) */}
+          <div className="flex items-center gap-2 md:hidden">
+            <Link
+              href="/services"
+              className="px-2.5 py-1 text-xs font-bold rounded bg-[#E9F2F7] text-[#173B63] border border-slate-300"
+            >
+              {lang === "ta" ? "சேவைகள்" : "Services"}
+            </Link>
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-300 bg-slate-100 text-slate-800 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-[#173B63]"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation-drawer"
+              aria-label={lang === "ta" ? "முழு மெனுவை திறக்க" : "Open Navigation Menu"}
+            >
+              <Menu className="w-5 h-5 text-slate-700" />
+              <span className="text-xs font-bold">{lang === "ta" ? "மெனு" : "Menu"}</span>
+            </button>
+          </div>
         </div>
 
-        {/* Universal Citizen Search Input (Layer B) */}
-        <div className="w-full md:max-w-md lg:max-w-lg">
-          <form onSubmit={handleSearchSubmit} className="relative w-full">
+        {/* Universal Search Bar + All Services Button */}
+        <div className="w-full md:w-auto flex-1 max-w-xl flex items-center gap-2">
+          <form onSubmit={handleSearchSubmit} className="relative flex-1" role="search">
+            <label htmlFor="portal-header-search" className="sr-only">
+              {lang === "ta" ? "அரசு சேவைகள் மற்றும் தொடர்பு தேடல்" : "Search government services and directory"}
+            </label>
             <input
-              type="text"
+              id="portal-header-search"
+              type="search"
               value={headerSearch}
               onChange={(e) => setHeaderSearch(e.target.value)}
               placeholder={
                 lang === "ta"
-                  ? "சேவை, சான்றிதழ், அரசாணை அல்லது அதிகாரி பெயர்..."
-                  : "Search service, certificate, G.O. or official name..."
+                  ? "சேவை, சான்றிதழ், அரசாணை அல்லது அதிகாரி பெயர் தேடுக..."
+                  : "Search service, certificate, G.O., department or officer..."
               }
-              className="w-full py-2.5 pl-10 pr-24 rounded-xl text-slate-900 bg-slate-50 border border-slate-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#004B87] text-xs sm:text-sm transition-all"
-              aria-label="Universal Citizen Search Input"
+              className="w-full pl-9 pr-20 py-2 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:ring-2 focus:ring-[#173B63] focus:border-transparent transition-all"
             />
-            <Search className="absolute left-3 top-3 text-slate-400 w-4 h-4" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5 pointer-events-none" />
             <button
               type="submit"
-              className="absolute right-1.5 top-1.5 px-3.5 py-1.5 rounded-lg text-white font-bold text-xs transition-colors shadow-xs"
-              style={{ backgroundColor: tnBlue }}
+              className="absolute right-1 top-1 bottom-1 px-3 bg-[#173B63] hover:bg-[#0f2844] text-white text-xs font-bold rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
             >
               {lang === "ta" ? "தேடுக" : "Search"}
             </button>
           </form>
+
+          {/* Direct "All Services" Access Button (Prompt Requirement) */}
+          <Link
+            href="/services"
+            className="hidden sm:inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-white bg-[#087F8C] hover:bg-[#06626c] rounded-lg shadow-2xs whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-[#173B63]"
+          >
+            <span>{lang === "ta" ? "அனைத்து சேவைகள்" : "All Services"}</span>
+          </Link>
         </div>
       </div>
 
       {/* =========================================================================
-          LAYER C: PRIMARY CATEGORY NAVIGATION (DESKTOP MEGA MENUS)
+          LAYER C: PRIMARY CATEGORY NAVIGATION (9 Canonical Desktop Categories)
           ========================================================================= */}
       <nav
-        aria-label="Primary Category Navigation"
+        aria-label="Primary Portal Navigation"
         className="hidden md:block w-full border-t border-slate-200 bg-white"
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
-          <ul className="flex items-center gap-1 lg:gap-2 text-xs font-bold text-slate-700">
+          <ul className="flex items-center gap-0.5 lg:gap-1 text-xs font-bold text-slate-700 flex-wrap">
             {PRIMARY_NAVIGATION.map((nav) => {
               const hasMega = Boolean(nav.groups && nav.groups.length > 0);
               const isSelected = activeMegaMenu === nav.id;
@@ -162,10 +185,10 @@ export default function GovernmentHeader({
                       type="button"
                       onClick={() => setActiveMegaMenu(isSelected ? null : nav.id)}
                       onMouseEnter={() => setActiveMegaMenu(nav.id)}
-                      className={`flex items-center gap-1 px-3 py-3 rounded-none border-b-2 font-bold text-xs uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-[#004B87] ${
+                      className={`flex items-center gap-1 px-2.5 lg:px-3 py-3 rounded-none border-b-2 font-bold text-xs uppercase tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-[#173B63] ${
                         isSelected
-                          ? "border-[#004B87] text-[#004B87] bg-blue-50/50"
-                          : "border-transparent hover:text-[#004B87] hover:border-blue-200"
+                          ? "border-[#173B63] text-[#173B63] bg-sky-50/70"
+                          : "border-transparent hover:text-[#173B63] hover:border-sky-300"
                       }`}
                       aria-haspopup="true"
                       aria-expanded={isSelected}
@@ -173,20 +196,20 @@ export default function GovernmentHeader({
                       <span>{lang === "ta" ? nav.label_ta : nav.label_en}</span>
                       <ChevronDown
                         className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                          isSelected ? "rotate-180 text-[#004B87]" : "text-slate-400"
+                          isSelected ? "rotate-180 text-[#173B63]" : "text-slate-400"
                         }`}
                       />
                     </button>
                   ) : (
                     <Link
                       href={nav.href}
-                      className="inline-flex items-center px-3 py-3 border-b-2 border-transparent hover:border-[#004B87] hover:text-[#004B87] font-bold text-xs uppercase tracking-wider transition-colors focus:outline-none focus:ring-2 focus:ring-[#004B87]"
+                      className="inline-flex items-center px-2.5 lg:px-3 py-3 border-b-2 border-transparent hover:border-[#173B63] hover:text-[#173B63] font-bold text-xs uppercase tracking-wide transition-colors focus:outline-none focus:ring-2 focus:ring-[#173B63]"
                     >
                       {lang === "ta" ? nav.label_ta : nav.label_en}
                     </Link>
                   )}
 
-                  {/* Desktop Mega Menu Dropdown */}
+                  {/* Accessible Mega Menu Dropdown */}
                   {hasMega && (
                     <AccessibleMegaMenu
                       isOpen={isSelected}
@@ -206,10 +229,10 @@ export default function GovernmentHeader({
             })}
           </ul>
 
-          {/* Quick Deep Link to All 45 Departments */}
+          {/* Quick Deep Link to Districts / Departments */}
           <Link
             href="/departments"
-            className="text-xs font-bold text-[#004B87] hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200 transition-colors shrink-0"
+            className="hidden xl:inline-flex text-xs font-bold text-[#173B63] hover:text-[#087F8C] bg-[#E9F2F7] hover:bg-sky-100 px-2.5 py-1 rounded-md border border-sky-200 transition-colors shrink-0"
           >
             {lang === "ta" ? "45 துறைகள்" : "45 Departments"} →
           </Link>
@@ -232,7 +255,7 @@ export default function GovernmentHeader({
               <div className="flex items-center gap-2">
                 <div
                   className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-xs"
-                  style={{ backgroundColor: tnBlue }}
+                  style={{ backgroundColor: navyColor }}
                 >
                   TN
                 </div>
@@ -243,140 +266,117 @@ export default function GovernmentHeader({
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-[#004B87]"
+                className="p-1.5 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-200 focus:outline-none focus:ring-2 focus:ring-[#173B63]"
                 aria-label="Close Mobile Menu"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            {/* Quick Actions Shortcuts in Drawer */}
-            <div className="p-3 bg-blue-50/60 border-b border-blue-100 grid grid-cols-2 gap-2 text-xs font-semibold">
+            {/* Mobile Category Accordions */}
+            <div className="p-4 flex-1 space-y-2">
               <Link
-                href="/services/certificates"
+                href="/"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-2 bg-white rounded border border-blue-200 text-slate-800 text-center flex flex-col items-center gap-1"
+                className="block p-2.5 font-bold text-sm text-slate-900 hover:bg-slate-100 rounded-lg"
               >
-                <FileText className="w-4 h-4 text-[#004B87]" />
-                <span>{lang === "ta" ? "சான்றிதழ்கள்" : "Certificates"}</span>
+                {lang === "ta" ? "முகப்பு (Home)" : "Home"}
               </Link>
-              <Link
-                href="/services/land"
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2 bg-white rounded border border-blue-200 text-slate-800 text-center flex flex-col items-center gap-1"
-              >
-                <Building2 className="w-4 h-4 text-[#004B87]" />
-                <span>{lang === "ta" ? "பட்டா சிட்டா" : "Patta Chitta"}</span>
-              </Link>
-              <Link
-                href="/contact-directory"
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2 bg-white rounded border border-blue-200 text-slate-800 text-center flex flex-col items-center gap-1"
-              >
-                <Users className="w-4 h-4 text-[#004B87]" />
-                <span>{lang === "ta" ? "அரசு தொடர்புகள்" : "Contacts"}</span>
-              </Link>
-              <Link
-                href="/schemes"
-                onClick={() => setMobileMenuOpen(false)}
-                className="p-2 bg-white rounded border border-blue-200 text-slate-800 text-center flex flex-col items-center gap-1"
-              >
-                <Award className="w-4 h-4 text-[#004B87]" />
-                <span>{lang === "ta" ? "நலத்திட்டங்கள்" : "Schemes"}</span>
-              </Link>
-            </div>
 
-            {/* Category Navigation Accordions */}
-            <div className="flex-1 p-4 space-y-2 text-xs">
-              {PRIMARY_NAVIGATION.map((nav) => {
-                const hasGroups = Boolean(nav.groups && nav.groups.length > 0);
-                const isExpanded = expandedMobileCategory === nav.id;
-
+              {PRIMARY_NAVIGATION.filter((n) => n.id !== "nav-home").map((cat) => {
+                const isExpanded = expandedMobileCategory === cat.id;
                 return (
-                  <div key={nav.id} className="border-b border-slate-100 pb-2">
-                    {hasGroups ? (
-                      <div>
-                        <button
-                          type="button"
-                          onClick={() => setExpandedMobileCategory(isExpanded ? null : nav.id)}
-                          className="w-full flex justify-between items-center py-2 text-left font-bold text-slate-900 text-sm hover:text-[#004B87]"
-                          aria-expanded={isExpanded}
-                        >
-                          <span>{lang === "ta" ? nav.label_ta : nav.label_en}</span>
-                          <ChevronDown
-                            className={`w-4 h-4 text-slate-400 transition-transform ${
-                              isExpanded ? "rotate-180 text-[#004B87]" : ""
-                            }`}
-                          />
-                        </button>
-                        {isExpanded && nav.groups && (
-                          <div className="pl-3 py-1 space-y-3">
-                            {nav.groups.map((grp) => (
-                              <div key={grp.group_id} className="space-y-1">
-                                <span className="text-[10px] uppercase font-bold text-[#004B87] tracking-wider block">
-                                  {lang === "ta" ? grp.group_title_ta : grp.group_title_en}
-                                </span>
-                                <ul className="space-y-1.5 pl-1">
-                                  {grp.items.map((item) => (
-                                    <li key={item.id}>
-                                      {item.isExternal ? (
-                                        <a
-                                          href={item.href}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          onClick={() => setMobileMenuOpen(false)}
-                                          className="text-slate-600 hover:text-slate-900 flex items-center justify-between py-1"
-                                        >
-                                          <span>{lang === "ta" ? item.title_ta : item.title_en}</span>
-                                          <ExternalLink className="w-3 h-3 text-slate-400" />
-                                        </a>
-                                      ) : (
-                                        <Link
-                                          href={item.href}
-                                          onClick={() => setMobileMenuOpen(false)}
-                                          className="text-slate-600 hover:text-slate-900 block py-1"
-                                        >
-                                          {lang === "ta" ? item.title_ta : item.title_en}
-                                        </Link>
-                                      )}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            ))}
-                            <Link
-                              href={nav.href}
-                              onClick={() => setMobileMenuOpen(false)}
-                              className="text-xs font-bold text-[#004B87] block pt-1"
-                            >
-                              {lang === "ta" ? "முழுப் பக்கத்தைக் காண்க →" : "View Full Section →"}
-                            </Link>
+                  <div key={cat.id} className="border border-slate-200 rounded-lg overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setExpandedMobileCategory(isExpanded ? null : cat.id)
+                      }
+                      className="w-full flex justify-between items-center p-3 text-left bg-slate-50 hover:bg-slate-100 font-bold text-xs uppercase tracking-wide text-slate-800"
+                      aria-expanded={isExpanded}
+                    >
+                      <span>{lang === "ta" ? cat.label_ta : cat.label_en}</span>
+                      <ChevronDown
+                        className={`w-4 h-4 text-slate-500 transition-transform ${
+                          isExpanded ? "rotate-180" : ""
+                        }`}
+                      />
+                    </button>
+
+                    {isExpanded && cat.groups && (
+                      <div className="p-3 bg-white space-y-4 border-t border-slate-200 text-xs">
+                        {cat.groups.map((grp) => (
+                          <div key={grp.group_id} className="space-y-1.5">
+                            <span className="font-bold text-[#173B63] block text-[11px] uppercase tracking-wider">
+                              {lang === "ta" ? grp.group_title_ta : grp.group_title_en}
+                            </span>
+                            <ul className="space-y-1 pl-2 border-l border-slate-200">
+                              {grp.items.map((item) => (
+                                <li key={item.id}>
+                                  <Link
+                                    href={item.href}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="block py-1 text-slate-600 hover:text-[#173B63] font-medium"
+                                  >
+                                    {lang === "ta" ? item.title_ta : item.title_en}
+                                  </Link>
+                                </li>
+                              ))}
+                            </ul>
                           </div>
-                        )}
+                        ))}
+                        <div className="pt-2 border-t border-slate-100">
+                          <Link
+                            href={cat.href}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="font-bold text-xs text-[#087F8C] block"
+                          >
+                            {lang === "ta"
+                              ? `${cat.label_ta} முழு விவரம் →`
+                              : `View All ${cat.label_en} →`}
+                          </Link>
+                        </div>
                       </div>
-                    ) : (
-                      <Link
-                        href={nav.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className="block py-2 font-bold text-slate-900 text-sm hover:text-[#004B87]"
-                      >
-                        {lang === "ta" ? nav.label_ta : nav.label_en}
-                      </Link>
                     )}
                   </div>
                 );
               })}
-            </div>
 
-            {/* Drawer Footer Emergency Call */}
-            <div className="p-4 bg-slate-900 text-white text-xs space-y-2 mt-auto">
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">CM Helpline:</span>
-                <a href="tel:1100" className="font-bold text-amber-400">1100 (24x7)</a>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-slate-400">e-Sevai Support:</span>
-                <a href="tel:18004251333" className="font-bold text-emerald-400">1800-425-1333</a>
+              {/* Emergency Numbers Quick Access in Drawer */}
+              <div className="mt-6 pt-4 border-t border-slate-200">
+                <span className="text-xs font-bold text-slate-500 block mb-2 uppercase">
+                  {lang === "ta" ? "அவசர எண்கள் (24x7):" : "Emergency Helplines (24x7):"}
+                </span>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <a
+                    href="tel:1100"
+                    className="flex items-center gap-1.5 p-2 rounded bg-amber-50 text-amber-900 border border-amber-200 font-bold"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5 text-amber-700" />
+                    <span>CM 1100</span>
+                  </a>
+                  <a
+                    href="tel:108"
+                    className="flex items-center gap-1.5 p-2 rounded bg-red-50 text-red-900 border border-red-200 font-bold"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5 text-red-700" />
+                    <span>108 Medical</span>
+                  </a>
+                  <a
+                    href="tel:100"
+                    className="flex items-center gap-1.5 p-2 rounded bg-blue-50 text-blue-900 border border-blue-200 font-bold"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5 text-blue-700" />
+                    <span>100 Police</span>
+                  </a>
+                  <a
+                    href="tel:181"
+                    className="flex items-center gap-1.5 p-2 rounded bg-purple-50 text-purple-900 border border-purple-200 font-bold"
+                  >
+                    <PhoneCall className="w-3.5 h-3.5 text-purple-700" />
+                    <span>181 Women</span>
+                  </a>
+                </div>
               </div>
             </div>
           </div>

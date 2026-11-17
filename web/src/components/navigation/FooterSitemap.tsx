@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, Mail, ShieldCheck, ExternalLink } from "lucide-react";
+import { Phone, Mail, ShieldCheck, ExternalLink, HelpCircle, FileText } from "lucide-react";
 
 interface FooterProps {
   lang: "ta" | "en";
@@ -9,40 +9,69 @@ interface FooterProps {
 
 export default function FooterSitemap({ lang }: FooterProps) {
   return (
-    <footer id="sitemap" className="w-full bg-slate-900 text-slate-300 text-xs pt-12 pb-8 border-t-4 border-[#004B87]">
+    <footer id="sitemap" className="w-full bg-[#0c1e33] text-slate-300 text-xs pt-12 pb-8 border-t-4 border-[#173B63]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
         {/* Top Categorized Sitemap Columns */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 pb-10 border-b border-slate-800">
-          {/* Column 1: Citizen Services */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 pb-10 border-b border-slate-800">
+          {/* Column 1: Government & Administration */}
           <div>
-            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3">
+            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3 border-b border-slate-700 pb-1">
+              {lang === "ta" ? "அரசு நிர்வாகம்" : "Government"}
+            </h4>
+            <ul className="space-y-2 text-slate-400">
+              <li>
+                <Link href="/contact-directory?role=governor" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "ஆளுநர் மாளிகை" : "Governor's Secretariat"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact-directory?role=cm" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "முதலமைச்சர் அலுவலகம்" : "Chief Minister's Office"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact-directory?role=minister" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "அமைச்சரவை" : "Council of Ministers"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact-directory?role=cs" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "தலைமைச் செயலர்" : "Chief Secretary"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/departments" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "அனைத்து 45 துறைகள்" : "Secretariat Departments"}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 2: Citizen Services */}
+          <div>
+            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3 border-b border-slate-700 pb-1">
               {lang === "ta" ? "பொதுமக்கள் சேவைகள்" : "Citizen Services"}
             </h4>
             <ul className="space-y-2 text-slate-400">
               <li>
                 <Link href="/services/certificates" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "சாதிச் சான்றிதழ்" : "Community Certificate"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/services/certificates" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "வருமானச் சான்றிதழ்" : "Income Certificate"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/services/certificates" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "இருப்பிடச் சான்றிதழ்" : "Nativity Certificate"}
+                  {lang === "ta" ? "சாதி / வருமான சான்றிதழ்" : "Community & Income Cert"}
                 </Link>
               </li>
               <li>
                 <Link href="/services/land" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "பட்டா சிட்டா விவரம்" : "Patta Chitta Land Records"}
+                  {lang === "ta" ? "பட்டா சிட்டா / நில ஆவணம்" : "Patta Chitta & Land"}
                 </Link>
               </li>
               <li>
                 <Link href="/services/certificates" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "வாரிசுச் சான்றிதழ்" : "Legal Heir Certificate"}
+                  {lang === "ta" ? "இருப்பிட & வாரிசுச் சான்று" : "Nativity & Legal Heir"}
                 </Link>
+              </li>
+              <li>
+                <a href="https://www.tnpds.gov.in/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "ஸ்மார்ட் குடும்ப அட்டை" : "TNPDS Smart Ration Card"}
+                </a>
               </li>
               <li>
                 <Link href="/services" className="text-amber-400 hover:text-amber-300 font-semibold mt-1 inline-block">
@@ -52,35 +81,30 @@ export default function FooterSitemap({ lang }: FooterProps) {
             </ul>
           </div>
 
-          {/* Column 2: Welfare Schemes */}
+          {/* Column 3: Schemes & Benefits */}
           <div>
-            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3">
-              {lang === "ta" ? "அரசு நலத்திட்டங்கள்" : "Welfare Schemes"}
+            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3 border-b border-slate-700 pb-1">
+              {lang === "ta" ? "அரசு நலத்திட்டங்கள்" : "Schemes & Benefits"}
             </h4>
             <ul className="space-y-2 text-slate-400">
               <li>
                 <Link href="/schemes" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "மகளிர் உரிமைத் திட்டம்" : "Magalir Urimai Thogai"}
+                  {lang === "ta" ? "கலைஞர் மகளிர் உரிமை" : "Magalir Urimai Thogai"}
                 </Link>
               </li>
               <li>
                 <Link href="/schemes" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "புதுமைப் பெண் திட்டம்" : "Pudhumai Penn Scheme"}
+                  {lang === "ta" ? "புதுமைப் பெண் & தமிழ்ப் புதல்வன்" : "Pudhumai Penn / Pudhalvan"}
                 </Link>
               </li>
               <li>
                 <Link href="/schemes" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "முதியோர் ஓய்வூதியம்" : "Old Age Pension (OAP)"}
+                  {lang === "ta" ? "முதியோர் ஓய்வூதியம் (OAP)" : "Old Age Pension (OAP)"}
                 </Link>
               </li>
               <li>
                 <Link href="/schemes" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "முதல்வர் மருத்துவக் காப்பீடு" : "CMCHIS Health Insurance"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/schemes" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "வேளாண் வளர்ச்சித் திட்டம்" : "All Village Agri Scheme"}
+                  {lang === "ta" ? "முதல்வர் விரிவான காப்பீடு" : "CMCHIS Health Insurance"}
                 </Link>
               </li>
               <li>
@@ -91,85 +115,22 @@ export default function FooterSitemap({ lang }: FooterProps) {
             </ul>
           </div>
 
-          {/* Column 3: Government Contacts */}
+          {/* Column 4: Districts & Documents */}
           <div>
-            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3">
-              {lang === "ta" ? "அரசு தொடர்புகள்" : "Government Contacts"}
+            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3 border-b border-slate-700 pb-1">
+              {lang === "ta" ? "மாவட்டங்கள் & ஆவணங்கள்" : "Districts & Docs"}
             </h4>
             <ul className="space-y-2 text-slate-400">
-              <li>
-                <Link href="/contact-directory?category=Minister" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "அமைச்சரவை" : "Council of Ministers"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact-directory?cadre=IAS" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "அரசுச் செயலாளர்கள்" : "Secretaries to Govt"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact-directory?designation=Collector" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "மாவட்ட ஆட்சித்தலைவர்கள்" : "District Collectors"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact-directory?category=HoD" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "துறைத் தலைவர்கள் (HoD)" : "Heads of Departments"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact-directory?category=RTI" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "RTI தகவல் அலுவலர்கள்" : "RTI Officers"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact-directory" className="text-amber-400 hover:text-amber-300 font-semibold mt-1 inline-block">
-                  {lang === "ta" ? "முழு தொடர்பு கையேடு →" : "Full Directory →"}
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4: Departments & Districts */}
-          <div>
-            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3">
-              {lang === "ta" ? "துறைகள் & மாவட்டங்கள்" : "Depts & Districts"}
-            </h4>
-            <ul className="space-y-2 text-slate-400">
-              <li>
-                <Link href="/departments" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "வருவாய்த் துறை" : "Revenue Department"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/departments" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "சமூக நலத்துறை" : "Social Welfare Dept"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/departments" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "பள்ளிக் கல்வித்துறை" : "School Education Dept"}
-                </Link>
-              </li>
-              <li>
-                <Link href="/departments" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "அனைத்து 45 துறைகள்" : "All 45 Departments"}
-                </Link>
-              </li>
               <li>
                 <Link href="/districts" className="hover:text-white transition-colors">
                   {lang === "ta" ? "அனைத்து 38 மாவட்டங்கள்" : "All 38 Districts"}
                 </Link>
               </li>
-            </ul>
-          </div>
-
-          {/* Column 5: Government Documents */}
-          <div>
-            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3">
-              {lang === "ta" ? "அரசாணைகள் & ஆவணங்கள்" : "Documents & Orders"}
-            </h4>
-            <ul className="space-y-2 text-slate-400">
+              <li>
+                <Link href="/contact-directory?designation=Collector" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "மாவட்ட ஆட்சியர்கள்" : "District Collectors"}
+                </Link>
+              </li>
               <li>
                 <Link href="/documents" className="hover:text-white transition-colors">
                   {lang === "ta" ? "அரசாணைகள் (G.O.s)" : "Government Orders (G.O.)"}
@@ -177,22 +138,41 @@ export default function FooterSitemap({ lang }: FooterProps) {
               </li>
               <li>
                 <Link href="/documents" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "கொள்கை விளக்கக் குறிப்பு" : "Policy Notes"}
+                  {lang === "ta" ? "அரசிதழ் (Gazette)" : "Tamil Nadu Gazette"}
                 </Link>
               </li>
               <li>
-                <Link href="/documents" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "அரசிதழ் அறிவிப்புகள்" : "Gazette Notifications"}
+                <a href="https://tntenders.gov.in/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "ஒப்பந்தப்புள்ளிகள் (Tenders)" : "TNTenders Portal"}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 5: Contacts & Directory */}
+          <div>
+            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3 border-b border-slate-700 pb-1">
+              {lang === "ta" ? "தொடர்பு & தகவல்" : "Contacts & RTI"}
+            </h4>
+            <ul className="space-y-2 text-slate-400">
+              <li>
+                <Link href="/contact-directory" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "அரசு தொலைபேசி கையேடு" : "Contact Directory"}
                 </Link>
               </li>
               <li>
-                <Link href="/documents" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "குடிமக்கள் சாசனம்" : "Citizen Charters"}
+                <Link href="/contact-directory?category=RTI" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "தகவல் அறியும் உரிமை (RTI)" : "RTI Officers"}
                 </Link>
               </li>
               <li>
-                <Link href="/documents" className="hover:text-white transition-colors">
-                  {lang === "ta" ? "அரசு விண்ணப்பப் படிவங்கள்" : "Official Forms"}
+                <Link href="/contact-directory?role=grievance" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "குறைதீர்க்கும் அலுவலர்கள்" : "Grievance Officers"}
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact-directory?role=hod" className="hover:text-white transition-colors">
+                  {lang === "ta" ? "இயக்குநரகங்கள் & ஆணையரகங்கள்" : "Heads of Departments"}
                 </Link>
               </li>
             </ul>
@@ -200,19 +180,24 @@ export default function FooterSitemap({ lang }: FooterProps) {
 
           {/* Column 6: Helplines & Assistance */}
           <div>
-            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3">
-              {lang === "ta" ? "உதவி & குறைதீர்ப்பு" : "Grievance & Help"}
+            <h4 className="text-white font-extrabold text-xs uppercase tracking-wider mb-3 border-b border-slate-700 pb-1">
+              {lang === "ta" ? "அவசர உதவி (24x7)" : "Helplines & Help"}
             </h4>
             <ul className="space-y-2 text-slate-400">
               <li>
                 <a href="tel:1100" className="text-amber-400 hover:underline font-bold block">
                   CM Helpline: 1100
                 </a>
-                <span className="text-[10px] text-slate-500">{lang === "ta" ? "24x7 பொதுமக்கள் குறைகேட்பு" : "24/7 Citizen Grievance"}</span>
+                <span className="text-[10px] text-slate-400">{lang === "ta" ? "24x7 பொதுமக்கள் குறைகேட்பு" : "24/7 Citizen Grievance"}</span>
               </li>
               <li>
                 <a href="tel:108" className="text-red-400 hover:underline font-bold block">
-                  Medical Emergency: 108
+                  Emergency Ambulance: 108
+                </a>
+              </li>
+              <li>
+                <a href="tel:100" className="text-sky-400 hover:underline font-bold block">
+                  Police Control: 100
                 </a>
               </li>
               <li>
@@ -221,13 +206,8 @@ export default function FooterSitemap({ lang }: FooterProps) {
                 </a>
               </li>
               <li>
-                <a href="tel:18004251333" className="text-emerald-400 hover:underline font-bold block">
-                  e-Sevai: 1800-425-1333
-                </a>
-              </li>
-              <li className="pt-1">
-                <Link href="/assisted" className="text-blue-400 hover:underline block font-semibold">
-                  {lang === "ta" ? "இ-சேவை உதவியாளர் மையம்" : "Assisted Kiosk Mode"}
+                <Link href="/assisted" className="text-emerald-400 hover:underline block font-semibold pt-1">
+                  {lang === "ta" ? "இ-சேவை உதவியாளர் மையம் →" : "e-Sevai Kiosk Mode →"}
                 </Link>
               </li>
             </ul>
@@ -238,31 +218,34 @@ export default function FooterSitemap({ lang }: FooterProps) {
         <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-slate-400 text-center md:text-left">
           <div className="space-y-1">
             <p className="font-extrabold text-white text-sm">
-              {lang === "ta" ? "தமிழ்நாடு அரசு டிஜிட்டல் போர்டல் 2.0" : "Government of Tamil Nadu Portal 2.0"}
+              {lang === "ta" ? "தமிழ்நாடு அரசு ஒருங்கிணைந்த டிஜிட்டல் போர்டல் 2.0" : "Government of Tamil Nadu Unified Digital Portal 2.0"}
             </p>
             <p className="text-[11px]">
               Designed and developed in accordance with GIGW 3.0 & WCAG 2.2 AA accessibility guidelines.
             </p>
             <p className="text-[11px] text-slate-500">
-              Content owned, maintained, and updated by respective Departments of Government of Tamil Nadu.
+              Content owned, maintained, and verified by respective Departments of Government of Tamil Nadu.
             </p>
           </div>
 
           <div className="flex flex-wrap justify-center gap-4 text-[11px] text-slate-300">
             <Link href="/contact-directory?category=RTI" className="hover:text-white underline-offset-2 hover:underline">
-              {lang === "ta" ? "தகவல் அறியும் உரிமை (RTI)" : "Right to Information (RTI)"}
+              {lang === "ta" ? "தகவல் அறியும் உரிமை (RTI)" : "Right to Information"}
             </Link>
-            <a href="#" className="hover:text-white underline-offset-2 hover:underline">
+            <a href="#policies" className="hover:text-white underline-offset-2 hover:underline">
               {lang === "ta" ? "தனியுரிமைக் கொள்கை" : "Privacy Policy"}
             </a>
-            <a href="#" className="hover:text-white underline-offset-2 hover:underline">
+            <a href="#disclaimer" className="hover:text-white underline-offset-2 hover:underline">
               {lang === "ta" ? "பொறுப்புத் துறப்பு" : "Disclaimer"}
             </a>
-            <a href="#" className="hover:text-white underline-offset-2 hover:underline">
-              {lang === "ta" ? "பயன்பாட்டு விதிமுறைகள்" : "Terms of Use"}
+            <a href="#accessibility" className="hover:text-white underline-offset-2 hover:underline">
+              {lang === "ta" ? "அணுகல் கொள்கை" : "Accessibility Statement"}
             </a>
             <a href="#sitemap" className="hover:text-white underline-offset-2 hover:underline">
               {lang === "ta" ? "தள வரைபடம்" : "Sitemap"}
+            </a>
+            <a href="#emergency-help" className="hover:text-white underline-offset-2 hover:underline">
+              {lang === "ta" ? "உதவி" : "Help"}
             </a>
           </div>
         </div>
