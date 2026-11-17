@@ -12,6 +12,7 @@ from .models import (
     Person,
     PositionAssignment,
     Service,
+    Scheme,
     Document,
     DocumentChunk,
     DirectoryCategory,
@@ -302,6 +303,49 @@ def ingest_directory_master_data(db: Session) -> int:
     return len(categories)
 
 
+def ingest_schemes(db: Session) -> int:
+    json_path = os.path.join(WEB_DATA_DIR, "schemes.json")
+    if not os.path.exists(json_path):
+        logger.warning("schemes.json not found at %s", json_path)
+        return 0
+
+    with open(json_path, "r", encoding="utf-8") as f:
+        schemes = json.load(f)
+
+    dept_cache = {d.name_en: d.department_id for d in db.query(Department).all()}
+    count = 0
+
+    for s in schemes:
+        scheme_id = s.get("id")
+        existing = db.query(Scheme).filter(Scheme.scheme_id == scheme_id).first()
+        if not existing:
+            existing = Scheme(scheme_id=scheme_id)
+            db.add(existing)
+
+        dept_name = s.get("dept_en", "Social Welfare")
+        dept_id = dept_cache.get(dept_name)
+
+        existing.scheme_name_en = s.get("name_en", "")
+        existing.scheme_name_ta = s.get("name_ta", "")
+        existing.category = s.get("category", "")
+        existing.department_name = dept_name
+        existing.department_id = dept_id
+        existing.target_beneficiaries = s.get("target_beneficiaries", "")
+        existing.eligibility_criteria = s.get("eligibility", "")
+        existing.benefits_provided = s.get("benefits", "")
+        existing.required_documents = s.get("required_docs", "")
+        existing.application_method = s.get("application_method", "")
+        existing.official_portal_url = s.get("official_url", "")
+        existing.status = s.get("status", "ACTIVE")
+        existing.source_url = s.get("official_url", "")
+        existing.last_verified = "2026-11-17"
+        count += 1
+
+    db.commit()
+    logger.info("Ingested %d government schemes", count)
+    return count
+
+
 def run_all(db: Session = None):
     close_when_done = False
     if db is None:
@@ -311,11 +355,12 @@ def run_all(db: Session = None):
 
     try:
         s_count = ingest_services(db)
+        sc_count = ingest_schemes(db)
         d_count = ingest_documents(db)
         c_count = ingest_contacts(db)
         m_count = ingest_directory_master_data(db)
         r_count = run_rag_indexing(db)
-        print(f"Ingestion complete: {s_count} services, {d_count} documents, {c_count} contacts, {m_count} categories, {r_count} RAG chunks.")
+        print(f"Ingestion complete: {s_count} services, {sc_count} schemes, {d_count} documents, {c_count} contacts, {m_count} categories, {r_count} RAG chunks.")
     finally:
         if close_when_done:
             db.close()

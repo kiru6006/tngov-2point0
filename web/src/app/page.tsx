@@ -272,6 +272,15 @@ export default function Home() {
             </button>
           </form>
 
+          {searchQuery && (
+            <Link
+              href={`/search?q=${encodeURIComponent(searchQuery)}`}
+              className="inline-flex items-center gap-1.5 text-xs text-amber-200 hover:text-white font-medium underline transition-colors"
+            >
+              <span>{lang === "ta" ? "ஒருங்கிணைந்த தேடல் பக்கத்தில் அனைத்து முடிவுகளையும் காண்க" : "View all matching services, schemes, documents & contacts"} →</span>
+            </Link>
+          )}
+
           {/* AI Citizen Assistant Resolution Card */}
           {aiResult && (
             <div className="w-full mt-4 bg-white text-slate-900 rounded-xl p-5 shadow-2xl text-left border-2 border-amber-400 animate-in fade-in duration-200">
@@ -607,6 +616,18 @@ export default function Home() {
                 <p className="text-slate-500 mt-1">{lang === "ta" ? "ஆண்டுகள் & துறைகள் வாரியாக அரசாணைகள் தேடல்" : "Searchable bilingual G.O. repository with OCR"}</p>
               </div>
               <span className="text-blue-700 font-bold mt-4 block">{lang === "ta" ? "காண்க" : "Explore"} →</span>
+            </Link>
+
+            <Link
+              href="/schemes"
+              className="p-5 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+            >
+              <div>
+                <Award className="w-6 h-6 text-emerald-700 mb-2" />
+                <h4 className="font-bold text-slate-900 text-sm">{lang === "ta" ? "அரசு நலத்திட்டங்கள் (Schemes)" : "Government Welfare Schemes"}</h4>
+                <p className="text-slate-500 mt-1">{lang === "ta" ? "மகளிர் உரிமைத் திட்டம், புதுமைப் பெண், உழவர் திட்டங்கள்" : "KMUT, Pudhumai Penn, agriculture subsidies & welfare benefits"}</p>
+              </div>
+              <span className="text-emerald-700 font-bold mt-4 block">{lang === "ta" ? "காண்க" : "Explore"} →</span>
             </Link>
 
             <Link

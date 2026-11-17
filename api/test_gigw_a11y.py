@@ -74,11 +74,13 @@ def test_frontend_route_architecture():
     required_routes = [
         "page.tsx",
         "services/page.tsx",
+        "schemes/page.tsx",
         "departments/page.tsx",
         "districts/page.tsx",
         "documents/page.tsx",
         "contact-directory/page.tsx",
         "assisted/page.tsx",
+        "search/page.tsx",
     ]
     for route in required_routes:
         path = os.path.join(src_app, route)

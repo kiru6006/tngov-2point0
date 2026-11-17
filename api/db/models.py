@@ -308,12 +308,36 @@ class Service(Base):
     service_name_en = Column(String(255), nullable=False)
     service_name_ta = Column(String(255), nullable=False)
     department_owner = Column(String(255), nullable=False)
+    department_id = Column(String(64), ForeignKey("departments.department_id"), nullable=True)
     citizen_category = Column(String(255), nullable=False)
     eligibility_rules = Column(Text, nullable=True)
     required_docs = Column(Text, nullable=True)
     statutory_sla_days = Column(Integer, default=15)
     service_channel = Column(String(100), default="Online (e-Sevai)")
     action_url = Column(String(255), nullable=True)
+    fees = Column(String(100), default="₹60 (Statutory)")
+    responsible_position_id = Column(String(64), ForeignKey("positions.position_id"), nullable=True)
+
+
+class Scheme(Base):
+    __tablename__ = "schemes"
+
+    scheme_id = Column(String(64), primary_key=True)
+    scheme_name_en = Column(String(255), nullable=False)
+    scheme_name_ta = Column(String(255), nullable=False)
+    category = Column(String(100), nullable=False)  # Education, Agriculture, Women, Health, Pensions
+    department_id = Column(String(64), ForeignKey("departments.department_id"), nullable=True)
+    department_name = Column(String(255), nullable=False)
+    target_beneficiaries = Column(Text, nullable=True)
+    eligibility_criteria = Column(Text, nullable=True)
+    benefits_provided = Column(Text, nullable=True)
+    required_documents = Column(Text, nullable=True)
+    application_method = Column(String(100), default="Online (e-Sevai) / District Office")
+    official_portal_url = Column(String(500), nullable=True)
+    responsible_position_id = Column(String(64), ForeignKey("positions.position_id"), nullable=True)
+    status = Column(String(50), default="ACTIVE")
+    source_url = Column(String(500), nullable=True)
+    last_verified = Column(String(50), default="2026-11-17")
 
 
 class Document(Base):
