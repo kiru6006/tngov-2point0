@@ -1,6 +1,7 @@
 import Link from "next/link";
 import servicesData from "@/data/services.json";
 import { ArrowLeft, Clock, CheckCircle2, ExternalLink } from "lucide-react";
+import Breadcrumbs from "@/components/navigation/Breadcrumbs";
 
 export function generateStaticParams() {
   return servicesData.map((service) => ({
@@ -18,7 +19,7 @@ export default async function ServiceDetailPage({
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
-      <header className="bg-white border-b border-slate-200 py-4 px-4 sm:px-6 shadow-sm">
+      <header className="bg-white border-b border-slate-200 py-3.5 px-4 sm:px-6 shadow-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Link
@@ -28,16 +29,18 @@ export default async function ServiceDetailPage({
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Services</span>
             </Link>
-            <Link
-              href="/"
-              className="text-xs font-semibold text-slate-500 hover:text-slate-800"
-            >
-              Portal Home
-            </Link>
           </div>
           <span className="text-xs font-semibold text-slate-500">Service Specification</span>
         </div>
       </header>
+
+      <Breadcrumbs
+        lang="ta"
+        items={[
+          { label_en: "Services", label_ta: "சேவைகள்", href: "/services" },
+          { label_en: service.title_en, label_ta: service.title_ta },
+        ]}
+      />
 
       <main className="flex-1 max-w-4xl mx-auto w-full px-4 py-8 flex flex-col gap-6">
         <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col gap-6">

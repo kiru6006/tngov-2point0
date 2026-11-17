@@ -2,40 +2,59 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import servicesData from "@/data/services.json";
 import {
   FileText,
-  Tractor,
   MapPin,
-  GraduationCap,
-  ShieldCheck,
-  Briefcase,
-  Search,
-  CheckCircle2,
   Clock,
   ArrowRight,
-  Sun,
-  Globe,
-  HelpCircle,
+  Search,
   Building2,
-  FileCheck2,
+  Users,
   Award,
+  FileCheck2,
+  PhoneCall,
+  ExternalLink,
+  ChevronRight,
+  Filter,
+  CheckCircle2,
+  HelpCircle,
 } from "lucide-react";
+
+import GovernmentUtilityBar from "@/components/navigation/GovernmentUtilityBar";
+import GovernmentHeader from "@/components/navigation/GovernmentHeader";
+import QuickAccessBar from "@/components/navigation/QuickAccessBar";
+import FooterSitemap from "@/components/navigation/FooterSitemap";
+import { MOST_USED_SERVICES, TN_DISTRICTS_LIST } from "@/data/navigation";
+import servicesData from "@/data/services.json";
+import schemesData from "@/data/schemes.json";
+import documentsData from "@/data/documents.json";
 
 const iconMap: Record<string, any> = {
   FileText,
-  Tractor,
   MapPin,
-  GraduationCap,
-  ShieldCheck,
-  Briefcase,
+  Clock,
+  Award,
+  Users,
+  FileCheck2,
+  PhoneCall,
+  Building2,
 };
 
 export default function Home() {
   const [lang, setLang] = useState<"ta" | "en">("ta");
   const [highContrast, setHighContrast] = useState(false);
-  const [appId, setAppId] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDistrict, setSelectedDistrict] = useState("DIS-03"); // Chennai default
+  const [schemeCategoryTab, setSchemeCategoryTab] = useState("WOMEN");
+  const [appId, setAppId] = useState("");
+  const [trackedStatus, setTrackedStatus] = useState<null | {
+    id: string;
+    stage: number;
+    service: string;
+    date: string;
+  }>(null);
+  const [trackingError, setTrackingError] = useState("");
+
   const [aiResult, setAiResult] = useState<null | {
     title: string;
     answer: string;
@@ -46,13 +65,64 @@ export default function Home() {
     citation: string;
     guardrail: string;
   }>(null);
-  const [trackedStatus, setTrackedStatus] = useState<null | {
-    id: string;
-    stage: number;
-    service: string;
-    date: string;
-  }>(null);
-  const [trackingError, setTrackingError] = useState("");
+
+  const handleSearch = (q: string) => {
+    const query = q.trim().toLowerCase();
+    if (!query) return;
+
+    if (query.includes("patta") || query.includes("பட்டா") || query.includes("chitta")) {
+      setAiResult({
+        title: lang === "ta" ? "பட்டா மாறுதல் & நில ஆவணங்கள்" : "Patta Transfer & Land Records",
+        answer:
+          lang === "ta"
+            ? "நில உரிமை மாற்றம் மற்றும் பட்டா மாறுதல் விண்ணப்பம் வருவாய்த் துறை இணையதளத்தில் செய்யப்பட வேண்டும்."
+            : "Patta transfer application is processed through the Revenue and Disaster Management e-Services portal.",
+        eligibility:
+          lang === "ta"
+            ? "செல்லுபடியாகும் கிரயப் பத்திரம் அல்லது வாரிசு உரிமை ஆவணம்."
+            : "Valid registered sale deed or legal heir certificate.",
+        docs:
+          lang === "ta"
+            ? "கிரயப் பத்திரம், வில்லங்கச் சான்று (EC), ஆதார் அட்டை."
+            : "Sale deed, Encumbrance Certificate, Aadhaar.",
+        sla: 30,
+        url: "/services/land",
+        citation: "Revenue Dept Statutory Citizen Charter 2026",
+        guardrail: "Zero-Generation Service Grounding",
+      });
+    } else if (query.includes("community") || query.includes("சாதி") || query.includes("income") || query.includes("வருமான")) {
+      setAiResult({
+        title: lang === "ta" ? "சான்றிதழ் சேவைகள் (இ-சேவை மையம்)" : "Certificate Services (e-Sevai)",
+        answer:
+          lang === "ta"
+            ? "வருமானம் மற்றும் சாதிச் சான்றிதழ்கள் இ-சேவை மையம் அல்லது இணையதளம் வழியாக 15 நாட்களில் வழங்கப்படுகின்றன."
+            : "Community and Income certificates are statutory e-Sevai services delivered in 15 working days.",
+        eligibility:
+          lang === "ta"
+            ? "தமிழ்நாட்டில் நிரந்தரமாக வசிக்கும் தகுதிவாய்ந்த குடிமக்கள்."
+            : "Permanent resident of Tamil Nadu belonging to eligible category.",
+        docs:
+          lang === "ta"
+            ? "ஆதார் அட்டை, குடும்ப அட்டை (Ration Card), முந்தைய சான்றிதழ்."
+            : "Aadhaar Card, Ration Card, Parent/Self prior certificate.",
+        sla: 15,
+        url: "/services/certificates",
+        citation: "G.O. Ms. No. 14 Revenue & Disaster Management",
+        guardrail: "Zero-Generation Service Grounding",
+      });
+    } else {
+      setAiResult({
+        title: lang === "ta" ? "அரசு தகவல் உதவி (Citizen AI Assistant)" : "Citizen AI Assistant Search",
+        answer:
+          lang === "ta"
+            ? `"${q}" தொடர்பான சரிபார்க்கப்பட்ட தகவல்கள் அரசு தொடர்பு கையேடு மற்றும் சேவைத் தொகுப்பில் உள்ளன.`
+            : `Verified information matching "${q}" is indexed in the official Contact Directory and Service Catalog.`,
+        url: `/search?q=${encodeURIComponent(q)}`,
+        citation: "Government of Tamil Nadu Portal Registry 2.0",
+        guardrail: "Semantic Vector Grounding",
+      });
+    }
+  };
 
   const handleTrack = (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +131,7 @@ export default function Home() {
       setTrackingError(
         lang === "ta"
           ? "சரியான 8-12 இலக்க விண்ணப்ப எண்ணை உள்ளிடவும் (எ.கா: TN20261001)"
-          : "Please enter a valid application number (e.g., TN20261001)"
+          : "Please enter a valid 8-12 alphanumeric application number (e.g., TN20261001)"
       );
       setTrackedStatus(null);
       return;
@@ -76,719 +146,745 @@ export default function Home() {
     });
   };
 
-  const handleSearch = (q: string) => {
-    const query = q.trim().toLowerCase();
-    if (!query) return;
-
-    if (query.includes("patta") || query.includes("பட்டா") || query.includes("chitta")) {
-      setAiResult({
-        title: lang === "ta" ? "பட்டா மாறுதல் (Patta Transfer)" : "Patta Transfer Service",
-        answer:
-          lang === "ta"
-            ? "நில உரிமை மாற்றம் மற்றும் பட்டா மாறுதல் விண்ணப்பம் வருவாய்த் துறை இணையதளத்தில் செய்யப்பட வேண்டும்."
-            : "Patta transfer application is processed through the Revenue and Disaster Management e-Services portal.",
-        eligibility:
-          lang === "ta"
-            ? "செல்லுபடியாகும் கிரயப் பத்திரம் அல்லது வாரிசு உரிமை ஆவணம்."
-            : "Valid registered sale deed or legal heir certificate.",
-        docs:
-          lang === "ta"
-            ? "கிரயப் பத்திரம், வில்லங்கச் சான்று (EC), ஆதார் அட்டை."
-            : "Sale deed, Encumbrance Certificate, Aadhaar.",
-        sla: 30,
-        url: "https://eservices.tn.gov.in/",
-        citation: "Revenue Dept Statutory Citizen Charter 2026",
-        guardrail: "Zero-Generation Service Grounding",
-      });
-    } else if (query.includes("community") || query.includes("சாதி") || query.includes("cert")) {
-      setAiResult({
-        title: lang === "ta" ? "சாதிச் சான்றிதழ் (Community Certificate)" : "Community Certificate",
-        answer:
-          lang === "ta"
-            ? "சாதிச் சான்றிதழ் இ-சேவை மையம் மூலமாகவோ அல்லது இணையதளம் வழியாகவோ விண்ணப்பிக்கலாம்."
-            : "Community certificate can be obtained online via e-Sevai centers or citizen login.",
-        eligibility:
-          lang === "ta"
-            ? "தமிழ்நாட்டில் நிரந்தரமாக வசிக்கும் SC/ST/OBC/BC வகுப்பினர்."
-            : "Resident of TN; SC/ST/OBC/BC category.",
-        docs:
-          lang === "ta"
-            ? "ஆதார் அட்டை, குடும்ப அட்டை (Ration Card), பெற்றோர் சான்றிதழ்."
-            : "Aadhaar Card, Ration Card, Parent's Community Certificate.",
-        sla: 15,
-        url: "https://tnesevai.tn.gov.in/",
-        citation: "G.O. Ms. No. 14 Revenue & Disaster Management",
-        guardrail: "Zero-Generation Service Grounding",
-      });
-    } else if (
-      query.includes("demand") ||
-      query.includes("கோரிக்கை") ||
-      query.includes("highway") ||
-      query.includes("நெடுஞ்சாலை")
-    ) {
-      setAiResult({
-        title:
-          lang === "ta"
-            ? "நெடுஞ்சாலைத்துறை கொள்கை விளக்கக் குறிப்பு 2026-27"
-            : "Highways & Minor Ports Policy Note 2026-27",
-        answer:
-          lang === "ta"
-            ? "கோரிக்கை எண் 21: தமிழ்நாடு நெடுஞ்சாலைகள் மற்றும் துறைமுகங்கள் உட்கட்டமைப்பு நிதி ஒதுக்கீடு மற்றும் கொள்கை வழிகாட்டுதல்கள்."
-            : "Demand No. 21: Statutory allocations, road connectivity programs, and coastal infrastructure projects.",
-        url: "https://cdn.tn.gov.in/docs/demand21.pdf",
-        citation: "TN-GO-HW-2026-045 (Demand No. 21)",
-        guardrail: "OCR & Document RAG Grounding",
-      });
-    } else {
-      setAiResult({
-        title: lang === "ta" ? "அரசு தகவல் உதவி (Citizen AI Assistant)" : "Citizen AI Assistant Search",
-        answer:
-          lang === "ta"
-            ? `"${q}" தொடர்பான அதிகாரப்பூர்வ தகவல்களைப் பெற அரசு தொடர்பு கையேடு அல்லது இ-சேவை தளத்தைப் பார்க்கவும்.`
-            : `Verified information matching "${q}" is indexed in the official Contact Directory and Service Catalog.`,
-        url: "/contact-directory",
-        citation: "Government of Tamil Nadu Portal Registry 2.0",
-        guardrail: "Semantic Vector Grounding",
-      });
-    }
-  };
+  const currentDistrictData =
+    TN_DISTRICTS_LIST.find((d) => d.id === selectedDistrict) || TN_DISTRICTS_LIST[2];
 
   const tnBlue = highContrast ? "#000000" : "#004B87";
 
   return (
     <div className={`min-h-screen flex flex-col ${highContrast ? "bg-black text-white" : "bg-slate-50 text-slate-900"}`}>
-      {/* 1. Global Accessibility & GIGW Utility Top Bar */}
-      <nav
-        aria-label="Accessibility Bar"
-        className="w-full border-b border-slate-200 bg-slate-900 text-slate-200 text-xs px-4 py-1.5 flex flex-wrap justify-between items-center gap-2"
-      >
-        <div className="flex items-center gap-3">
-          <span>{lang === "ta" ? "தமிழ்நாடு அரசு அதிகாரப்பூர்வ தளம்" : "Official Portal of Govt of Tamil Nadu"}</span>
-          <span className="hidden sm:inline text-slate-400">|</span>
-          <a href="#main-content" className="hover:underline hidden sm:inline">
-            {lang === "ta" ? "முதன்மை உள்ளடக்கத்திற்கு செல்க" : "Skip to main content"}
-          </a>
-        </div>
-        <div className="flex items-center gap-4">
-          <button
-            onClick={() => setHighContrast(!highContrast)}
-            className="flex items-center gap-1 hover:text-white px-2 py-0.5 rounded border border-slate-700"
-            aria-label="Toggle High Contrast Mode"
-          >
-            <Sun className="w-3.5 h-3.5" />
-            <span>{highContrast ? "Normal Mode" : "High Contrast"}</span>
-          </button>
-          <button
-            onClick={() => setLang(lang === "ta" ? "en" : "ta")}
-            className="flex items-center gap-1 font-semibold text-amber-400 hover:text-amber-300 px-2 py-0.5 rounded border border-slate-700"
-            aria-label="Switch Language"
-          >
-            <Globe className="w-3.5 h-3.5" />
-            <span>{lang === "ta" ? "English" : "தமிழ்"}</span>
-          </button>
-          <Link
-            href="/assisted"
-            className="flex items-center gap-1 font-semibold text-emerald-400 hover:text-emerald-300 px-2 py-0.5 rounded border border-emerald-700/60 bg-emerald-950/40"
-            aria-label="Assisted Access Kiosk Mode"
-          >
-            <span>{lang === "ta" ? "இ-சேவை உதவியாளர்" : "e-Sevai Kiosk"}</span>
-          </Link>
-        </div>
-      </nav>
+      {/* =========================================================================
+          LAYER A: GOVERNMENT UTILITY BAR
+          ========================================================================= */}
+      <GovernmentUtilityBar
+        lang={lang}
+        setLang={setLang}
+        highContrast={highContrast}
+        setHighContrast={setHighContrast}
+      />
 
-      {/* 2. Main Branding Header */}
-      <header className="w-full bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <div className="flex items-center gap-3.5">
-            <div
-              className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white shadow-md text-sm shrink-0"
-              style={{ backgroundColor: tnBlue }}
+      {/* =========================================================================
+          LAYER B & C: MAIN HEADER & PRIMARY CATEGORY NAVIGATION (MEGA MENUS)
+          ========================================================================= */}
+      <GovernmentHeader
+        lang={lang}
+        highContrast={highContrast}
+        onSearch={handleSearch}
+      />
+
+      {/* =========================================================================
+          LAYER D: QUICK ACCESS ACTION BAR
+          ========================================================================= */}
+      <QuickAccessBar lang={lang} />
+
+      <main id="main-content" role="main" className="flex-1 flex flex-col w-full">
+        {/* =========================================================================
+            SECTION 1: PROMINENT CITIZEN SEARCH (HERO SECTION)
+            ========================================================================= */}
+        <section
+          aria-labelledby="hero-search-heading"
+          className="w-full py-10 sm:py-14 px-4 sm:px-6 text-white text-center relative shadow-inner"
+          style={{ backgroundColor: tnBlue }}
+        >
+          <div className="max-w-4xl mx-auto flex flex-col items-center gap-5">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-xs">
+              <FileCheck2 className="w-3.5 h-3.5" />
+              {lang === "ta"
+                ? "ஒருங்கிணைந்த தமிழ்நாடு அரசு டிஜிட்டல் நுழைவு வாயில் - 45 துறைகள் & 38 மாவட்டங்கள்"
+                : "Unified Gateway of Tamil Nadu Government - 45 Departments & 38 Districts"}
+            </span>
+
+            <h2 id="hero-search-heading" className="text-2xl sm:text-4xl font-black tracking-tight leading-tight">
+              {lang === "ta" ? "நீங்கள் என்ன அரசு சேவை தேடுகிறீர்கள்?" : "What government service do you need?"}
+            </h2>
+
+            <p className="text-xs sm:text-base text-slate-200 max-w-2xl leading-relaxed">
+              {lang === "ta"
+                ? "சான்றிதழ்கள், நில ஆவணங்கள், உதவித்தொகைகள், அரசாணைகள் மற்றும் அரசு அதிகாரிகளின் தொடர்புகளை எளிதாகக் கண்டறியுங்கள்."
+                : "Discover online citizen certificates, patta land records, welfare benefits, government orders, and verified administrative contacts instantly."}
+            </p>
+
+            {/* Prominent Bilingual Citizen Search Bar */}
+            <form
+              className="w-full max-w-2xl relative mt-2"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSearch(searchQuery);
+              }}
             >
-              TN
-            </div>
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 leading-tight">
-                {lang === "ta" ? "தமிழ்நாடு அரசு டிஜிட்டல் போர்டல் 2.0" : "Government of Tamil Nadu Digital Portal 2.0"}
-              </h1>
-              <p className="text-xs text-slate-500 font-medium">
-                {lang === "ta"
-                  ? "பொதுமக்கள் சேவை & அரசு தொடர்பு கையேடு"
-                  : "Citizen Services & Administrative Directory"}
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 text-xs text-slate-600">
-            <div className="text-right hidden md:block">
-              <div className="font-semibold text-slate-800">CM Helpline: 1100</div>
-              <div>TNeGA e-Sevai Support: 1800-425-1333</div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      {/* 3. Hero Section with Prominent Semantic Search */}
-      <section
-        className="w-full py-12 px-4 sm:px-6 text-white text-center relative shadow-inner"
-        style={{ backgroundColor: tnBlue }}
-      >
-        <div className="max-w-3xl mx-auto flex flex-col items-center gap-5">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white backdrop-blur-sm">
-            <FileCheck2 className="w-3.5 h-3.5" />
-            {lang === "ta" ? "ஒரே நுழைவு வாயில் - 45 துறைகள் & 38 மாவட்டங்கள்" : "Single Gateway - 45 Departments & 38 Districts"}
-          </span>
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight">
-            {lang === "ta" ? "நீங்கள் என்ன சேவை தேடுகிறீர்கள்?" : "How can the Government assist you today?"}
-          </h2>
-          <p className="text-sm sm:text-base text-slate-200 max-w-xl">
-            {lang === "ta"
-              ? "சான்றிதழ்கள், நில ஆவணங்கள், அரசு ஆணைகள் மற்றும் திட்டங்களை நேரடியாகத் தேடுங்கள்."
-              : "Discover online services, schemes, government orders, and administrative contacts instantly."}
-          </p>
-
-          {/* Bilingual Semantic Search Bar */}
-          <form
-            className="w-full relative mt-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSearch(searchQuery);
-            }}
-          >
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={
-                lang === "ta"
-                  ? "எ.கா: சாதிச் சான்றிதழ், பட்டா மாறுதல், மகளிர் உரிமைத் திட்டம், நெடுஞ்சாலை..."
-                  : "Search by service name, scheme, G.O. number, or department..."
-              }
-              className="w-full py-3.5 pl-12 pr-28 rounded-xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-400 text-sm sm:text-base"
-              aria-label="Universal Citizen Search"
-            />
-            <Search className="absolute left-4 top-4 text-slate-400 w-5 h-5" />
-            <button
-              type="submit"
-              className="absolute right-2 top-2 px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs sm:text-sm transition-colors"
-            >
-              {lang === "ta" ? "தேடுக" : "Search"}
-            </button>
-          </form>
-
-          {searchQuery && (
-            <Link
-              href={`/search?q=${encodeURIComponent(searchQuery)}`}
-              className="inline-flex items-center gap-1.5 text-xs text-amber-200 hover:text-white font-medium underline transition-colors"
-            >
-              <span>{lang === "ta" ? "ஒருங்கிணைந்த தேடல் பக்கத்தில் அனைத்து முடிவுகளையும் காண்க" : "View all matching services, schemes, documents & contacts"} →</span>
-            </Link>
-          )}
-
-          {/* AI Citizen Assistant Resolution Card */}
-          {aiResult && (
-            <div className="w-full mt-4 bg-white text-slate-900 rounded-xl p-5 shadow-2xl text-left border-2 border-amber-400 animate-in fade-in duration-200">
-              <div className="flex justify-between items-start gap-4">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span className="text-xs font-bold uppercase tracking-wider text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
-                    {lang === "ta" ? "அரசு நுண்ணறிவு உதவி (AI Citizen Assistant)" : "Grounded AI Assistance"}
-                  </span>
-                  <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                    {aiResult.guardrail}
-                  </span>
-                </div>
-                <button
-                  onClick={() => setAiResult(null)}
-                  className="text-xs font-semibold text-slate-400 hover:text-slate-700 bg-slate-100 px-2 py-0.5 rounded"
-                >
-                  ✕ {lang === "ta" ? "மூடுக" : "Close"}
-                </button>
-              </div>
-
-              <h4 className="text-base font-bold text-slate-900 mt-2">{aiResult.title}</h4>
-              <p className="text-xs sm:text-sm text-slate-700 mt-1 leading-relaxed">{aiResult.answer}</p>
-
-              {aiResult.eligibility && (
-                <div className="mt-3 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs space-y-1">
-                  <div>
-                    <strong>{lang === "ta" ? "தகுதி வரம்பு:" : "Statutory Eligibility:"}</strong> {aiResult.eligibility}
-                  </div>
-                  {aiResult.docs && (
-                    <div>
-                      <strong>{lang === "ta" ? "தேவைப்படும் ஆவணங்கள்:" : "Required Documents:"}</strong> {aiResult.docs}
-                    </div>
-                  )}
-                  {aiResult.sla && (
-                    <div>
-                      <strong>{lang === "ta" ? "சட்டப்பூர்வ காலக்கெடு:" : "Statutory SLA:"}</strong> {aiResult.sla}{" "}
-                      {lang === "ta" ? "வேலை நாட்கள்" : "working days"}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-3 text-xs">
-                <div className="text-slate-500 font-mono text-[11px]">
-                  <strong>Citation:</strong> {aiResult.citation}
-                </div>
-                <a
-                  href={aiResult.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#004B87] hover:bg-blue-900 text-white font-bold transition-colors shadow-sm"
-                >
-                  <span>{lang === "ta" ? "விண்ணப்பிக்க / காண்க" : "Apply / View Source"}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </div>
-          )}
-
-          {/* Search Pills */}
-          <div className="flex flex-wrap justify-center items-center gap-2 text-xs text-slate-200 mt-1">
-            <span className="opacity-80">{lang === "ta" ? "அடிக்கடி தேடப்படுபவை:" : "Popular Searches:"}</span>
-            {["Patta Chitta", "Community Cert", "Old Age Pension", "Demand No. 21"].map((pill) => (
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={
+                  lang === "ta"
+                    ? "எ.கா: சாதிச் சான்றிதழ், பட்டா மாறுதல், மகளிர் உரிமைத் திட்டம், மாவட்ட ஆட்சியர்..."
+                    : "e.g. Community Certificate, Patta Transfer, Magalir Urimai, District Collector..."
+                }
+                className="w-full py-3.5 pl-12 pr-28 rounded-xl text-slate-900 bg-white shadow-xl focus:outline-none focus:ring-4 focus:ring-amber-400 text-xs sm:text-base"
+                aria-label="Universal Citizen Search"
+              />
+              <Search className="absolute left-4 top-4 text-slate-400 w-5 h-5" />
               <button
-                type="button"
-                key={pill}
-                onClick={() => {
-                  setSearchQuery(pill);
-                  handleSearch(pill);
-                }}
-                className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 cursor-pointer border border-white/20 transition-colors"
+                type="submit"
+                className="absolute right-2 top-2 px-5 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs sm:text-sm transition-colors cursor-pointer"
               >
-                {pill}
+                {lang === "ta" ? "தேடுக" : "Search"}
               </button>
-            ))}
-          </div>
-        </div>
-      </section>
+            </form>
 
-      {/* 4. Main Content Area */}
-      <main id="main-content" className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-10 flex flex-col gap-12">
-        {/* Section A: 6 Life-Event Service Cards Grid */}
-        <section aria-labelledby="services-heading">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
-            <div>
-              <h3 id="services-heading" className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
-                {lang === "ta" ? "முக்கிய மக்கள் சேவைகள் (Life Events)" : "Citizen Services by Life Events"}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-600">
-                {lang === "ta"
-                  ? "துறை சார்ந்த சிக்கல்களின்றி தேவையான சேவைகளை எளிதாகப் பெறுங்கள்"
-                  : "Access essential government services grouped by life events without departmental confusion"}
-              </p>
+            {/* Grounded AI Citizen Assistant Resolution Card */}
+            {aiResult && (
+              <div className="w-full max-w-2xl mt-4 bg-white text-slate-900 rounded-xl p-5 shadow-2xl text-left border-2 border-amber-400 animate-in fade-in duration-200">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-blue-900 bg-blue-50 px-2.5 py-0.5 rounded border border-blue-200">
+                      {lang === "ta" ? "அரசு நுண்ணறிவு உதவி (Grounded Assistant)" : "Grounded AI Assistance"}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                      {aiResult.guardrail}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => setAiResult(null)}
+                    className="text-xs font-semibold text-slate-400 hover:text-slate-700 bg-slate-100 px-2 py-0.5 rounded"
+                  >
+                    ✕ {lang === "ta" ? "மூடுக" : "Close"}
+                  </button>
+                </div>
+
+                <h4 className="text-base font-bold text-slate-900 mt-2">{aiResult.title}</h4>
+                <p className="text-xs sm:text-sm text-slate-700 mt-1 leading-relaxed">{aiResult.answer}</p>
+
+                {aiResult.eligibility && (
+                  <div className="mt-3 p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs space-y-1">
+                    <div>
+                      <strong>{lang === "ta" ? "தகுதி வரம்பு:" : "Statutory Eligibility:"}</strong> {aiResult.eligibility}
+                    </div>
+                    {aiResult.docs && (
+                      <div>
+                        <strong>{lang === "ta" ? "தேவைப்படும் ஆவணங்கள்:" : "Required Documents:"}</strong> {aiResult.docs}
+                      </div>
+                    )}
+                    {aiResult.sla && (
+                      <div>
+                        <strong>{lang === "ta" ? "சட்டப்பூர்வ காலக்கெடு:" : "Statutory SLA:"}</strong> {aiResult.sla}{" "}
+                        {lang === "ta" ? "வேலை நாட்கள்" : "working days"}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-3 text-xs">
+                  <div className="text-slate-500 font-mono text-[11px]">
+                    <strong>Citation:</strong> {aiResult.citation}
+                  </div>
+                  <Link
+                    href={aiResult.url}
+                    className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-[#004B87] hover:bg-blue-900 text-white font-bold transition-colors shadow-xs"
+                  >
+                    <span>{lang === "ta" ? "விவரங்களைக் காண்க" : "View Details"}</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            )}
+
+            {/* Popular Search Suggestions Pills */}
+            <div className="flex flex-wrap justify-center items-center gap-2 text-xs text-slate-200 mt-1">
+              <span className="opacity-80">{lang === "ta" ? "அடிக்கடி தேடப்படுபவை:" : "Popular Searches:"}</span>
+              {["Patta Chitta", "Community Cert", "Income Cert", "Magalir Urimai", "Salem Collector"].map((pill) => (
+                <button
+                  type="button"
+                  key={pill}
+                  onClick={() => {
+                    setSearchQuery(pill);
+                    handleSearch(pill);
+                  }}
+                  className="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 cursor-pointer border border-white/20 transition-colors"
+                >
+                  {pill}
+                </button>
+              ))}
             </div>
           </div>
+        </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {servicesData.map((item) => {
-              const IconComp = iconMap[item.icon] || FileText;
-              return (
-                <article
-                  key={item.id}
-                  className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="flex justify-between items-start mb-3">
-                      <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center text-white shrink-0"
-                        style={{ backgroundColor: tnBlue }}
-                      >
-                        <IconComp className="w-5 h-5" />
+        <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-10 flex flex-col gap-14">
+          {/* =========================================================================
+              SECTION 2: MOST USED SERVICES (12 HIGH-VALUE CARDS)
+              ========================================================================= */}
+          <section aria-labelledby="most-used-heading">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#004B87] bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                  {lang === "ta" ? "அதிகம் பயன்படுத்தப்படும் சேவைகள்" : "High-Demand Citizen Services"}
+                </span>
+                <h3 id="most-used-heading" className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  {lang === "ta" ? "முக்கிய பொதுமக்கள் சேவைகள்" : "Most Frequently Used Services"}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                  {lang === "ta"
+                    ? "குடிமக்கள் நேரடியாக விண்ணப்பிக்கும் முதன்மைச் சான்றிதழ்கள், நில ஆவணங்கள் மற்றும் நலத்திட்டங்கள்."
+                    : "Direct single-click access to verified certificates, revenue records, and welfare programs."}
+                </p>
+              </div>
+
+              <Link
+                href="/services"
+                className="text-xs font-bold text-[#004B87] hover:text-blue-900 bg-blue-50 hover:bg-blue-100 px-3.5 py-2 rounded-lg border border-blue-200 transition-colors flex items-center gap-1 shrink-0"
+              >
+                <span>{lang === "ta" ? "அனைத்து சேவைகளையும் காண்க" : "Browse All Services"}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {MOST_USED_SERVICES.map((srv) => {
+                const IconComp = iconMap[srv.icon] || FileText;
+                const isExt = srv.href.startsWith("http");
+
+                return isExt ? (
+                  <a
+                    key={srv.id}
+                    href={srv.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="flex justify-between items-start mb-2.5">
+                        <div className="w-9 h-9 rounded-lg bg-blue-50 text-[#004B87] flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <IconComp className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded flex items-center gap-1">
+                          <span>{lang === "ta" ? srv.sla_ta : srv.sla_en}</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </span>
                       </div>
-                      <span className="text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded flex items-center gap-1 border border-slate-200">
-                        <Clock className="w-3 h-3 text-slate-500" /> SLA: {item.sla}
-                      </span>
+                      <h4 className="font-extrabold text-slate-900 text-sm group-hover:text-[#004B87] transition-colors leading-snug">
+                        {lang === "ta" ? srv.title_ta : srv.title_en}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                        {lang === "ta" ? srv.dept_ta : srv.dept_en}
+                      </p>
                     </div>
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex justify-between items-center text-xs font-semibold text-[#004B87]">
+                      <span>{lang === "ta" ? srv.fee_ta : srv.fee_en}</span>
+                      <span className="group-hover:translate-x-0.5 transition-transform">Apply →</span>
+                    </div>
+                  </a>
+                ) : (
+                  <Link
+                    key={srv.id}
+                    href={srv.href}
+                    className="p-4 rounded-xl bg-white border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="flex justify-between items-start mb-2.5">
+                        <div className="w-9 h-9 rounded-lg bg-blue-50 text-[#004B87] flex items-center justify-center group-hover:scale-105 transition-transform">
+                          <IconComp className="w-5 h-5" />
+                        </div>
+                        <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
+                          {lang === "ta" ? srv.sla_ta : srv.sla_en}
+                        </span>
+                      </div>
+                      <h4 className="font-extrabold text-slate-900 text-sm group-hover:text-[#004B87] transition-colors leading-snug">
+                        {lang === "ta" ? srv.title_ta : srv.title_en}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 mt-1 line-clamp-1">
+                        {lang === "ta" ? srv.dept_ta : srv.dept_en}
+                      </p>
+                    </div>
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex justify-between items-center text-xs font-semibold text-[#004B87]">
+                      <span>{lang === "ta" ? srv.fee_ta : srv.fee_en}</span>
+                      <span className="group-hover:translate-x-0.5 transition-transform">Details →</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
 
-                    <h4 className="text-base font-bold text-slate-900 group-hover:text-blue-700 transition-colors">
-                      {lang === "ta" ? item.title_ta : item.title_en}
+          {/* =========================================================================
+              SECTION 3: BROWSE ALL SERVICES (EXPANDED DIRECTORY WITHOUT TYPING)
+              ========================================================================= */}
+          <section aria-labelledby="browse-all-heading" className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                  {lang === "ta" ? "முழுமையான சேவைத் தொகுப்பு" : "Browse Without Typing"}
+                </span>
+                <h3 id="browse-all-heading" className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  {lang === "ta" ? "பிரிவு வாரியாக அனைத்து சேவைகளையும் காண்க" : "Browse All Citizen Services by Category"}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                  {lang === "ta"
+                    ? "துறைகளின் பெயர் தெரியாவிட்டாலும் தேவைக்கேற்ப நேரடியாகத் தேர்வு செய்யலாம்."
+                    : "Discover government services arranged by real-world citizen life needs."}
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {servicesData.map((category) => (
+                <div key={category.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
+                  <div>
+                    <h4 className="font-extrabold text-slate-900 text-sm flex items-center justify-between pb-2 border-b border-slate-200">
+                      <span>{lang === "ta" ? category.title_ta : category.title_en}</span>
+                      <span className="text-[11px] font-mono text-slate-500">{category.items.length} {lang === "ta" ? "சேவைகள்" : "services"}</span>
                     </h4>
-                    <p className="text-xs text-slate-500 mb-3 font-medium">
-                      {lang === "ta" ? item.dept_ta : item.dept_en}
-                    </p>
-
-                    <ul className="text-xs text-slate-600 space-y-1.5 border-t border-slate-100 pt-3 mb-4">
-                      {item.items.map((srv, idx) => (
-                        <li key={idx} className="flex items-center gap-2">
-                          <span className="w-1.5 h-1.5 rounded-full bg-blue-600" />
-                          <span className="truncate">{srv}</span>
+                    <ul className="mt-3 space-y-2 text-xs">
+                      {category.items.map((item, idx) => (
+                        <li key={idx}>
+                          <Link
+                            href={`/services/${category.id}`}
+                            className="text-slate-700 hover:text-[#004B87] font-medium flex items-center justify-between group"
+                          >
+                            <span className="group-hover:underline">{item}</span>
+                            <span className="text-[10px] text-slate-400 group-hover:text-[#004B87] font-mono">{category.sla}</span>
+                          </Link>
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   <Link
-                    href="/services"
-                    className="inline-flex items-center justify-between text-xs font-bold text-blue-700 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-2 rounded-lg transition-colors"
-                    aria-label={`View all services under ${lang === "ta" ? item.title_ta : item.title_en}`}
+                    href={`/services/${category.id}`}
+                    className="mt-4 pt-2 border-t border-slate-200 text-xs font-bold text-[#004B87] hover:underline flex items-center justify-between"
                   >
-                    <span>{lang === "ta" ? "அனைத்து சேவைகள்" : "View All Services"}</span>
+                    <span>{lang === "ta" ? "முழுப் பிரிவைக் காண்க" : "Explore Category"}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
-                </article>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* Section B: Unified Application Tracking Component */}
-        <section
-          aria-labelledby="tracker-heading"
-          className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm"
-        >
-          <div className="max-w-2xl mx-auto text-center">
-            <h3 id="tracker-heading" className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 mb-2">
-              {lang === "ta" ? "ஒருங்கிணைந்த விண்ணப்ப நிலை கண்காணிப்பு" : "Unified Citizen Application Status Tracker"}
-            </h3>
-            <p className="text-xs text-slate-500 mb-6">
-              {lang === "ta"
-                ? "இ-சேவை மற்றும் அரசுத் துறைகளில் சமர்ப்பிக்கப்பட்ட விண்ணப்பங்களை ஒரே இடத்தில் கண்காணிக்கவும்"
-                : "Real-time statutory status tracking across all 45 Tamil Nadu Government Departments"}
-            </p>
-
-            <form onSubmit={handleTrack} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto mb-4">
-              <input
-                type="text"
-                value={appId}
-                onChange={(e) => setAppId(e.target.value)}
-                placeholder={lang === "ta" ? "விண்ணப்ப எண் (எ.கா: TNREV123456)" : "Application ID (e.g. TNREV123456)"}
-                className="flex-1 px-4 py-2.5 rounded-lg border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 font-mono"
-                aria-label="Application Number"
-              />
-              <button
-                type="submit"
-                className="px-5 py-2.5 rounded-lg bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs transition-colors shrink-0"
-              >
-                {lang === "ta" ? "நிலை காண்க" : "Track Status"}
-              </button>
-            </form>
-
-            {trackingError && <p className="text-xs text-red-600 font-medium mb-4">{trackingError}</p>}
-
-            {/* Simulated Live Progress Bar */}
-            {trackedStatus && (
-              <div
-                role="region"
-                aria-live="polite"
-                className="mt-6 p-5 rounded-xl bg-slate-50 border border-slate-200 text-left animate-fadeIn"
-              >
-                <div className="flex flex-wrap justify-between items-center text-xs text-slate-600 pb-3 border-b border-slate-200 mb-4 gap-2">
-                  <div>
-                    <span className="font-bold text-slate-900">{lang === "ta" ? "விண்ணப்ப எண்:" : "Application ID:"}</span>{" "}
-                    <code className="font-mono bg-white px-2 py-0.5 rounded border border-slate-300">{trackedStatus.id}</code>
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-900">{lang === "ta" ? "சேவை:" : "Service:"}</span> {trackedStatus.service}
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-900">{lang === "ta" ? "தேதி:" : "Filed Date:"}</span> {trackedStatus.date}
-                  </div>
                 </div>
-
-                <div className="relative py-2">
-                  <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-slate-200">
-                    <div
-                      style={{ width: "75%" }}
-                      className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 transition-all duration-500"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-4 text-center text-[10px] sm:text-xs font-medium text-slate-600 gap-1">
-                    <div className="text-blue-700 font-bold flex flex-col items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                      <span>{lang === "ta" ? "சமர்ப்பிக்கப்பட்டது" : "Submitted"}</span>
-                    </div>
-                    <div className="text-blue-700 font-bold flex flex-col items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                      <span>{lang === "ta" ? "ஆவண சரிபார்ப்பு" : "VAO / RI Verification"}</span>
-                    </div>
-                    <div className="text-blue-700 font-bold flex flex-col items-center gap-1">
-                      <Clock className="w-4 h-4 text-amber-500 animate-pulse" />
-                      <span>{lang === "ta" ? "வட்டாட்சியர் ஒப்புதல் நிலை" : "Tahsildar Review"}</span>
-                    </div>
-                    <div className="text-slate-400 flex flex-col items-center gap-1">
-                      <div className="w-4 h-4 rounded-full border border-slate-300" />
-                      <span>{lang === "ta" ? "சான்றிதழ் வழங்கல்" : "Certificate Ready"}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Section C: P0 Contact Directory Spotlight (Prompt 3 Mandate) */}
-        <section
-          aria-labelledby="directory-spotlight-heading"
-          className="bg-gradient-to-r from-blue-900 to-[#004B87] rounded-2xl p-6 sm:p-8 text-white shadow-lg"
-        >
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-            <div className="max-w-xl">
-              <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-white/10 px-2.5 py-0.5 rounded border border-white/20 inline-block mb-2">
-                {lang === "ta" ? "P0 முதன்மை சேவை" : "P0 Core Statutory Capability"}
-              </span>
-              <h3 id="directory-spotlight-heading" className="text-xl sm:text-2xl font-bold leading-tight">
-                {lang === "ta" ? "அரசு அலுவலர் அல்லது அலுவலகத்தைத் தேடுங்கள்" : "Find a Government Official or Office"}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-200 mt-2">
-                {lang === "ta"
-                  ? "அமைச்சர்கள், செயலாளர்கள், மாவட்ட ஆட்சியர்கள் மற்றும் வட்டாட்சியர்களின் சரிபார்க்கப்பட்ட தொடர்பு விவரங்கள்."
-                  : "Verified statutory directory for Ministers, Secretariat Secretaries, 38 District Collectors, and Tahsildars."}
-              </p>
-
-              {/* One-click quick links */}
-              <div className="flex flex-wrap gap-2 mt-4 text-xs font-semibold">
-                <Link
-                  href="/contact-directory?tab=leadership"
-                  className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/20 transition-colors"
-                >
-                  {lang === "ta" ? "அமைச்சரவை" : "Council of Ministers"}
-                </Link>
-                <Link
-                  href="/contact-directory?cadre=IAS"
-                  className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/20 transition-colors"
-                >
-                  {lang === "ta" ? "தலைமைச் செயலாளர்கள்" : "Secretaries (IAS)"}
-                </Link>
-                <Link
-                  href="/districts"
-                  className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/20 transition-colors"
-                >
-                  {lang === "ta" ? "38 மாவட்ட ஆட்சியர்கள்" : "District Collectors"}
-                </Link>
-                <Link
-                  href="/contact-directory?tab=hierarchy"
-                  className="px-3 py-1.5 rounded-lg bg-white/15 hover:bg-white/25 border border-white/20 transition-colors"
-                >
-                  {lang === "ta" ? "நிர்வாக படிநிலை" : "Hierarchy Tree"}
-                </Link>
-              </div>
+              ))}
             </div>
+          </section>
 
-            <div className="shrink-0 flex flex-col gap-2">
+          {/* =========================================================================
+              SECTION 4: FIND GOVERNMENT CONTACTS (P0 HIGH-VISIBILITY DIRECTORY)
+              ========================================================================= */}
+          <section aria-labelledby="contacts-heading" className="bg-slate-900 text-white rounded-2xl p-6 sm:p-8 shadow-md">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-6">
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                  {lang === "ta" ? "பிழை இல்லாத சரிபார்க்கப்பட்ட கையேடு (P0)" : "P0 Master Contact Directory"}
+                </span>
+                <h3 id="contacts-heading" className="text-xl sm:text-2xl font-black text-white mt-1">
+                  {lang === "ta" ? "அரசு அதிகாரிகளின் தொடர்பு கையேடு" : "Verified Government Contact Directory"}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-xl">
+                  {lang === "ta"
+                    ? "முதலமைச்சர், அமைச்சர்கள், துறைச் செயலாளர்கள் மற்றும் 38 மாவட்ட ஆட்சித்தலைவர்களின் அதிகாரப்பூர்வ தொடர்பு எண்கள்."
+                    : "Verified coordinates for Ministers, Secretaries, District Collectors, and Heads of Departments."}
+                </p>
+              </div>
+
               <Link
                 href="/contact-directory"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-sm transition-colors shadow-md"
+                className="px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs transition-colors shrink-0 flex items-center gap-1.5"
               >
-                <span>{lang === "ta" ? "முழு தொடர்பு கையேடு" : "View Full Contact Directory"}</span>
-                <ArrowRight className="w-4 h-4" />
+                <Users className="w-4 h-4" />
+                <span>{lang === "ta" ? "முழு கையேட்டைத் திறக்க" : "Open Full Directory"}</span>
               </Link>
             </div>
-          </div>
-        </section>
 
-        {/* Section D: Direct Portal Modules & Gateways */}
-        <section aria-labelledby="gateways-heading">
-          <h3 id="gateways-heading" className="text-xl font-bold tracking-tight text-slate-900 mb-4">
-            {lang === "ta" ? "அரசுத் தகவல் & ஆவணங்கள் நுழைவாயில்" : "Government Information & Document Gateways"}
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
-            <Link
-              href="/departments"
-              className="p-5 rounded-xl bg-white border border-slate-200 hover:border-blue-400 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <Building2 className="w-6 h-6 text-blue-700 mb-2" />
-                <h4 className="font-bold text-slate-900 text-sm">{lang === "ta" ? "45 தலைமைச் செயலகத் துறைகள்" : "45 Secretariat Departments"}</h4>
-                <p className="text-slate-500 mt-1">{lang === "ta" ? "துறை செயல்பாடுகள், அமைச்சர்கள் & செயலாளர்கள்" : "Portfolios, functions, ministers & secretaries"}</p>
-              </div>
-              <span className="text-blue-700 font-bold mt-4 block">{lang === "ta" ? "காண்க" : "Explore"} →</span>
-            </Link>
-
-            <Link
-              href="/districts"
-              className="p-5 rounded-xl bg-white border border-slate-200 hover:border-blue-400 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <MapPin className="w-6 h-6 text-blue-700 mb-2" />
-                <h4 className="font-bold text-slate-900 text-sm">{lang === "ta" ? "38 வருவாய் மாவட்டங்கள்" : "38 District Collectorates"}</h4>
-                <p className="text-slate-500 mt-1">{lang === "ta" ? "ஆட்சியர் அலுவலகங்கள், தாலுகாக்கள் & சேவைகள்" : "Collectorate offices, taluks & district services"}</p>
-              </div>
-              <span className="text-blue-700 font-bold mt-4 block">{lang === "ta" ? "காண்க" : "Explore"} →</span>
-            </Link>
-
-            <Link
-              href="/documents"
-              className="p-5 rounded-xl bg-white border border-slate-200 hover:border-blue-400 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <FileText className="w-6 h-6 text-blue-700 mb-2" />
-                <h4 className="font-bold text-slate-900 text-sm">{lang === "ta" ? "அரசாணைகள் & கொள்கை குறிப்புகள்" : "Government Orders & Policies"}</h4>
-                <p className="text-slate-500 mt-1">{lang === "ta" ? "ஆண்டுகள் & துறைகள் வாரியாக அரசாணைகள் தேடல்" : "Searchable bilingual G.O. repository with OCR"}</p>
-              </div>
-              <span className="text-blue-700 font-bold mt-4 block">{lang === "ta" ? "காண்க" : "Explore"} →</span>
-            </Link>
-
-            <Link
-              href="/schemes"
-              className="p-5 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <Award className="w-6 h-6 text-emerald-700 mb-2" />
-                <h4 className="font-bold text-slate-900 text-sm">{lang === "ta" ? "அரசு நலத்திட்டங்கள் (Schemes)" : "Government Welfare Schemes"}</h4>
-                <p className="text-slate-500 mt-1">{lang === "ta" ? "மகளிர் உரிமைத் திட்டம், புதுமைப் பெண், உழவர் திட்டங்கள்" : "KMUT, Pudhumai Penn, agriculture subsidies & welfare benefits"}</p>
-              </div>
-              <span className="text-emerald-700 font-bold mt-4 block">{lang === "ta" ? "காண்க" : "Explore"} →</span>
-            </Link>
-
-            <Link
-              href="/services"
-              className="p-5 rounded-xl bg-white border border-slate-200 hover:border-blue-400 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
-            >
-              <div>
-                <FileCheck2 className="w-6 h-6 text-blue-700 mb-2" />
-                <h4 className="font-bold text-slate-900 text-sm">{lang === "ta" ? "250+ மக்கள் சேவைகள் வழிகாட்டி" : "250+ Citizen Service Catalog"}</h4>
-                <p className="text-slate-500 mt-1">{lang === "ta" ? "சட்டப்பூர்வ காலக்கெடு & கட்டண விவரங்கள்" : "Statutory SLAs, fees & direct e-Sevai links"}</p>
-              </div>
-              <span className="text-blue-700 font-bold mt-4 block">{lang === "ta" ? "காண்க" : "Explore"} →</span>
-            </Link>
-          </div>
-        </section>
-
-        {/* Section E: Citizen Help & Official Helplines */}
-        <section
-          aria-labelledby="help-heading"
-          className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm flex flex-col md:flex-row justify-between items-center gap-6"
-        >
-          <div>
-            <h3 id="help-heading" className="text-base sm:text-lg font-bold text-slate-900">
-              {lang === "ta" ? "அரசு அவசர & உதவி எண்கள் (Helplines)" : "Official Government Helplines & Assistance"}
-            </h3>
-            <p className="text-xs text-slate-500 mt-1">
-              {lang === "ta"
-                ? "24/7 பொதுமக்கள் குறைகேட்பு மற்றும் அவசர கால சேவைகள்"
-                : "24/7 Citizen Grievance Redressal and Emergency Support"}
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-4 text-xs font-mono font-bold">
-            <div className="p-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 text-center">
-              <span className="text-[10px] text-slate-500 block">CM Helpline</span>
-              <a href="tel:1100" className="text-sm text-blue-800">1100</a>
-            </div>
-            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-900 text-center">
-              <span className="text-[10px] text-slate-500 block">Medical Emergency</span>
-              <a href="tel:108" className="text-sm text-red-800">108</a>
-            </div>
-            <div className="p-3 rounded-lg bg-purple-50 border border-purple-200 text-purple-900 text-center">
-              <span className="text-[10px] text-slate-500 block">Women Helpline</span>
-              <a href="tel:181" className="text-sm text-purple-800">181</a>
-            </div>
-            <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-900 text-center">
-              <span className="text-[10px] text-slate-500 block">e-Sevai Support</span>
-              <a href="tel:18004251333" className="text-sm text-emerald-800">1800-425-1333</a>
-            </div>
-          </div>
-        </section>
-
-        {/* Section G: Unified Application Tracking */}
-        <section
-          aria-labelledby="tracker-heading"
-          className="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-10 shadow-sm"
-        >
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-100 text-blue-800 mb-3">
-              <FileCheck2 className="w-6 h-6" />
-            </div>
-            <h3 id="tracker-heading" className="text-xl sm:text-2xl font-bold text-slate-900 mb-1">
-              {lang === "ta" ? "விண்ணப்ப நிலை கண்காணிப்பு (Unified Tracking)" : "Track Application Status"}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-600 mb-6">
-              {lang === "ta"
-                ? "இ-சேவை அல்லது அரசுத் துறைகளில் சமர்ப்பிக்கப்பட்ட விண்ணப்ப நிலையை அறியவும்"
-                : "Check the live statutory processing stage for applications filed through e-Sevai or department portals"}
-            </p>
-
-            <form onSubmit={handleTrack} className="flex flex-col sm:flex-row gap-3 justify-center mb-4">
-              <input
-                type="text"
-                value={appId}
-                onChange={(e) => setAppId(e.target.value)}
-                placeholder="TN20261001 (8-12 alphanumeric)"
-                className="w-full sm:w-80 px-4 py-2.5 rounded-lg border border-slate-300 text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600"
-                aria-label="Application Tracking Number"
-              />
-              <button
-                type="submit"
-                className="px-6 py-2.5 rounded-lg text-white font-semibold text-sm transition-colors shadow-sm shrink-0"
-                style={{ backgroundColor: tnBlue }}
+            {/* Quick Contact Categorical Filters */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+              <Link
+                href="/contact-directory?category=Minister"
+                className="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-center hover:border-amber-400 transition-colors"
               >
-                {lang === "ta" ? "நிலையைக் காண்க" : "Check Status"}
-              </button>
-            </form>
+                <span className="block font-bold text-white mb-0.5">{lang === "ta" ? "அமைச்சரவை" : "Ministers"}</span>
+                <span className="text-[10px] text-slate-400">Chief Minister & Cabinet</span>
+              </Link>
 
-            {trackingError && <p className="text-xs text-red-600 font-medium mb-4">{trackingError}</p>}
-
-            {/* Simulated Live Progress Bar */}
-            {trackedStatus && (
-              <div
-                role="region"
-                aria-live="polite"
-                className="mt-6 p-5 rounded-xl bg-slate-50 border border-slate-200 text-left animate-fadeIn"
+              <Link
+                href="/contact-directory?cadre=IAS"
+                className="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-center hover:border-amber-400 transition-colors"
               >
-                <div className="flex flex-wrap justify-between items-center text-xs text-slate-600 pb-3 border-b border-slate-200 mb-4 gap-2">
+                <span className="block font-bold text-white mb-0.5">{lang === "ta" ? "செயலாளர்கள்" : "Secretaries"}</span>
+                <span className="text-[10px] text-slate-400">Chief Sec & Dept Heads</span>
+              </Link>
+
+              <Link
+                href="/contact-directory?designation=Collector"
+                className="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-center hover:border-amber-400 transition-colors"
+              >
+                <span className="block font-bold text-white mb-0.5">{lang === "ta" ? "ஆட்சித்தலைவர்கள்" : "Collectors"}</span>
+                <span className="text-[10px] text-slate-400">All 38 Districts</span>
+              </Link>
+
+              <Link
+                href="/contact-directory?category=HoD"
+                className="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-center hover:border-amber-400 transition-colors"
+              >
+                <span className="block font-bold text-white mb-0.5">{lang === "ta" ? "துறைத் தலைவர்கள்" : "HoDs"}</span>
+                <span className="text-[10px] text-slate-400">Commissioners & Directors</span>
+              </Link>
+
+              <Link
+                href="/contact-directory?category=RTI"
+                className="p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700 text-center hover:border-amber-400 transition-colors"
+              >
+                <span className="block font-bold text-white mb-0.5">{lang === "ta" ? "RTI அலுவலர்கள்" : "RTI Officers"}</span>
+                <span className="text-[10px] text-slate-400">Appellate Authorities</span>
+              </Link>
+
+              <Link
+                href="/contact-directory?category=Helpline"
+                className="p-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-center transition-colors"
+              >
+                <span className="block font-bold text-amber-400 mb-0.5">{lang === "ta" ? "உதவி எண்கள்" : "Helplines"}</span>
+                <span className="text-[10px] text-slate-300">CM 1100 / 108 / 181</span>
+              </Link>
+            </div>
+          </section>
+
+          {/* =========================================================================
+              SECTION 5: SCHEMES FOR YOU (BENEFICIARY-ORIENTED TABS)
+              ========================================================================= */}
+          <section aria-labelledby="schemes-heading" className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-purple-800 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                  {lang === "ta" ? "பயனாளிகள் பிரிவு வாரியாக" : "Targeted Beneficiary Programs"}
+                </span>
+                <h3 id="schemes-heading" className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  {lang === "ta" ? "உங்களுக்கான அரசு நலத்திட்டங்கள்" : "Government Welfare Schemes for You"}
+                </h3>
+              </div>
+
+              <Link
+                href="/schemes"
+                className="text-xs font-bold text-[#004B87] hover:underline flex items-center gap-1"
+              >
+                <span>{lang === "ta" ? "அனைத்து 8 முதன்மைத் திட்டங்கள்" : "View All 8 Schemes"}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* Beneficiary Filter Buttons */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {[
+                { id: "WOMEN", en: "Women & Children", ta: "மகளிர் & குழந்தைகள்" },
+                { id: "FARMERS", en: "Farmers & Agriculture", ta: "விவசாயிகள்" },
+                { id: "STUDENTS", en: "Students & Youth", ta: "மாணவர்கள் & இளைஞர்கள்" },
+                { id: "SENIOR", en: "Senior Citizens", ta: "முதியோர் & ஓய்வூதியம்" },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setSchemeCategoryTab(tab.id)}
+                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer ${
+                    schemeCategoryTab === tab.id
+                      ? "bg-[#004B87] text-white"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  }`}
+                >
+                  {lang === "ta" ? tab.ta : tab.en}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {schemesData.slice(0, 3).map((sch) => (
+                <div key={sch.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col justify-between">
                   <div>
-                    <span className="font-bold text-slate-900">{lang === "ta" ? "விண்ணப்ப எண்:" : "Application ID:"}</span>{" "}
-                    <code className="font-mono bg-white px-2 py-0.5 rounded border border-slate-300">{trackedStatus.id}</code>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800 bg-blue-100 px-2 py-0.5 rounded">
+                      {lang === "ta" ? sch.category_ta : sch.category}
+                    </span>
+                    <h4 className="font-extrabold text-slate-900 text-sm mt-2">
+                      {lang === "ta" ? sch.name_ta : sch.name_en}
+                    </h4>
+                    <p className="text-xs text-slate-600 mt-1 line-clamp-2">
+                      {sch.benefits}
+                    </p>
                   </div>
-                  <div>
-                    <span className="font-bold text-slate-900">{lang === "ta" ? "சேவை:" : "Service:"}</span> {trackedStatus.service}
-                  </div>
-                  <div>
-                    <span className="font-bold text-slate-900">{lang === "ta" ? "தேதி:" : "Filed Date:"}</span> {trackedStatus.date}
+                  <div className="mt-4 pt-2.5 border-t border-slate-200 flex justify-between items-center text-xs">
+                    <span className="text-[11px] font-bold text-slate-500">{lang === "ta" ? sch.dept_ta : sch.dept_en}</span>
+                    <Link href="/schemes" className="font-bold text-[#004B87] hover:underline">
+                      {lang === "ta" ? "விவரங்கள் →" : "Details →"}
+                    </Link>
                   </div>
                 </div>
+              ))}
+            </div>
+          </section>
 
-                <div className="relative py-2">
-                  <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-slate-200">
-                    <div
-                      style={{ width: "75%" }}
-                      className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-blue-600 transition-all duration-500"
-                    />
+          {/* =========================================================================
+              SECTION 6: GOVERNMENT ORDERS & DOCUMENTS (DIRECT G.O. RETRIEVAL)
+              ========================================================================= */}
+          <section aria-labelledby="documents-heading" className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-600 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                  {lang === "ta" ? "அதிகாரப்பூர்வ அரசாணைகள்" : "Official Gazette & Orders"}
+                </span>
+                <h3 id="documents-heading" className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  {lang === "ta" ? "சமீபத்திய அரசாணைகள் மற்றும் ஆவணங்கள்" : "Recent Government Orders & Documents"}
+                </h3>
+              </div>
+
+              <Link
+                href="/documents"
+                className="text-xs font-bold text-[#004B87] hover:underline flex items-center gap-1"
+              >
+                <span>{lang === "ta" ? "அனைத்து அரசாணைகளையும் தேடுக" : "Search All G.O.s"}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="space-y-3">
+              {documentsData.slice(0, 3).map((doc) => (
+                <div key={doc.id} className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-200 text-slate-800 px-2 py-0.5 rounded">
+                        {doc.type} ({doc.year})
+                      </span>
+                      <span className="text-xs text-slate-500 font-mono">Issued: {doc.date}</span>
+                    </div>
+                    <h4 className="font-extrabold text-slate-900 text-sm mt-1">
+                      {lang === "ta" ? doc.subject_ta : doc.subject_en}
+                    </h4>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {lang === "ta" ? doc.dept_ta : doc.dept_en}
+                    </p>
                   </div>
 
-                  <div className="grid grid-cols-4 text-center text-[10px] sm:text-xs font-medium text-slate-600 gap-1">
-                    <div className="text-blue-700 font-bold flex flex-col items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                      <span>{lang === "ta" ? "சமர்ப்பிக்கப்பட்டது" : "Submitted"}</span>
-                    </div>
-                    <div className="text-blue-700 font-bold flex flex-col items-center gap-1">
-                      <CheckCircle2 className="w-4 h-4 text-blue-600" />
-                      <span>{lang === "ta" ? "ஆவண சரிபார்ப்பு" : "VAO / RI Verification"}</span>
-                    </div>
-                    <div className="text-blue-700 font-bold flex flex-col items-center gap-1">
-                      <Clock className="w-4 h-4 text-amber-500 animate-pulse" />
-                      <span>{lang === "ta" ? "வட்டாட்சியர் ஒப்புதல் நிலை" : "Tahsildar Review"}</span>
-                    </div>
-                    <div className="text-slate-400 flex flex-col items-center gap-1">
-                      <div className="w-4 h-4 rounded-full border border-slate-300" />
-                      <span>{lang === "ta" ? "சான்றிதழ் வழங்கல்" : "Certificate Ready"}</span>
-                    </div>
+                  <a
+                    href={doc.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs shrink-0 flex items-center gap-1.5 transition-colors"
+                  >
+                    <span>{lang === "ta" ? "பதிவிறக்குக" : "Download PDF"}</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* =========================================================================
+              SECTION 7: DISTRICT SERVICES (INTERACTIVE 38-DISTRICT SELECTOR)
+              ========================================================================= */}
+          <section aria-labelledby="district-heading" className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-6 gap-2">
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-blue-800 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                  {lang === "ta" ? "மாவட்ட நிர்வாகம்" : "Local Administration"}
+                </span>
+                <h3 id="district-heading" className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  {lang === "ta" ? "உங்கள் மாவட்ட சேவைகள் மற்றும் அதிகாரிகள்" : "District Administration & Local Services"}
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+                  {lang === "ta"
+                    ? "38 மாவட்டங்களில் உள்ள ஆட்சியர் அலுவலகத் தொடர்பு மற்றும் தாலுகா சேவைகளைக் காண்க."
+                    : "Select your district to access verified Collectorate contacts and local services."}
+                </p>
+              </div>
+
+              <Link
+                href="/districts"
+                className="text-xs font-bold text-[#004B87] hover:underline flex items-center gap-1"
+              >
+                <span>{lang === "ta" ? "அனைத்து 38 மாவட்டங்கள்" : "View All 38 Districts"}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* District Selector & Output Box */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+              <div>
+                <label htmlFor="district-select" className="block text-xs font-bold text-slate-700 mb-2">
+                  {lang === "ta" ? "மாவட்டத்தைத் தேர்வு செய்க:" : "Select District:"}
+                </label>
+                <select
+                  id="district-select"
+                  value={selectedDistrict}
+                  onChange={(e) => setSelectedDistrict(e.target.value)}
+                  className="w-full p-2.5 rounded-lg border border-slate-300 text-slate-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#004B87]"
+                >
+                  {TN_DISTRICTS_LIST.map((dist) => (
+                    <option key={dist.id} value={dist.id}>
+                      {lang === "ta" ? dist.name_ta : dist.name_en}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="md:col-span-2 p-5 rounded-xl bg-blue-50 border border-blue-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#004B87]">
+                    {lang === "ta" ? "மாவட்ட ஆட்சித்தலைவர் அலுவலகம்" : "District Collectorate"}
+                  </span>
+                  <h4 className="text-base font-extrabold text-slate-900 mt-0.5">
+                    {lang === "ta" ? `${currentDistrictData.name_ta} மாவட்டம்` : `${currentDistrictData.name_en} District`}
+                  </h4>
+                  <p className="text-xs text-slate-600 mt-1">
+                    {currentDistrictData.collector_en}
+                  </p>
+                  <p className="text-xs font-mono font-bold text-[#004B87] mt-0.5">
+                    Phone: {currentDistrictData.phone}
+                  </p>
+                </div>
+
+                <Link
+                  href={`/contact-directory?district=${encodeURIComponent(currentDistrictData.name_en)}`}
+                  className="px-4 py-2 rounded-lg bg-[#004B87] hover:bg-blue-900 text-white font-bold text-xs transition-colors shrink-0"
+                >
+                  {lang === "ta" ? "மாவட்ட அதிகாரிகள் பட்டியல்" : "District Directory"} →
+                </Link>
+              </div>
+            </div>
+          </section>
+
+          {/* =========================================================================
+              SECTION 8: GRIEVANCES AND ASSISTANCE (CM HELPLINE 1100 & TRACKING)
+              ========================================================================= */}
+          <section id="grievances" aria-labelledby="grievance-heading" className="bg-slate-50 border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+            <div className="max-w-3xl mx-auto text-center mb-8">
+              <span className="text-[11px] font-extrabold uppercase tracking-wider text-red-700 bg-red-50 px-2.5 py-0.5 rounded border border-red-200">
+                {lang === "ta" ? "பொதுமக்கள் குறைகேட்பு & அவசர சேவைகள்" : "24/7 Grievance Redressal"}
+              </span>
+              <h3 id="grievance-heading" className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                {lang === "ta" ? "குறைதீர்ப்பு மற்றும் நேரடி உதவி" : "Grievance Redressal & Emergency Assistance"}
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-600 mt-1">
+                {lang === "ta"
+                  ? "மாண்புமிகு முதலமைச்சர் உதவி மையம் 1100 மற்றும் அவசர உதவி எண்களை நேரடியாகத் தொடர்பு கொள்ளலாம்."
+                  : "Direct citizen grievance registration via CM Helpline 1100 and emergency state toll-free channels."}
+              </p>
+            </div>
+
+            {/* 4 Emergency Helplines Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+              <div className="p-4 rounded-xl bg-blue-50 border border-blue-200 text-center">
+                <span className="text-[10px] font-bold text-blue-900 block uppercase">CM Helpline (24x7)</span>
+                <a href="tel:1100" className="text-lg font-black text-blue-800 hover:underline block my-1">1100</a>
+                <span className="text-[10px] text-slate-500">{lang === "ta" ? "பொதுமக்கள் குறைதீர்ப்பு" : "Grievance Redressal"}</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-center">
+                <span className="text-[10px] font-bold text-red-900 block uppercase">Medical Emergency</span>
+                <a href="tel:108" className="text-lg font-black text-red-800 hover:underline block my-1">108</a>
+                <span className="text-[10px] text-slate-500">{lang === "ta" ? "மருத்துவ அவசரம்" : "Ambulance"}</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-purple-50 border border-purple-200 text-center">
+                <span className="text-[10px] font-bold text-purple-900 block uppercase">Women Helpline</span>
+                <a href="tel:181" className="text-lg font-black text-purple-800 hover:underline block my-1">181</a>
+                <span className="text-[10px] text-slate-500">{lang === "ta" ? "மகளிர் உதவி மையம்" : "Women in Distress"}</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+                <span className="text-[10px] font-bold text-emerald-900 block uppercase">e-Sevai Support</span>
+                <a href="tel:18004251333" className="text-sm font-black text-emerald-800 hover:underline block my-2">1800-425-1333</a>
+                <span className="text-[10px] text-slate-500">{lang === "ta" ? "இ-சேவை மையம் உதவி" : "Citizen Portal Help"}</span>
+              </div>
+            </div>
+
+            {/* Application Tracking Console */}
+            <div id="tracker" className="p-6 rounded-xl bg-white border border-slate-200 max-w-xl mx-auto shadow-2xs text-center">
+              <h4 className="font-extrabold text-slate-900 text-sm mb-1">
+                {lang === "ta" ? "விண்ணப்ப நிலை கண்காணிப்பு (Unified Tracking)" : "Track Application Status"}
+              </h4>
+              <p className="text-xs text-slate-500 mb-4">
+                {lang === "ta"
+                  ? "இ-சேவை அல்லது அரசுத் துறைகளில் சமர்ப்பிக்கப்பட்ட விண்ணப்பத்தின் நேரடி நிலையை அறியவும்."
+                  : "Check live processing status for applications filed via e-Sevai or department portals."}
+              </p>
+
+              <form onSubmit={handleTrack} className="flex flex-col sm:flex-row gap-2 justify-center">
+                <input
+                  type="text"
+                  value={appId}
+                  onChange={(e) => setAppId(e.target.value)}
+                  placeholder="TN20261001"
+                  className="px-3.5 py-2 rounded-lg border border-slate-300 text-slate-900 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-[#004B87]"
+                  aria-label="Application Number"
+                />
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-lg text-white font-bold text-xs transition-colors shrink-0"
+                  style={{ backgroundColor: tnBlue }}
+                >
+                  {lang === "ta" ? "நிலையைக் காண்க" : "Check Status"}
+                </button>
+              </form>
+
+              {trackingError && <p className="text-xs text-red-600 font-semibold mt-2">{trackingError}</p>}
+
+              {trackedStatus && (
+                <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-200 text-xs text-left">
+                  <div className="font-bold text-slate-900">{trackedStatus.service}</div>
+                  <div className="text-[11px] text-slate-500">App ID: {trackedStatus.id} | Date: {trackedStatus.date}</div>
+                  <div className="mt-2 text-blue-900 font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Stage 3 of 4: Tahsildar Digital Signature in Progress</span>
                   </div>
                 </div>
+              )}
+            </div>
+          </section>
+
+          {/* =========================================================================
+              SECTION 9: ANNOUNCEMENTS (VERIFIED GAZETTE & STATE NOTICES)
+              ========================================================================= */}
+          <section aria-labelledby="announcements-heading" className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 shadow-xs">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-2">
+              <div>
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                  {lang === "ta" ? "அரசு செய்திகள் & அறிவிப்புகள்" : "Press Releases & Gazettes"}
+                </span>
+                <h3 id="announcements-heading" className="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  {lang === "ta" ? "முக்கிய அறிவிப்புகள்" : "Official State Announcements"}
+                </h3>
               </div>
-            )}
-          </div>
-        </section>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[10px] font-mono font-bold text-slate-500">16 Nov 2026</span>
+                <h4 className="font-bold text-slate-900 mt-1">
+                  {lang === "ta" ? "மகளிர் உரிமைத் திட்ட பயனாளிகள் வங்கி கணக்கு சரிபார்ப்பு" : "Kalaignar Magalir Urimai Thogai Bank Account Verification"}
+                </h4>
+                <p className="text-slate-500 mt-1 line-clamp-2">
+                  Social Welfare Department circular regarding Aadhaar-linked DBT account validation.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[10px] font-mono font-bold text-slate-500">14 Nov 2026</span>
+                <h4 className="font-bold text-slate-900 mt-1">
+                  {lang === "ta" ? "பருவமழை முன்னெச்சரிக்கை: 24/7 பேரிடர் மேலாண்மை மையம்" : "Monsoon Preparedness: 24/7 State Emergency Operations Center"}
+                </h4>
+                <p className="text-slate-500 mt-1 line-clamp-2">
+                  Revenue and Disaster Management toll-free control room operational at 1070.
+                </p>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200">
+                <span className="text-[10px] font-mono font-bold text-slate-500">10 Nov 2026</span>
+                <h4 className="font-bold text-slate-900 mt-1">
+                  {lang === "ta" ? "இ-சேவை 2.0 தளம் மூலம் 15 புதிய சான்றிதழ்கள் தொடக்கம்" : "TNeGA e-Sevai 2.0 Launches 15 New Direct Certificates"}
+                </h4>
+                <p className="text-slate-500 mt-1 line-clamp-2">
+                  Faceless, paperless delivery for agriculture and educational documents.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
       </main>
 
-      {/* 5. GIGW Standard Footer */}
-      <footer className="w-full bg-slate-900 text-slate-400 text-xs py-8 px-4 border-t border-slate-800">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-center sm:text-left">
-          <div>
-            <p className="text-slate-200 font-bold text-sm mb-1">
-              {lang === "ta" ? "தமிழ்நாடு அரசு டிஜிட்டல் போர்டல் 2.0" : "Government of Tamil Nadu Portal 2.0"}
-            </p>
-            <p>Designed as per GIGW 3.0 & WCAG 2.2 AA accessibility standards.</p>
-          </div>
-          <div className="flex flex-wrap justify-center gap-4 text-slate-300">
-            <a href="#" className="hover:underline">RTI</a>
-            <a href="#" className="hover:underline">Privacy Policy</a>
-            <a href="#" className="hover:underline">Contact Directory (P0)</a>
-            <a href="#" className="hover:underline">Disclaimer</a>
-          </div>
-        </div>
-      </footer>
+      {/* =========================================================================
+          SECTION 10: COMPLETE FOOTER SITEMAP (GIGW 3.0 MANDATORY LINK DIRECTORY)
+          ========================================================================= */}
+      <FooterSitemap lang={lang} />
     </div>
   );
 }
