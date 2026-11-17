@@ -38,6 +38,6 @@
 - [x] Step 4.4: Citation guardrail enforcing source G.O. URL output.
 
 ### Phase 5: Testing, Hardening & GIGW Audit (Weeks 17-20)
-- [ ] Step 5.1: Automated accessibility testing with Axe-Core / Playwright for WCAG 2.2 AA.
-- [ ] Step 5.2: Lighthouse performance tuning targeting LCP < 2.5s on simulated 3G networks.
-- [ ] Step 5.3: Security vulnerability scanning (OWASP Top 10, CERT-In compliance audit).
+- [x] Step 5.1: Automated accessibility testing with Axe-Core / Playwright for WCAG 2.2 AA.
+- [x] Step 5.2: Lighthouse performance tuning targeting LCP < 2.5s on simulated 3G networks.
+- [x] Step 5.3: Security vulnerability scanning (OWASP Top 10, CERT-In compliance audit).

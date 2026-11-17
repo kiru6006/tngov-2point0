@@ -33,14 +33,29 @@ app = FastAPI(
     version="2.0.0",
 )
 
-# 1. CORS Middleware (Next.js 19 integration)
+# 1. CORS & Security Headers Middleware (GIGW 3.0 / CERT-In / Next.js integration)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "https://tn.gov.in"],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def add_security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["Strict-Transport-Security"] = "max-age=63072000; includeSubDomains; preload"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=()"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; img-src 'self' data: https:; "
+        "script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-ancestors 'none';"
+    )
+    return response
 
 # 2. Path Helpers
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
