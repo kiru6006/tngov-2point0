@@ -15,14 +15,13 @@ import {
   PhoneCall,
   ExternalLink,
   ChevronRight,
-  Filter,
   CheckCircle2,
-  HelpCircle,
   GraduationCap,
   Briefcase,
-  Compass,
-  AlertCircle,
   Download,
+  ShieldCheck,
+  Landmark,
+  Compass,
 } from "lucide-react";
 
 import GovernmentUtilityBar from "@/components/navigation/GovernmentUtilityBar";
@@ -32,8 +31,9 @@ import FooterSitemap from "@/components/navigation/FooterSitemap";
 
 import {
   MOST_USED_SERVICES,
-  SERVICE_CATEGORIES_DATA,
-  GOVERNMENT_LEADERSHIP,
+  INLINE_SERVICE_CATEGORIES,
+  LIFE_SITUATIONS_DATA,
+  CONSTITUTIONAL_PILLARS,
   E_GOVERNANCE_PORTALS,
   NOTICE_BOARD_DATA,
   TOURISM_HIGHLIGHTS,
@@ -52,6 +52,9 @@ const iconMap: Record<string, any> = {
   Building2,
   GraduationCap,
   Briefcase,
+  Landmark,
+  ShieldCheck,
+  Compass,
 };
 
 export default function Home() {
@@ -59,7 +62,7 @@ export default function Home() {
   const [highContrast, setHighContrast] = useState(false);
   const [fontSize, setFontSize] = useState<"sm" | "base" | "lg">("base");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategoryTab, setSelectedCategoryTab] = useState("education");
+  const [inlineCategoryTab, setInlineCategoryTab] = useState("cat-cert");
   const [selectedNoticeTab, setSelectedNoticeTab] = useState<"gos" | "notifications" | "circulars" | "tenders" | "recruitment" | "announcements">("gos");
   const [selectedDistrict, setSelectedDistrict] = useState("DIS-03"); // Chennai default
   const [dirSearchQuery, setDirSearchQuery] = useState("");
@@ -136,9 +139,9 @@ export default function Home() {
   const currentDistrictData =
     TN_DISTRICTS_LIST.find((d) => d.id === selectedDistrict) || TN_DISTRICTS_LIST[2];
 
-  const currentCategoryData =
-    SERVICE_CATEGORIES_DATA.find((c) => c.id === selectedCategoryTab) ||
-    SERVICE_CATEGORIES_DATA[0];
+  const currentInlineCategory =
+    INLINE_SERVICE_CATEGORIES.find((c) => c.id === inlineCategoryTab) ||
+    INLINE_SERVICE_CATEGORIES[0];
 
   const fontSizeClass =
     fontSize === "sm" ? "text-[13px]" : fontSize === "lg" ? "text-[17px]" : "text-[15px]";
@@ -150,10 +153,10 @@ export default function Home() {
       }`}
     >
       {/* =========================================================================
-          SECTION 1: GOVERNMENT HEADER & 4-LAYER NAVIGATION ARCHITECTURE
+          SECTION 1 & 2: GOVERNMENT UTILITY HEADER, IDENTITY & NAVIGATION
           ========================================================================= */}
       <header className="sticky top-0 z-40 bg-white shadow-xs">
-        {/* Layer A: Utility Bar */}
+        {/* 1. Government Utility Header */}
         <GovernmentUtilityBar
           lang={lang}
           setLang={setLang}
@@ -163,21 +166,21 @@ export default function Home() {
           setFontSize={setFontSize}
         />
 
-        {/* Layer B & C: Main Identity Header + Accessible Mega Menus + Mobile Drawer */}
+        {/* 2. Government Identity & Primary Navigation with Mega Menu */}
         <GovernmentHeader
           lang={lang}
           highContrast={highContrast}
           onSearch={(q) => handleSearch(q)}
         />
 
-        {/* Layer D: Quick Access Action Strip */}
+        {/* Quick Access Action Strip */}
         <QuickAccessBar lang={lang} />
       </header>
 
       {/* Main Content Landmark for Screen Readers and Skip-Links */}
       <main id="main-content" className="flex-1 focus:outline-none">
         {/* =========================================================================
-            SECTION 2: CITIZEN SEARCH HERO ("All Government Services. One Place.")
+            SECTION 3: CITIZEN SEARCH HERO
             ========================================================================= */}
         <section
           aria-label="Citizen Search Hero"
@@ -186,8 +189,8 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center space-y-5">
             <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-white/10 text-emerald-300 border border-emerald-400/30">
               {lang === "ta"
-                ? "ஒருங்கிணைந்த குடிமக்கள் சேவை நுழைவாயில்"
-                : "Unified Citizen Digital Gateway"}
+                ? "ஒருங்கிணைந்த தமிழ்நாடு அரசு டிஜிட்டல் நுழைவாயில் 2.0"
+                : "Tamil Nadu Unified Citizen Digital Gateway 2.0"}
             </span>
 
             <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
@@ -198,8 +201,8 @@ export default function Home() {
 
             <p className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto">
               {lang === "ta"
-                ? "சான்றிதழ்கள், நலத்திட்டங்கள், நில ஆவணங்கள், அரசாணைகள் மற்றும் அரசு அதிகாரிகளின் தொடர்புகளை எளிதாகக் கண்டறியவும்."
-                : "Access verified state certificates, welfare benefits, land records, Government Orders, and administrative contacts without hassle."}
+                ? "சான்றிதழ்கள், நில ஆவணங்கள், அரசு நலத்திட்டங்கள், அரசாணைகள் மற்றும் 38 மாவட்டங்களின் சேவைகளை உடனடியாகப் பெறுங்கள்."
+                : "Search or browse statutory certificates, land records, welfare benefits, Government Orders, and verified public administration contacts."}
             </p>
 
             {/* Prominent Large Search Bar */}
@@ -235,7 +238,7 @@ export default function Home() {
               </button>
             </form>
 
-            {/* Suggested Searches & Clear All Services Link */}
+            {/* Suggested Searches & Quick All Services Link */}
             <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs">
               <span className="text-slate-300 font-semibold">
                 {lang === "ta" ? "பிரபலமான தேடல்கள்:" : "Popular Searches:"}
@@ -269,7 +272,7 @@ export default function Home() {
               </Link>
             </div>
 
-            {/* AI Search Result Card (Zero-Generation Grounded Response) */}
+            {/* AI Grounded Result Card */}
             {aiResult && (
               <div
                 role="region"
@@ -314,19 +317,19 @@ export default function Home() {
         </section>
 
         {/* =========================================================================
-            SECTION 3: MOST USED CITIZEN SERVICES (12 Visible Cards)
+            SECTION 4: POPULAR SERVICES (QUICK ACCESS SERVICES)
             ========================================================================= */}
         <section
-          aria-label="Most Used Services"
+          aria-label="Popular Services"
           className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
         >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
             <div>
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
-                {lang === "ta" ? "அதிகம் பயன்படுத்தப்படும் சேவைகள்" : "High Priority Services"}
+                {lang === "ta" ? "அடிக்கடி தேவைப்படும் அரசு சேவைகள்" : "High Priority Services"}
               </span>
               <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                {lang === "ta" ? "அடிக்கடி தேவைப்படும் அரசு சேவைகள்" : "Most Used Citizen Services"}
+                {lang === "ta" ? "விரைவு சேவைகள் (Quick Access Services)" : "Popular Citizen Services"}
               </h3>
             </div>
             <Link
@@ -386,98 +389,158 @@ export default function Home() {
         </section>
 
         {/* =========================================================================
-            SECTION 4: BROWSE SERVICES BY CATEGORY (Interactive Tabs without Page Leave)
+            SECTION 5: BROWSE ALL SERVICES BY CATEGORY
             ========================================================================= */}
         <section
-          aria-label="Browse Services by Category"
+          aria-label="Browse All Services by Category"
           className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
         >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
               <div>
                 <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
-                  {lang === "ta" ? "துறை சார்ந்த சேவைகள்" : "Categorized Discovery"}
+                  {lang === "ta" ? "14 முதன்மை சேவைப் பிரிவுகள்" : "14 Service Domains"}
                 </span>
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {lang === "ta" ? "பிரிவு வாரியாக சேவைகளைத் தேடுக" : "Browse Services by Category"}
+                  {lang === "ta" ? "அனைத்து சேவைப் பிரிவுகள் (Directory)" : "Browse All Services by Category"}
                 </h3>
               </div>
               <Link
                 href="/services"
                 className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
               >
-                <span>{lang === "ta" ? "அனைத்துப் பிரிவுகள் காண்க" : "View All Categories"}</span>
+                <span>{lang === "ta" ? "முழு பட்டியல்" : "Service Master"}</span>
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* Category Tabs Scroll Bar */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 no-scrollbar">
-              {SERVICE_CATEGORIES_DATA.map((cat) => {
-                const isSelected = selectedCategoryTab === cat.id;
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+              {INLINE_SERVICE_CATEGORIES.map((cat) => {
+                const IconComp = iconMap[cat.iconName] || FileText;
                 return (
                   <button
                     key={cat.id}
-                    onClick={() => setSelectedCategoryTab(cat.id)}
-                    className={`px-3.5 py-2 rounded-lg font-bold text-xs sm:text-sm whitespace-nowrap transition-all border flex items-center gap-1.5 focus:outline-none focus:ring-2 focus:ring-[#173B63] ${
-                      isSelected
-                        ? "bg-[#173B63] text-white border-[#173B63] shadow-sm"
-                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    onClick={() => {
+                      setInlineCategoryTab(cat.id);
+                      const el = document.getElementById("service-action-panel");
+                      if (el) el.scrollIntoView({ behavior: "smooth" });
+                    }}
+                    className={`p-3 rounded-xl border text-left transition-all flex flex-col justify-between ${
+                      inlineCategoryTab === cat.id
+                        ? "bg-[#173B63] text-white border-[#173B63] shadow-md"
+                        : "bg-slate-50 hover:bg-[#E9F2F7] border-slate-200 text-slate-800"
                     }`}
                   >
-                    <span>{lang === "ta" ? cat.label_ta : cat.label_en}</span>
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                        isSelected ? "bg-white/20 text-white" : "bg-slate-200 text-slate-700"
+                    <IconComp
+                      className={`w-5 h-5 mb-2 ${
+                        inlineCategoryTab === cat.id ? "text-amber-400" : "text-[#087F8C]"
                       }`}
-                    >
-                      {cat.services.length}
-                    </span>
+                    />
+                    <div>
+                      <span className="font-extrabold text-xs block leading-tight">
+                        {lang === "ta" ? cat.label_ta : cat.label_en}
+                      </span>
+                      <span
+                        className={`text-[10px] mt-1 block font-medium ${
+                          inlineCategoryTab === cat.id ? "text-slate-300" : "text-slate-500"
+                        }`}
+                      >
+                        {cat.services.length} {lang === "ta" ? "சேவைகள்" : "Services"}
+                      </span>
+                    </div>
                   </button>
                 );
               })}
             </div>
+          </div>
+        </section>
 
-            {/* Inline Services Grid for Selected Category (Zero Page Refresh) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {currentCategoryData.services.map((srv) => (
+        {/* =========================================================================
+            SECTION 6: SERVICE ACTION PANEL (INLINE DISCOVERY - AP BENCHMARK)
+            ========================================================================= */}
+        <section
+          id="service-action-panel"
+          aria-label="Service Action Panel"
+          className="bg-[#E9F2F7] border-b border-slate-200 py-10 px-4 sm:px-6"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-300 gap-2">
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
+                  {lang === "ta" ? "நேரடி சேவை நடவடிக்கை பலகை (AP Pattern)" : "Inline Service Action Panel"}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                  <span>
+                    {lang === "ta" ? currentInlineCategory.label_ta : currentInlineCategory.label_en}
+                  </span>
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#173B63] text-white">
+                    {currentInlineCategory.services.length} {lang === "ta" ? "சேவைகள்" : "Live Services"}
+                  </span>
+                </h3>
+              </div>
+              <p className="text-xs text-slate-600 font-medium">
+                {lang === "ta"
+                  ? "பக்கத்தை விட்டு வெளியேறாமல் நேரடியாக விண்ணப்பிக்கவும் அல்லது நிலையை அறியவும்."
+                  : "Apply directly or track application without navigating away."}
+              </p>
+            </div>
+
+            {/* Inline Service Action Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {currentInlineCategory.services.map((srv) => (
                 <div
                   key={srv.id}
-                  className="p-4 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-[#173B63] transition-all flex flex-col justify-between shadow-2xs group"
+                  className="bg-white rounded-xl border border-slate-200 hover:border-[#173B63] p-4 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
                 >
                   <div>
-                    <h5 className="font-bold text-sm text-slate-900 group-hover:text-[#173B63] leading-snug">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                        SLA: {lang === "ta" ? srv.sla_ta : srv.sla_en}
+                      </span>
+                      <span className="text-[10px] font-mono font-bold text-slate-600">
+                        Fee: {lang === "ta" ? srv.fee_ta : srv.fee_en}
+                      </span>
+                    </div>
+
+                    <h4 className="font-extrabold text-sm text-slate-900 leading-snug">
                       {lang === "ta" ? srv.name_ta : srv.name_en}
-                    </h5>
+                    </h4>
+
                     <p className="text-[11px] text-slate-500 mt-1">
                       {lang === "ta" ? srv.dept_ta : srv.dept_en}
                     </p>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200">
-                      {lang === "ta" ? srv.sla_ta : srv.sla_en}
-                    </span>
+                  {/* Direct Actions: Apply + Track + Details */}
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <Link
+                      href={srv.detail_url}
+                      className="text-xs font-bold text-[#173B63] hover:text-[#087F8C]"
+                    >
+                      {lang === "ta" ? "விவரக்குறிப்பு" : "Checklist"}
+                    </Link>
 
-                    {srv.isExternal ? (
+                    <div className="flex items-center gap-1.5">
+                      {srv.track_url && (
+                        <a
+                          href={srv.track_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-2.5 py-1 text-xs font-bold rounded border border-slate-300 text-slate-700 hover:bg-slate-50"
+                        >
+                          {lang === "ta" ? "நிலை" : "Track"}
+                        </a>
+                      )}
                       <a
-                        href={srv.href}
+                        href={srv.apply_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-xs font-bold text-[#087F8C] hover:text-[#173B63]"
+                        className="px-3 py-1 bg-[#173B63] hover:bg-[#0f2844] text-white rounded text-xs font-bold inline-flex items-center gap-1 transition-colors"
                       >
-                        <span>{lang === "ta" ? "இணையதளம்" : "Portal"}</span>
+                        <span>{lang === "ta" ? "விண்ணப்பிக்க" : "Apply"}</span>
                         <ExternalLink className="w-3 h-3" />
                       </a>
-                    ) : (
-                      <Link
-                        href={srv.href}
-                        className="inline-flex items-center gap-1 text-xs font-bold text-[#087F8C] hover:text-[#173B63]"
-                      >
-                        <span>{lang === "ta" ? "விவரம்" : "Details"}</span>
-                        <ArrowRight className="w-3 h-3" />
-                      </Link>
-                    )}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -486,78 +549,82 @@ export default function Home() {
         </section>
 
         {/* =========================================================================
-            SECTION 5: GOVERNMENT LEADERSHIP (Restrained, Verified, Executive Layout)
+            SECTION 7: BROWSE BY LIFE SITUATION (UP BENCHMARK PATTERN)
             ========================================================================= */}
         <section
-          aria-label="Government Leadership"
+          aria-label="Browse by Life Situation"
           className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
         >
-          <div className="mb-6 pb-2 border-b border-slate-200">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
-              {lang === "ta" ? "மாநில தலைமை" : "State Leadership"}
-            </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              {lang === "ta" ? "அரசு தலைமை & முக்கிய நிர்வாகப் பொறுப்பாளர்கள்" : "Government Leadership"}
-            </h3>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
+                {lang === "ta" ? "வாழ்க்கை சூழல் வாரியான தேவைகள்" : "Life Situation Discovery"}
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                {lang === "ta" ? "குடிமக்கள் சூழல் வாரியாக நலத்திட்டங்கள்" : "Browse by Life Situation"}
+              </h3>
+            </div>
+            <Link
+              href="/schemes"
+              className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
+            >
+              <span>{lang === "ta" ? "அனைத்து நலத்திட்டங்கள்" : "View All Schemes"}</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {GOVERNMENT_LEADERSHIP.map((lead) => (
-              <div
-                key={lead.id}
-                className="bg-white rounded-xl border border-slate-200 p-4 shadow-2xs hover:shadow-sm transition-all flex flex-col justify-between"
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {LIFE_SITUATIONS_DATA.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                className="p-4 rounded-xl border border-slate-200 bg-white hover:border-[#173B63] hover:shadow-sm transition-all group flex flex-col justify-between"
               >
                 <div>
-                  <div className="w-12 h-12 rounded-full bg-[#173B63] text-white flex items-center justify-center font-bold text-sm mb-3">
-                    TN
+                  <div className="flex items-center justify-between mb-1.5">
+                    <h4 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-[#173B63]">
+                      {lang === "ta" ? item.label_ta : item.label_en}
+                    </h4>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-100 text-[#173B63]">
+                      {item.count}
+                    </span>
                   </div>
-                  <h4 className="font-extrabold text-sm text-slate-900">
-                    {lang === "ta" ? lead.name_ta : lead.name_en}
-                  </h4>
-                  <p className="text-xs font-semibold text-[#087F8C] mt-0.5">
-                    {lang === "ta" ? lead.role_ta : lead.role_en}
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    {lang === "ta" ? lead.office_ta : lead.office_en}
+                  <p className="text-xs text-slate-600 leading-relaxed">
+                    {lang === "ta" ? item.desc_ta : item.desc_en}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-2 border-t border-slate-100">
-                  <Link
-                    href={lead.profile_url}
-                    className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
-                  >
-                    <span>{lang === "ta" ? "தொடர்பு & விவரம்" : "Contact Details"}</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </Link>
+                <div className="mt-3 pt-2 border-t border-slate-100 text-xs font-bold text-[#087F8C] group-hover:text-[#173B63] flex items-center justify-between">
+                  <span>{lang === "ta" ? "திட்டங்களை காண்க" : "Explore Entitlements"}</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
 
         {/* =========================================================================
-            SECTION 6: GOVERNMENT CONTACT DIRECTORY QUICK SEARCH
+            SECTION 8: GOVERNMENT CONTACT DIRECTORY (P0 MODULE)
             ========================================================================= */}
         <section
           aria-label="Government Contact Directory"
-          className="bg-[#E9F2F7] border-y border-slate-200 py-10 px-4 sm:px-6"
+          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
         >
           <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-300 gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
               <div>
                 <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
-                  {lang === "ta" ? "அரசு தொடர்பு கையேடு (P0)" : "Contact Directory (P0 Module)"}
+                  {lang === "ta" ? "அரசு தொடர்பு கையேடு (P0 Module)" : "Public Administration Directory"}
                 </span>
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {lang === "ta" ? "அரசு அதிகாரிகளின் சரிபார்க்கப்பட்ட தொடர்புகள்" : "Find Government Officials & Offices"}
+                  {lang === "ta" ? "அதிகாரிகள் மற்றும் துறைத் தொடர்புகள்" : "Government Contact Directory"}
                 </h3>
               </div>
               <Link
                 href="/contact-directory"
                 className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
               >
-                <span>{lang === "ta" ? "முழு கையேடு தேடல்" : "Advanced Directory Search"}</span>
+                <span>{lang === "ta" ? "முழு கையேடு தேடல்" : "Full Directory Search"}</span>
                 <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -574,7 +641,7 @@ export default function Home() {
                       ? "அதிகாரி பெயர், பதவி, துறை அல்லது மாவட்டத்தை உள்ளிடவும்..."
                       : "Search official by Name, Designation, Department, or District..."
                   }
-                  className="w-full pl-10 pr-24 py-2.5 text-xs sm:text-sm bg-white border border-slate-300 rounded-lg shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#173B63]"
+                  className="w-full pl-10 pr-24 py-2.5 text-xs sm:text-sm bg-slate-50 border border-slate-300 rounded-lg shadow-2xs focus:outline-none focus:ring-2 focus:ring-[#173B63]"
                 />
                 <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
                 <Link
@@ -601,7 +668,7 @@ export default function Home() {
                   <Link
                     key={idx}
                     href={item.href}
-                    className="p-3 bg-white hover:bg-sky-50 rounded-lg border border-slate-200 hover:border-[#173B63] transition-all flex items-center gap-2.5 shadow-2xs group"
+                    className="p-3 bg-slate-50 hover:bg-sky-50 rounded-lg border border-slate-200 hover:border-[#173B63] transition-all flex items-center gap-2.5 shadow-2xs group"
                   >
                     <IconComp className="w-4 h-4 text-[#087F8C] group-hover:text-[#173B63] shrink-0" />
                     <span className="text-xs font-bold text-slate-800 group-hover:text-[#173B63] line-clamp-1">
@@ -615,66 +682,499 @@ export default function Home() {
         </section>
 
         {/* =========================================================================
-            SECTION 7: KEY E-GOVERNANCE PORTALS DIRECTORY
+            SECTION 9: GOVERNMENT & ADMINISTRATION (THREE CONSTITUTIONAL PILLARS)
             ========================================================================= */}
         <section
-          id="egov-portals"
-          aria-label="Key e-Governance Portals"
+          aria-label="Government and Administration"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+        >
+          <div className="mb-6 pb-2 border-b border-slate-200">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
+              {lang === "ta" ? "அரசியலமைப்பு தூண்கள் (Telangana Pattern)" : "Constitutional Governance"}
+            </span>
+            <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              {lang === "ta" ? "அரசு மற்றும் நிர்வாகக் கட்டமைப்பு" : "Government and Administration"}
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {CONSTITUTIONAL_PILLARS.map((pillar) => (
+              <div
+                key={pillar.id}
+                className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs flex flex-col justify-between"
+              >
+                <div>
+                  <h4 className="font-black text-base text-[#173B63] mb-2 border-b border-slate-100 pb-2">
+                    {lang === "ta" ? pillar.title_ta : pillar.title_en}
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                    {lang === "ta" ? pillar.desc_ta : pillar.desc_en}
+                  </p>
+
+                  <div className="space-y-2">
+                    {pillar.leadership.map((lead, idx) => (
+                      <div key={idx} className="p-2 rounded bg-slate-50 border border-slate-100 text-xs">
+                        <span className="text-[10px] uppercase font-bold text-[#087F8C] block">
+                          {lang === "ta" ? lead.role_ta : lead.role_en}
+                        </span>
+                        <span className="font-bold text-slate-800">
+                          {lang === "ta" ? lead.name_ta : lead.name_en}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-5 pt-3 border-t border-slate-100">
+                  <Link
+                    href={pillar.link}
+                    className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
+                  >
+                    <span>{lang === "ta" ? "முழு கட்டமைப்பு" : "View Details"}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 10: DEPARTMENTS AND DISTRICTS (38 DISTRICTS INTERACTIVE EXPLORER)
+            ========================================================================= */}
+        <section
+          aria-label="Departments and Districts"
+          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
+                  {lang === "ta" ? "38 மாவட்டங்கள் & 45 துறைகள்" : "District Administration"}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  {lang === "ta" ? "மாவட்டங்கள் மற்றும் நிர்வாக வழிகாட்டி" : "Departments and Districts Explorer"}
+                </h3>
+              </div>
+              <Link
+                href="/districts"
+                className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
+              >
+                <span>{lang === "ta" ? "அனைத்து மாவட்ட பக்கங்கள்" : "All District Portals"}</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 shadow-2xs grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
+              {/* District Selector Dropdown */}
+              <div className="space-y-2">
+                <label htmlFor="final-district-select" className="block text-xs font-bold text-slate-700">
+                  {lang === "ta" ? "உங்கள் மாவட்டத்தைத் தேர்ந்தெடுக்கவும்:" : "Select your District:"}
+                </label>
+                <select
+                  id="final-district-select"
+                  value={selectedDistrict}
+                  onChange={(e) => setSelectedDistrict(e.target.value)}
+                  className="w-full p-2.5 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#173B63]"
+                >
+                  {TN_DISTRICTS_LIST.map((dist) => (
+                    <option key={dist.id} value={dist.id}>
+                      {lang === "ta" ? dist.name_ta : dist.name_en}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-slate-500">
+                  {lang === "ta"
+                    ? "மாவட்ட ஆட்சியரக தொடர்பு மற்றும் இணையதள விவரங்களை உடனடியாக அறியலாம்."
+                    : "Instant Collectorate phone, email, and NIC portal access."}
+                </p>
+              </div>
+
+              {/* District Live Details Card */}
+              <div className="md:col-span-2 p-4 bg-white rounded-lg border border-sky-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#173B63] text-white">
+                    {currentDistrictData.id}
+                  </span>
+                  <h4 className="text-base sm:text-lg font-black text-slate-900">
+                    {lang === "ta" ? currentDistrictData.name_ta : currentDistrictData.name_en}{" "}
+                    <span className="text-xs font-semibold text-slate-600">
+                      ({lang === "ta" ? currentDistrictData.hq_ta : currentDistrictData.hq_en} HQ)
+                    </span>
+                  </h4>
+                  <p className="text-xs text-slate-700 font-medium">{currentDistrictData.collector_en}</p>
+                  <div className="flex flex-wrap items-center gap-3 pt-1 text-xs">
+                    <span className="flex items-center gap-1 font-mono font-bold text-[#173B63]">
+                      <PhoneCall className="w-3.5 h-3.5 text-[#087F8C]" />
+                      <a href={`tel:${currentDistrictData.phone}`}>{currentDistrictData.phone}</a>
+                    </span>
+                    <span className="text-slate-400">|</span>
+                    <span className="font-mono text-slate-600">{currentDistrictData.email}</span>
+                  </div>
+                </div>
+
+                <a
+                  href={currentDistrictData.portal}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 bg-[#173B63] hover:bg-[#0f2844] text-white font-bold text-xs rounded-lg transition-colors inline-flex items-center gap-1 shrink-0"
+                >
+                  <span>{lang === "ta" ? "மாவட்ட இணையதளம்" : "District Portal"}</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 11: GOVERNMENT ORDERS AND DOCUMENTS
+            ========================================================================= */}
+        <section
+          aria-label="Government Orders and Documents"
           className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
         >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
             <div>
               <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
-                {lang === "ta" ? "டிஜிட்டல் தமிழ்நாடு" : "Digital Tamil Nadu"}
+                {lang === "ta" ? "அரசாணைகள் & அறிவிப்புகள்" : "Orders & Notice Board"}
               </span>
               <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                {lang === "ta" ? "முக்கிய மின்-ஆளுமை இணையதளங்கள்" : "Key e-Governance Portals"}
+                {lang === "ta" ? "சமீபத்திய அரசாணைகள் & ஆவணங்கள்" : "Government Orders and Documents"}
               </h3>
             </div>
-            <span className="text-xs text-slate-500 font-medium">
-              {lang === "ta" ? "சரிபார்க்கப்பட்ட அதிகாரப்பூர்வ தளங்கள்" : "Verified Official Gateways"}
-            </span>
+            <Link
+              href="/documents"
+              className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
+            >
+              <span>{lang === "ta" ? "அனைத்து ஆவணங்கள்" : "Document Archive"}</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {E_GOVERNANCE_PORTALS.map((portal) => (
+          {/* Notice Board Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200 pb-2 mb-4">
+            {[
+              { id: "gos", label_en: "Government Orders", label_ta: "அரசாணைகள் (G.O.)" },
+              { id: "notifications", label_en: "Notifications", label_ta: "அறிவிக்கைகள்" },
+              { id: "circulars", label_en: "Circulars", label_ta: "சுற்றறிக்கைகள்" },
+              { id: "tenders", label_en: "Tenders", label_ta: "ஒப்பந்தப்புள்ளிகள்" },
+              { id: "recruitment", label_en: "Recruitment", label_ta: "வேலைவாய்ப்பு அறிவிப்புகள்" },
+              { id: "announcements", label_en: "Announcements", label_ta: "செய்திக்குறிப்புகள்" },
+            ].map((tab) => {
+              const isSelected = selectedNoticeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setSelectedNoticeTab(tab.id as any)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors border ${
+                    isSelected
+                      ? "bg-[#173B63] text-white border-[#173B63]"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                  }`}
+                >
+                  {lang === "ta" ? tab.label_ta : tab.label_en}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Tab Content Display */}
+          <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl bg-slate-50/50 overflow-hidden">
+            {NOTICE_BOARD_DATA[selectedNoticeTab].map((item: any) => (
               <div
-                key={portal.id}
-                className="bg-white rounded-xl border border-slate-200 hover:border-[#173B63] p-5 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group"
+                key={item.id}
+                className="p-4 bg-white hover:bg-sky-50/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3"
               >
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-100 text-[#173B63]">
-                      {lang === "ta" ? portal.category_ta : portal.category_en}
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-sky-100 text-[#173B63]">
+                      {item.number}
                     </span>
-                    <span className="text-[10px] text-slate-400 font-semibold">TNeGA / NIC</span>
+                    <span className="text-[11px] text-slate-500 font-medium">
+                      {lang === "ta" ? item.dept_ta : item.dept_en}
+                    </span>
                   </div>
-
-                  <h4 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-[#173B63] flex items-center justify-between">
-                    <span>{lang === "ta" ? portal.name_ta : portal.name_en}</span>
-                  </h4>
-
-                  <p className="text-[11px] font-medium text-[#087F8C] mt-0.5">
-                    {lang === "ta" ? portal.dept_ta : portal.dept_en}
-                  </p>
-
-                  <p className="text-xs text-slate-600 mt-2 line-clamp-2 leading-relaxed">
-                    {lang === "ta" ? portal.description_ta : portal.description_en}
+                  <p className="font-bold text-xs sm:text-sm text-slate-900 leading-snug">
+                    {lang === "ta" ? item.title_ta : item.title_en}
                   </p>
                 </div>
 
-                <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-slate-400">
-                    {new URL(portal.url).hostname}
+                <div className="flex items-center gap-4 shrink-0 text-xs">
+                  <span className="text-slate-400 font-mono text-[11px]">{item.date}</span>
+                  {item.isExternal ? (
+                    <a
+                      href={item.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#E9F2F7] hover:bg-[#173B63] text-[#173B63] hover:text-white font-bold transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{item.size || "Portal"}</span>
+                    </a>
+                  ) : (
+                    <Link
+                      href={item.href}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#E9F2F7] hover:bg-[#173B63] text-[#173B63] hover:text-white font-bold transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>{item.size || "Download"}</span>
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 12: E-GOVERNANCE PORTAL DIRECTORY
+            ========================================================================= */}
+        <section
+          id="egov-portals"
+          aria-label="e-Governance Portal Directory"
+          className="bg-[#E9F2F7] border-y border-slate-200 py-10 px-4 sm:px-6"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-300 gap-2">
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
+                  {lang === "ta" ? "டிஜிட்டல் தமிழ்நாடு" : "Digital Tamil Nadu"}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  {lang === "ta" ? "முக்கிய மின்-ஆளுமை இணையதளங்கள்" : "e-Governance Portal Directory"}
+                </h3>
+              </div>
+              <span className="text-xs text-slate-500 font-medium">
+                {lang === "ta" ? "சரிபார்க்கப்பட்ட அதிகாரப்பூர்வ தளங்கள்" : "Verified Official Gateways"}
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {E_GOVERNANCE_PORTALS.map((portal) => (
+                <div
+                  key={portal.id}
+                  className="bg-white rounded-xl border border-slate-200 hover:border-[#173B63] p-5 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group"
+                >
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-sky-100 text-[#173B63]">
+                        {lang === "ta" ? portal.category_ta : portal.category_en}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-semibold">TNeGA / NIC</span>
+                    </div>
+
+                    <h4 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-[#173B63]">
+                      {lang === "ta" ? portal.name_ta : portal.name_en}
+                    </h4>
+
+                    <p className="text-[11px] font-medium text-[#087F8C] mt-0.5">
+                      {lang === "ta" ? portal.dept_ta : portal.dept_en}
+                    </p>
+
+                    <p className="text-xs text-slate-600 mt-2 line-clamp-2 leading-relaxed">
+                      {lang === "ta" ? portal.description_ta : portal.description_en}
+                    </p>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-[11px] font-mono text-slate-400">
+                      {new URL(portal.url).hostname}
+                    </span>
+                    <a
+                      href={portal.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 px-3 py-1 bg-[#E9F2F7] hover:bg-[#173B63] text-[#173B63] hover:text-white rounded-md text-xs font-bold transition-colors"
+                    >
+                      <span>{lang === "ta" ? "தளத்திற்கு செல்க" : "Visit Portal"}</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 13: SCHEMES AND BENEFITS
+            ========================================================================= */}
+        <section
+          aria-label="Schemes and Benefits"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
+                {lang === "ta" ? "அரசு நலத்திட்டங்கள் & உதவிகள்" : "Welfare & Social Security"}
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                {lang === "ta" ? "முக்கிய அரசு நலத்திட்டங்கள்" : "Schemes and Benefits"}
+              </h3>
+            </div>
+            <Link
+              href="/schemes"
+              className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
+            >
+              <span>{lang === "ta" ? "அனைத்து திட்டங்கள்" : "All Welfare Schemes"}</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { title_en: "Kalaignar Magalir Urimai Thittam", title_ta: "கலைஞர் மகளிர் உரிமைத் திட்டம்", amount: "₹1,000 / month", dept: "Special Programme Impl.", href: "/schemes" },
+              { title_en: "Pudhumai Penn Scheme", title_ta: "புதுமைப் பெண் திட்டம்", amount: "₹1,000 / month", dept: "Higher Education", href: "/schemes" },
+              { title_en: "Tamil Pudhalvan Thittam", title_ta: "தமிழ்ப் புதல்வன் திட்டம்", amount: "₹1,000 / month", dept: "Social Welfare", href: "/schemes" },
+              { title_en: "Chief Minister Comprehensive Health Insurance", title_ta: "முதலமைச்சர் விரிவான மருத்துவக் காப்பீடு", amount: "₹5 Lakhs / year", dept: "Health & Family Welfare", href: "/schemes" },
+            ].map((sch, idx) => (
+              <div key={idx} className="p-4 bg-white rounded-xl border border-slate-200 shadow-2xs flex flex-col justify-between">
+                <div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-800 border border-emerald-200 mb-2 inline-block">
+                    {sch.amount}
                   </span>
+                  <h4 className="font-extrabold text-sm text-slate-900">
+                    {lang === "ta" ? sch.title_ta : sch.title_en}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-1">{sch.dept}</p>
+                </div>
+                <div className="mt-3 pt-2 border-t border-slate-100">
+                  <Link href={sch.href} className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1">
+                    <span>{lang === "ta" ? "விவரம்" : "Eligibility"}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 14: ANNOUNCEMENTS AND RECRUITMENT
+            ========================================================================= */}
+        <section
+          id="announcements"
+          aria-label="Announcements and Recruitment"
+          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
+        >
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
+              <div>
+                <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
+                  {lang === "ta" ? "செய்திகள் & ஆட்சேர்ப்பு" : "Updates & Jobs"}
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                  {lang === "ta" ? "அரசு செய்திகள் மற்றும் வேலைவாய்ப்பு அறிவிப்புகள்" : "Announcements and Recruitment"}
+                </h3>
+              </div>
+              <a
+                href="https://www.tnpsc.gov.in/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
+              >
+                <span>{lang === "ta" ? "டிஎன்பிஎஸ்சி தளம்" : "TNPSC Portal"}</span>
+                <ExternalLink className="w-3.5 h-3.5" />
+              </a>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-[#173B63]">
+                  TNPSC Recruitment
+                </span>
+                <h4 className="font-bold text-sm text-slate-900">
+                  Combined Civil Services Examination - Group II & IIA (1,240 Posts)
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Online applications invited for Assistant Section Officer, Sub-Registrar, and Municipal Executive Officer posts.
+                </p>
+                <div className="pt-2 text-xs">
+                  <a href="https://www.tnpsc.gov.in/" target="_blank" rel="noopener noreferrer" className="font-bold text-[#173B63] hover:underline">
+                    View Recruitment Notification →
+                  </a>
+                </div>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900">
+                  DIPR Press Release
+                </span>
+                <h4 className="font-bold text-sm text-slate-900">
+                  State Disaster Relief Authority weather alert and advisory for coastal districts
+                </h4>
+                <p className="text-xs text-slate-600">
+                  Fishermen advised not to venture into deep sea. 24x7 district control rooms established.
+                </p>
+                <div className="pt-2 text-xs">
+                  <a href="/documents" className="font-bold text-[#173B63] hover:underline">
+                    Read Official Advisory →
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            SECTION 15: TOURISM AND CULTURE
+            ========================================================================= */}
+        <section
+          id="tourism"
+          aria-label="Tourism and Culture"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
+            <div>
+              <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
+                {lang === "ta" ? "கலாச்சாரம் & பாரம்பரியம்" : "Heritage & Tourism"}
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                {lang === "ta" ? "தமிழ்நாடு சுற்றுலா & வரலாற்றுச் சிறப்புமிக்க இடங்கள்" : "Tourism and Culture"}
+              </h3>
+            </div>
+            <a
+              href="https://www.tamilnadutourism.tn.gov.in/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
+            >
+              <span>{lang === "ta" ? "TTDC சுற்றுலா தளம்" : "Official TTDC Portal"}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {TOURISM_HIGHLIGHTS.map((spot) => (
+              <div
+                key={spot.id}
+                className="rounded-xl border border-slate-200 bg-white p-4 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group"
+              >
+                <div>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200 mb-2 inline-block">
+                    {spot.badge}
+                  </span>
+                  <h4 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-[#173B63]">
+                    {lang === "ta" ? spot.title_ta : spot.title_en}
+                  </h4>
+                  <p className="text-[11px] font-semibold text-[#087F8C] mt-0.5">
+                    {lang === "ta" ? spot.location_ta : spot.location_en}
+                  </p>
+                  <p className="text-xs text-slate-600 mt-2 line-clamp-3 leading-relaxed">
+                    {lang === "ta" ? spot.description_ta : spot.description_en}
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-slate-200">
                   <a
-                    href={portal.url}
+                    href={spot.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 px-3 py-1 bg-[#E9F2F7] hover:bg-[#173B63] text-[#173B63] hover:text-white rounded-md text-xs font-bold transition-colors focus:outline-none focus:ring-1 focus:ring-[#173B63]"
+                    className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
                   >
-                    <span>{lang === "ta" ? "தளத்திற்கு செல்க" : "Visit Portal"}</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>{lang === "ta" ? "சுற்றுலா விவரம்" : "Explore Spot"}</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
                   </a>
                 </div>
               </div>
@@ -683,317 +1183,64 @@ export default function Home() {
         </section>
 
         {/* =========================================================================
-            SECTION 8: GOVERNMENT ORDERS & NOTICE BOARD (Tabs with Dates & Downloads)
-            ========================================================================= */}
-        <section
-          aria-label="Government Orders and Notice Board"
-          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
-        >
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
-              <div>
-                <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
-                  {lang === "ta" ? "அரசாணைகள் & அறிவிப்புகள்" : "Orders & Notice Board"}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {lang === "ta" ? "சமீபத்திய அரசாணைகள் & அறிவிக்கைப் பலகை" : "Government Orders & Notice Board"}
-                </h3>
-              </div>
-              <Link
-                href="/documents"
-                className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
-              >
-                <span>{lang === "ta" ? "அனைத்து ஆவணங்கள்" : "Document Archive"}</span>
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-
-            {/* Notice Board Tabs */}
-            <div className="flex items-center gap-1.5 overflow-x-auto border-b border-slate-200 pb-2 mb-4">
-              {[
-                { id: "gos", label_en: "Government Orders", label_ta: "அரசாணைகள் (G.O.)" },
-                { id: "notifications", label_en: "Notifications", label_ta: "அறிவிக்கைகள்" },
-                { id: "circulars", label_en: "Circulars", label_ta: "சுற்றறிக்கைகள்" },
-                { id: "tenders", label_en: "Tenders", label_ta: "ஒப்பந்தப்புள்ளிகள்" },
-                { id: "recruitment", label_en: "Recruitment", label_ta: "வேலைவாய்ப்பு அறிவிப்புகள்" },
-                { id: "announcements", label_en: "Announcements", label_ta: "செய்திக்குறிப்புகள்" },
-              ].map((tab) => {
-                const isSelected = selectedNoticeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setSelectedNoticeTab(tab.id as any)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-colors border ${
-                      isSelected
-                        ? "bg-[#173B63] text-white border-[#173B63]"
-                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                    }`}
-                  >
-                    {lang === "ta" ? tab.label_ta : tab.label_en}
-                  </button>
-                );
-              })}
-            </div>
-
-            {/* Tab Content Display */}
-            <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl bg-slate-50/50 overflow-hidden">
-              {NOTICE_BOARD_DATA[selectedNoticeTab].map((item: any) => (
-                <div
-                  key={item.id}
-                  className="p-4 bg-white hover:bg-sky-50/40 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-3"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[11px] font-mono font-bold px-2 py-0.5 rounded bg-sky-100 text-[#173B63]">
-                        {item.number}
-                      </span>
-                      <span className="text-[11px] text-slate-500 font-medium">
-                        {lang === "ta" ? item.dept_ta : item.dept_en}
-                      </span>
-                    </div>
-                    <p className="font-bold text-xs sm:text-sm text-slate-900 leading-snug">
-                      {lang === "ta" ? item.title_ta : item.title_en}
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-4 shrink-0 text-xs">
-                    <span className="text-slate-400 font-mono text-[11px]">{item.date}</span>
-                    {item.isExternal ? (
-                      <a
-                        href={item.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#E9F2F7] hover:bg-[#173B63] text-[#173B63] hover:text-white font-bold transition-colors"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>{item.size || "Portal"}</span>
-                      </a>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-[#E9F2F7] hover:bg-[#173B63] text-[#173B63] hover:text-white font-bold transition-colors"
-                      >
-                        <Download className="w-3.5 h-3.5" />
-                        <span>{item.size || "Download"}</span>
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================================
-            SECTION 9: DISTRICT EXPLORER (Interactive 38-District Selector)
-            ========================================================================= */}
-        <section
-          aria-label="District Explorer"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
-        >
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
-            <div>
-              <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
-                {lang === "ta" ? "38 மாவட்டங்கள்" : "District Administration"}
-              </span>
-              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                {lang === "ta" ? "மாவட்ட நிர்வாக வழிகாட்டி" : "Tamil Nadu District Explorer"}
-              </h3>
-            </div>
-            <Link
-              href="/districts"
-              className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
-            >
-              <span>{lang === "ta" ? "அனைத்து மாவட்ட பக்கங்கள்" : "All District Portals"}</span>
-              <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-2xs grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
-            {/* District Selector Dropdown */}
-            <div className="space-y-2">
-              <label htmlFor="district-select" className="block text-xs font-bold text-slate-700">
-                {lang === "ta" ? "உங்கள் மாவட்டத்தைத் தேர்ந்தெடுக்கவும்:" : "Select your District:"}
-              </label>
-              <select
-                id="district-select"
-                value={selectedDistrict}
-                onChange={(e) => setSelectedDistrict(e.target.value)}
-                className="w-full p-2.5 bg-slate-50 border border-slate-300 rounded-lg text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-[#173B63]"
-              >
-                {TN_DISTRICTS_LIST.map((dist) => (
-                  <option key={dist.id} value={dist.id}>
-                    {lang === "ta" ? dist.name_ta : dist.name_en}
-                  </option>
-                ))}
-              </select>
-              <p className="text-[11px] text-slate-500">
-                {lang === "ta"
-                  ? "மாவட்ட ஆட்சியரக தொடர்பு மற்றும் இணையதள விவரங்களை உடனடியாக அறியலாம்."
-                  : "Instant Collectorate phone, email, and NIC portal access."}
-              </p>
-            </div>
-
-            {/* District Live Details Card */}
-            <div className="md:col-span-2 p-4 bg-[#E9F2F7] rounded-lg border border-sky-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-[#173B63] text-white">
-                  {currentDistrictData.id}
-                </span>
-                <h4 className="text-base sm:text-lg font-black text-slate-900">
-                  {lang === "ta" ? currentDistrictData.name_ta : currentDistrictData.name_en}{" "}
-                  <span className="text-xs font-semibold text-slate-600">
-                    ({lang === "ta" ? currentDistrictData.hq_ta : currentDistrictData.hq_en} HQ)
-                  </span>
-                </h4>
-                <p className="text-xs text-slate-700 font-medium">{currentDistrictData.collector_en}</p>
-                <div className="flex flex-wrap items-center gap-3 pt-1 text-xs">
-                  <span className="flex items-center gap-1 font-mono font-bold text-[#173B63]">
-                    <PhoneCall className="w-3.5 h-3.5 text-[#087F8C]" />
-                    <a href={`tel:${currentDistrictData.phone}`}>{currentDistrictData.phone}</a>
-                  </span>
-                  <span className="text-slate-400">|</span>
-                  <span className="font-mono text-slate-600">{currentDistrictData.email}</span>
-                </div>
-              </div>
-
-              <a
-                href={currentDistrictData.portal}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 bg-[#173B63] hover:bg-[#0f2844] text-white font-bold text-xs rounded-lg transition-colors inline-flex items-center gap-1 shrink-0"
-              >
-                <span>{lang === "ta" ? "மாவட்ட இணையதளம்" : "District Portal"}</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================================
-            SECTION 10: TOURISM AND CULTURE (Curated State Heritage)
-            ========================================================================= */}
-        <section
-          id="tourism"
-          aria-label="Tourism and Culture"
-          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
-        >
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
-              <div>
-                <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
-                  {lang === "ta" ? "கலாச்சாரம் & பாரம்பரியம்" : "Heritage & Tourism"}
-                </span>
-                <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-                  {lang === "ta" ? "தமிழ்நாடு சுற்றுலா & வரலாற்றுச் சிறப்புமிக்க இடங்கள்" : "Enchanting Tamil Nadu - Tourism & Heritage"}
-                </h3>
-              </div>
-              <a
-                href="https://www.tamilnadutourism.tn.gov.in/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
-              >
-                <span>{lang === "ta" ? "TTDC சுற்றுலா தளம்" : "Official TTDC Portal"}</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </a>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {TOURISM_HIGHLIGHTS.map((spot) => (
-                <div
-                  key={spot.id}
-                  className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group"
-                >
-                  <div>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-100 text-amber-900 border border-amber-200 mb-2 inline-block">
-                      {spot.badge}
-                    </span>
-                    <h4 className="font-extrabold text-sm sm:text-base text-slate-900 group-hover:text-[#173B63]">
-                      {lang === "ta" ? spot.title_ta : spot.title_en}
-                    </h4>
-                    <p className="text-[11px] font-semibold text-[#087F8C] mt-0.5">
-                      {lang === "ta" ? spot.location_ta : spot.location_en}
-                    </p>
-                    <p className="text-xs text-slate-600 mt-2 line-clamp-3 leading-relaxed">
-                      {lang === "ta" ? spot.description_ta : spot.description_en}
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-slate-200">
-                    <a
-                      href={spot.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
-                    >
-                      <span>{lang === "ta" ? "சுற்றுலா விவரம்" : "Explore Spot"}</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </a>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* =========================================================================
-            SECTION 11: EMERGENCY AND HELP (24x7 Helplines & Grievances)
+            SECTION 16: EMERGENCY AND GRIEVANCE HELP (24x7 HELPLINES)
             ========================================================================= */}
         <section
           id="emergency-help"
-          aria-label="Emergency and Help"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+          aria-label="Emergency and Grievance Help"
+          className="bg-white border-t border-slate-200 py-10 px-4 sm:px-6"
         >
-          <div className="mb-6 pb-2 border-b border-slate-200">
-            <span className="text-xs font-extrabold uppercase tracking-wider text-red-600">
-              {lang === "ta" ? "அவசர உதவி & குறைதீர்ப்பு" : "24x7 Assistance"}
-            </span>
-            <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
-              {lang === "ta" ? "அரசு அவசர உதவி எண்கள் & பொது மக்கள் குறைதீர்ப்பு" : "Emergency Helplines & Citizen Grievances"}
-            </h3>
-          </div>
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-6 pb-2 border-b border-slate-200">
+              <span className="text-xs font-extrabold uppercase tracking-wider text-red-600">
+                {lang === "ta" ? "அவசர உதவி & குறைதீர்ப்பு" : "24x7 Assistance"}
+              </span>
+              <h3 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+                {lang === "ta" ? "அரசு அவசர உதவி எண்கள் & பொது மக்கள் குறைதீர்ப்பு" : "Emergency and Grievance Help"}
+              </h3>
+            </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {EMERGENCY_HELPLINES.map((hl) => {
-              const IconComp = iconMap[hl.icon] || PhoneCall;
-              return (
-                <div
-                  key={hl.id}
-                  className="p-4 rounded-xl border border-slate-200 bg-white shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <IconComp className="w-5 h-5 text-red-600" />
-                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-50 text-red-700">
-                        24x7
-                      </span>
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              {EMERGENCY_HELPLINES.map((hl) => {
+                const IconComp = iconMap[hl.icon] || PhoneCall;
+                return (
+                  <div
+                    key={hl.id}
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <IconComp className="w-5 h-5 text-red-600" />
+                        <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-red-100 text-red-700">
+                          24x7
+                        </span>
+                      </div>
+                      <h4 className="font-extrabold text-xs sm:text-sm text-slate-900">
+                        {lang === "ta" ? hl.title_ta : hl.title_en}
+                      </h4>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        {lang === "ta" ? hl.desc_ta : hl.desc_en}
+                      </p>
                     </div>
-                    <h4 className="font-extrabold text-xs sm:text-sm text-slate-900">
-                      {lang === "ta" ? hl.title_ta : hl.title_en}
-                    </h4>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
-                      {lang === "ta" ? hl.desc_ta : hl.desc_en}
-                    </p>
-                  </div>
 
-                  <div className="mt-3 pt-2 border-t border-slate-100">
-                    <a
-                      href={`tel:${hl.number}`}
-                      className="font-mono text-base font-black text-[#173B63] hover:text-red-700 block tracking-wider"
-                    >
-                      {hl.number}
-                    </a>
+                    <div className="mt-3 pt-2 border-t border-slate-200">
+                      <a
+                        href={`tel:${hl.number}`}
+                        className="font-mono text-base font-black text-[#173B63] hover:text-red-700 block tracking-wider"
+                      >
+                        {hl.number}
+                      </a>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </section>
       </main>
 
       {/* =========================================================================
-          SECTION 12: COMPREHENSIVE FOOTER & SITEMAP
+          SECTION 17: COMPREHENSIVE FOOTER & SITEMAP
           ========================================================================= */}
       <FooterSitemap lang={lang} />
     </div>

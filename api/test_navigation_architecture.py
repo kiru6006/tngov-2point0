@@ -1,7 +1,7 @@
 """
-UP Portal Modernization & P0 Navigation Architecture Regression Test Suite
-Validates the 4-layer header, 9-category canonical navigation, accessible mega menus,
-12-section homepage service visibility, mobile drawer, and low-click citizen journeys.
+Consolidated Benchmark (AP + Telangana + UP) Navigation Architecture Regression Test Suite
+Validates the 4-layer header, 8-category canonical desktop menu, 14-category mega menu,
+17-section homepage sequence, inline service action panel, and 18-attribute service detail page.
 """
 import os
 import re
@@ -10,6 +10,7 @@ import pytest
 WEB_DIR = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "web", "src")
 NAV_FILE = os.path.join(WEB_DIR, "data", "navigation.ts")
 PAGE_FILE = os.path.join(WEB_DIR, "app", "page.tsx")
+SERVICE_DETAIL_FILE = os.path.join(WEB_DIR, "app", "services", "[id]", "page.tsx")
 HEADER_FILE = os.path.join(WEB_DIR, "components", "navigation", "GovernmentHeader.tsx")
 QUICK_BAR_FILE = os.path.join(WEB_DIR, "components", "navigation", "QuickAccessBar.tsx")
 MEGA_MENU_FILE = os.path.join(WEB_DIR, "components", "navigation", "AccessibleMegaMenu.tsx")
@@ -18,15 +19,16 @@ SITEMAP_FILE = os.path.join(WEB_DIR, "components", "navigation", "FooterSitemap.
 
 
 def test_navigation_data_model_and_configuration():
-    """Verify centralized navigation configuration file exists with required UP-modernized exports."""
+    """Verify centralized navigation configuration file exists with required exports."""
     assert os.path.exists(NAV_FILE), "navigation.ts configuration missing"
     with open(NAV_FILE, "r", encoding="utf-8") as f:
         code = f.read()
         assert "QUICK_ACCESS_ITEMS" in code
         assert "PRIMARY_NAVIGATION" in code
         assert "MOST_USED_SERVICES" in code
-        assert "SERVICE_CATEGORIES_DATA" in code
-        assert "GOVERNMENT_LEADERSHIP" in code
+        assert "INLINE_SERVICE_CATEGORIES" in code
+        assert "LIFE_SITUATIONS_DATA" in code
+        assert "CONSTITUTIONAL_PILLARS" in code
         assert "E_GOVERNANCE_PORTALS" in code
         assert "NOTICE_BOARD_DATA" in code
         assert "TN_DISTRICTS_LIST" in code
@@ -39,87 +41,114 @@ def test_four_layer_header_architecture():
     assert os.path.exists(PAGE_FILE)
     with open(PAGE_FILE, "r", encoding="utf-8") as f:
         code = f.read()
-        # Layer A: GovernmentUtilityBar
         assert "<GovernmentUtilityBar" in code
-        # Layer B & C: GovernmentHeader
         assert "<GovernmentHeader" in code
-        # Layer D: QuickAccessBar
         assert "<QuickAccessBar" in code
 
 
-def test_nine_primary_categories_and_mega_menus():
+def test_eight_primary_categories_and_mega_menus():
     """
-    Verify Primary Navigation contains all 9 canonical categories adapted from UP reference:
-    HOME, ABOUT TAMIL NADU, GOVERNMENT, CITIZEN SERVICES, SCHEMES & BENEFITS,
-    GOVERNMENT DOCUMENTS, CONTACT DIRECTORY, DISTRICTS, MORE.
+    Verify Primary Navigation contains all 8 canonical categories:
+    HOME, CITIZEN SERVICES, SCHEMES & BENEFITS, GOVERNMENT, DEPARTMENTS & DISTRICTS,
+    CONTACT DIRECTORY, GOVERNMENT DOCUMENTS, MORE.
     """
     with open(NAV_FILE, "r", encoding="utf-8") as f:
         content = f.read()
         expected_categories = [
             "nav-home",
-            "nav-about",
-            "nav-government",
             "nav-services",
             "nav-schemes",
-            "nav-docs",
+            "nav-government",
+            "nav-dept-dist",
             "nav-contacts",
-            "nav-districts",
+            "nav-documents",
             "nav-more",
         ]
         for cat in expected_categories:
             assert cat in content, f"Missing primary navigation category: {cat}"
 
 
-def test_homepage_twelve_sections_ordered_sequence():
+def test_fourteen_inline_service_categories():
+    """Verify all 14 statutory service categories exist in INLINE_SERVICE_CATEGORIES."""
+    with open(NAV_FILE, "r", encoding="utf-8") as f:
+        content = f.read()
+        assert "cat-cert" in content
+        assert "cat-land" in content
+        assert "cat-edu" in content
+        assert "cat-emp" in content
+        assert "cat-health" in content
+        assert "cat-agri" in content
+        assert "cat-util" in content
+        assert "cat-trans" in content
+        assert "cat-house" in content
+        assert "cat-biz" in content
+        assert "cat-welf" in content
+        assert "cat-safety" in content
+        assert "cat-grv" in content
+        assert "cat-local" in content
+
+
+def test_homepage_seventeen_sections_ordered_sequence():
     """
-    Verify all 12 homepage sections are implemented in the exact mandated sequence:
-    1. Header and Navigation
-    2. Citizen Search Hero ("All Government Services. One Place.")
-    3. Most Used Citizen Services (8-12 cards)
-    4. Browse Services by Category
-    5. Government Leadership
-    6. Government Contact Directory
-    7. Key e-Governance Portals
-    8. Government Orders and Notice Board
-    9. District Explorer (38 districts selector)
-    10. Tourism and Culture
-    11. Emergency and Help (24x7 Helplines)
-    12. Comprehensive Footer & Sitemap
+    Verify all 17 homepage sections are implemented in the exact mandated sequence:
+    1. Utility Header
+    2. Identity & Nav
+    3. Citizen Search
+    4. Popular Services
+    5. Browse All Services by Category
+    6. Service Action Panel (Inline Discovery - AP Pattern)
+    7. Browse by Life Situation
+    8. Government Contact Directory
+    9. Government and Administration
+    10. Departments and Districts
+    11. Government Orders and Documents
+    12. e-Governance Portal Directory
+    13. Schemes and Benefits
+    14. Announcements and Recruitment
+    15. Tourism and Culture
+    16. Emergency and Grievance Help
+    17. Comprehensive Footer & Sitemap
     """
     with open(PAGE_FILE, "r", encoding="utf-8") as f:
         content = f.read()
 
-        # Find section positions
         pos_s1 = content.find("<header")
-        pos_s2 = content.find('aria-label="Citizen Search Hero"')
-        pos_s3 = content.find('aria-label="Most Used Services"')
-        pos_s4 = content.find('aria-label="Browse Services by Category"')
-        pos_s5 = content.find('aria-label="Government Leadership"')
-        pos_s6 = content.find('aria-label="Government Contact Directory"')
-        pos_s7 = content.find('aria-label="Key e-Governance Portals"')
-        pos_s8 = content.find('aria-label="Government Orders and Notice Board"')
-        pos_s9 = content.find('aria-label="District Explorer"')
-        pos_s10 = content.find('aria-label="Tourism and Culture"')
-        pos_s11 = content.find('aria-label="Emergency and Help"')
-        pos_s12 = content.find("<FooterSitemap")
+        pos_s3 = content.find('aria-label="Citizen Search Hero"')
+        pos_s4 = content.find('aria-label="Popular Services"')
+        pos_s5 = content.find('aria-label="Browse All Services by Category"')
+        pos_s6 = content.find('aria-label="Service Action Panel"')
+        pos_s7 = content.find('aria-label="Browse by Life Situation"')
+        pos_s8 = content.find('aria-label="Government Contact Directory"')
+        pos_s9 = content.find('aria-label="Government and Administration"')
+        pos_s10 = content.find('aria-label="Departments and Districts"')
+        pos_s11 = content.find('aria-label="Government Orders and Documents"')
+        pos_s12 = content.find('aria-label="e-Governance Portal Directory"')
+        pos_s13 = content.find('aria-label="Schemes and Benefits"')
+        pos_s14 = content.find('aria-label="Announcements and Recruitment"')
+        pos_s15 = content.find('aria-label="Tourism and Culture"')
+        pos_s16 = content.find('aria-label="Emergency and Grievance Help"')
+        pos_s17 = content.find("<FooterSitemap")
 
-        assert pos_s1 != -1, "Section 1: Header & Nav missing"
-        assert pos_s2 != -1, "Section 2: Hero Search missing"
-        assert pos_s3 != -1, "Section 3: Most Used Services missing"
-        assert pos_s4 != -1, "Section 4: Browse by Category missing"
-        assert pos_s5 != -1, "Section 5: Government Leadership missing"
-        assert pos_s6 != -1, "Section 6: Contact Directory missing"
-        assert pos_s7 != -1, "Section 7: Key e-Governance Portals missing"
-        assert pos_s8 != -1, "Section 8: Government Orders & Notice Board missing"
-        assert pos_s9 != -1, "Section 9: District Explorer missing"
-        assert pos_s10 != -1, "Section 10: Tourism & Culture missing"
-        assert pos_s11 != -1, "Section 11: Emergency & Help missing"
-        assert pos_s12 != -1, "Section 12: Footer Sitemap missing"
+        assert pos_s1 != -1, "Section 1/2: Header missing"
+        assert pos_s3 != -1, "Section 3: Citizen Search Hero missing"
+        assert pos_s4 != -1, "Section 4: Popular Services missing"
+        assert pos_s5 != -1, "Section 5: Browse All Services missing"
+        assert pos_s6 != -1, "Section 6: Service Action Panel missing"
+        assert pos_s7 != -1, "Section 7: Browse by Life Situation missing"
+        assert pos_s8 != -1, "Section 8: Contact Directory missing"
+        assert pos_s9 != -1, "Section 9: Government and Administration missing"
+        assert pos_s10 != -1, "Section 10: Departments and Districts missing"
+        assert pos_s11 != -1, "Section 11: Government Orders missing"
+        assert pos_s12 != -1, "Section 12: e-Governance Portals missing"
+        assert pos_s13 != -1, "Section 13: Schemes and Benefits missing"
+        assert pos_s14 != -1, "Section 14: Announcements missing"
+        assert pos_s15 != -1, "Section 15: Tourism and Culture missing"
+        assert pos_s16 != -1, "Section 16: Emergency and Grievance Help missing"
+        assert pos_s17 != -1, "Section 17: Footer Sitemap missing"
 
         # Verify strict order
         assert (
             pos_s1
-            < pos_s2
             < pos_s3
             < pos_s4
             < pos_s5
@@ -130,7 +159,29 @@ def test_homepage_twelve_sections_ordered_sequence():
             < pos_s10
             < pos_s11
             < pos_s12
+            < pos_s13
+            < pos_s14
+            < pos_s15
+            < pos_s16
+            < pos_s17
         ), "Homepage sections are not in the exact mandated order"
+
+
+def test_standard_service_detail_specification_fields():
+    """Verify /services/[id] renders standard 18 attributes and action buttons."""
+    assert os.path.exists(SERVICE_DETAIL_FILE)
+    with open(SERVICE_DETAIL_FILE, "r", encoding="utf-8") as f:
+        code = f.read()
+        assert "APPLY / OPEN OFFICIAL SERVICE" in code
+        assert "Check Application Status" in code
+        assert "View Required Documents" in code
+        assert "Find Nearest e-Sevai Kiosk" in code
+        assert "Get Help" in code
+        assert "who_can_apply" in code
+        assert "eligibility" in code
+        assert "required_documents" in code
+        assert "application_procedure" in code
+        assert "last_verified_date" in code
 
 
 def test_utility_bar_font_resizer_and_contrast():
@@ -164,7 +215,6 @@ def test_low_click_citizen_journeys_reachability():
     """
     with open(NAV_FILE, "r", encoding="utf-8") as f:
         nav_code = f.read()
-
         assert "/services/certificates" in nav_code
         assert "/contact-directory?designation=Collector" in nav_code
         assert "/documents" in nav_code
