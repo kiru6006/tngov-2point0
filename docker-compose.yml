@@ -1,0 +1,77 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: tngov-pilot-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-tngov_portal}
+      POSTGRES_USER: ${POSTGRES_USER:-tngov_admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ChangeMeInPilotSecretVault123!}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-tngov_admin} -d ${POSTGRES_DB:-tngov_portal}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tngov-internal
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: tngov-pilot-api
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-tngov_admin}:${POSTGRES_PASSWORD:-ChangeMeInPilotSecretVault123!}@db:5432/${POSTGRES_DB:-tngov_portal}
+      AI_CITIZEN_ASSISTANT_ENABLED: "true"
+      RAG_ZERO_GENERATION_STRICT: "true"
+      DETERMINISTIC_DIRECTORY_ROUTING: "true"
+      PORT: 8000
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - tngov-internal
+      - tngov-edge
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: tngov-pilot-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://api:8000
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    networks:
+      - tngov-edge
+
+volumes:
+  postgres_data:
+    name: tngov-pilot-postgres-data
+
+networks:
+  tngov-internal:
+    internal: true
+  tngov-edge:
