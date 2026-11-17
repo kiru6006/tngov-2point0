@@ -27,15 +27,15 @@
 - [x] Step 2.5: CORS & security headers configuration (CSP, HSTS, X-Frame-Options).
 
 ### Phase 3: Relational DB & Master Data Modeling (Weeks 9-12)
-- [ ] Step 3.1: SQLAlchemy / Alembic migration scripts for `positions`, `persons`, `position_assignments`.
-- [ ] Step 3.2: Ingestion pipeline loading `data/service-catalogue.csv` and `data/document-catalogue.csv`.
-- [ ] Step 3.3: Maker-checker verification queue API (`POST /api/v1/admin/assignments`).
+- [x] Step 3.1: SQLAlchemy / Alembic migration scripts for `positions`, `persons`, `position_assignments`.
+- [x] Step 3.2: Ingestion pipeline loading `data/service-catalogue.csv` and `data/document-catalogue.csv`.
+- [x] Step 3.3: Maker-checker verification queue API (`POST /api/v1/admin/assignments`).
 
 ### Phase 4: OCR Pipeline & RAG Search (Weeks 13-16)
-- [ ] Step 4.1: Batch OCR ingestion worker using Tesseract/PaddleOCR for Tamil/English scanned PDFs.
-- [ ] Step 4.2: Multilingual embedding generation (512-token chunks with 64-token overlap).
-- [ ] Step 4.3: Hybrid search API endpoint combining BM25 keyword matching + pgvector cosine similarity.
-- [ ] Step 4.4: Citation guardrail enforcing source G.O. URL output.
+- [x] Step 4.1: Batch OCR ingestion worker using Tesseract/PaddleOCR for Tamil/English scanned PDFs.
+- [x] Step 4.2: Multilingual embedding generation (512-token chunks with 64-token overlap).
+- [x] Step 4.3: Hybrid search API endpoint combining BM25 keyword matching + pgvector cosine similarity.
+- [x] Step 4.4: Citation guardrail enforcing source G.O. URL output.
 
 ### Phase 5: Testing, Hardening & GIGW Audit (Weeks 17-20)
 - [ ] Step 5.1: Automated accessibility testing with Axe-Core / Playwright for WCAG 2.2 AA.
