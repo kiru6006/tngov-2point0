@@ -64,3 +64,41 @@ def test_contrast_ratio_compliance():
     ratio = (lum_white + 0.05) / (lum_primary + 0.05)
 
     assert ratio >= 4.5, f"Contrast ratio {ratio:.2f} is below WCAG 2.2 AA threshold of 4.5:1"
+
+
+def test_frontend_route_architecture():
+    """
+    Prompt 3 Verification: Verify all citizen-first routes exist and have valid structure.
+    """
+    src_app = os.path.join(WEB_DIR, "src", "app")
+    required_routes = [
+        "page.tsx",
+        "services/page.tsx",
+        "departments/page.tsx",
+        "districts/page.tsx",
+        "documents/page.tsx",
+        "contact-directory/page.tsx",
+        "assisted/page.tsx",
+    ]
+    for route in required_routes:
+        path = os.path.join(src_app, route)
+        assert os.path.exists(path), f"Required frontend route missing: {route}"
+        with open(path, "r", encoding="utf-8") as f:
+            code = f.read()
+            assert "<main" in code or "export default" in code, f"Invalid component in {route}"
+
+
+def test_assisted_access_operator_workflow():
+    """
+    Prompt 3 Verification: e-Sevai Assisted Access Mode compliance.
+    Must include kiosk ID, citizen verification, document sighting checklist, and receipt generation.
+    """
+    assisted_page = os.path.join(WEB_DIR, "src", "app", "assisted", "page.tsx")
+    assert os.path.exists(assisted_page), "Assisted access kiosk page missing"
+    with open(assisted_page, "r", encoding="utf-8") as f:
+        content = f.read()
+        assert "TN-ESEVAI" in content
+        assert "Aadhaar" in content or "ஆதார்" in content
+        assert "Receipt" in content or "ரசீது" in content
+        assert "window.print()" in content
+

@@ -20,13 +20,21 @@ export default async function ServiceDetailPage({
     <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
       <header className="bg-white border-b border-slate-200 py-4 px-4 sm:px-6 shadow-sm">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link
-            href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-900 bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-100"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Portal</span>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-900 bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-100"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Back to Services</span>
+            </Link>
+            <Link
+              href="/"
+              className="text-xs font-semibold text-slate-500 hover:text-slate-800"
+            >
+              Portal Home
+            </Link>
+          </div>
           <span className="text-xs font-semibold text-slate-500">Service Specification</span>
         </div>
       </header>
@@ -89,6 +97,12 @@ export default async function ServiceDetailPage({
               <span>Apply Online via TNeGA e-Sevai</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
+            <Link
+              href="/assisted"
+              className="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs transition-colors"
+            >
+              <span>Apply via e-Sevai Operator Kiosk</span>
+            </Link>
           </div>
         </div>
       </main>
