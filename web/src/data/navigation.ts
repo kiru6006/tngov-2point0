@@ -489,10 +489,9 @@ export const CONSTITUTIONAL_PILLARS = [
     desc_en: "Governor, Chief Minister, Council of Ministers, Chief Secretary, and 45 Secretariat Departments executing state governance.",
     desc_ta: "மாண்புமிகு ஆளுநர், முதலமைச்சர், அமைச்சரவை, தலைமைச் செயலாளர் மற்றும் 45 தலைமைச் செயலகத் துறைகள்.",
     leadership: [
-      { role_en: "Governor", role_ta: "ஆளுநர்", name_en: "Thiru R. N. Ravi", name_ta: "திரு. ஆர். என். ரவி" },
-      { role_en: "Chief Minister", role_ta: "முதலமைச்சர்", name_en: "Thiru M. K. Stalin", name_ta: "திரு. மு. க. ஸ்டாலின்" },
-      { role_en: "Deputy Chief Minister", role_ta: "துணை முதலமைச்சர்", name_en: "Thiru Udhayanidhi Stalin", name_ta: "திரு. உதயநிதி ஸ்டாலின்" },
-      { role_en: "Chief Secretary", role_ta: "தலைமைச் செயலாளர்", name_en: "Thiru N. Muruganandam, IAS", name_ta: "திரு. நா. முருகானந்தம், இ.ஆ.ப." },
+      { role_en: "Governor", role_ta: "ஆளுநர்", name_en: "Thiru Rajendra Vishwanath Arlekar", name_ta: "திரு. ராஜேந்திர விஸ்வநாத் அர்லேகர்" },
+      { role_en: "Chief Minister", role_ta: "முதலமைச்சர்", name_en: "Thiru C. Joseph Vijay", name_ta: "திரு. சி. ஜோசப் விஜய்" },
+      { role_en: "Chief Secretary", role_ta: "தலைமைச் செயலாளர்", name_en: "Dr. M. Sai Kumar, IAS", name_ta: "டாக்டர் எம். சாய்குமார், இ.ஆ.ப." },
     ],
     link: "/departments#executive",
   },

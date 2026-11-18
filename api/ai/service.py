@@ -119,7 +119,7 @@ class ContactDirectoryAIService:
             return DirectoryAIQueryResponse(
                 query=query,
                 position_title=cs_pos.title_en,
-                current_officeholder="Thiru N. Muruganandam, IAS",
+                current_officeholder="Dr. M. Sai Kumar, IAS",
                 official_phone="044-25671555",
                 official_email="cs@tn.gov.in",
                 office_address="Chief Secretary Office, Secretariat, Chennai - 600009",

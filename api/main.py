@@ -235,7 +235,10 @@ def list_contacts(
             or_(
                 Person.name_en.ilike(f"%{query}%"),
                 Position.title_en.ilike(f"%{query}%"),
+                Position.position_id.ilike(f"%{query}%"),
                 Department.name_en.ilike(f"%{query}%"),
+                Jurisdiction.district_en.ilike(f"%{query}%"),
+                Jurisdiction.district_ta.ilike(f"%{query}%"),
             )
         )
     assignments = q.order_by(Position.position_id).limit(limit).all()
@@ -272,10 +275,17 @@ def list_contacts(
 
     filtered = officials
     if query:
-        q = query.lower()
+        q_str = query.lower()
         filtered = [
             o for o in filtered
-            if q in o["name_en"].lower() or q in o["name_ta"].lower() or q in o["designation_en"].lower()
+            if (
+                q_str in o.get("name_en", "").lower()
+                or q_str in o.get("name_ta", "").lower()
+                or q_str in o.get("designation_en", "").lower()
+                or q_str in o.get("id", "").lower()
+                or q_str in o.get("department_en", "").lower()
+                or q_str in o.get("district_en", "").lower()
+            )
         ]
     if department and department != "ALL":
         filtered = [o for o in filtered if department.lower() in o["department_en"].lower()]
