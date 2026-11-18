@@ -1,0 +1,578 @@
+#!/usr/bin/env python3
+"""
+Seed Master Government Data
+Ingests authoritative Tamil Nadu Government data provided from tn.gov.in into SQLite (api/tngov.db)
+and exports clean JSON files to web/src/data/ for Next.js frontend consumption.
+"""
+
+import os
+import sys
+import json
+import re
+
+# Add parent directory to path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from db.session import SessionLocal, engine, Base
+from db.models import (
+    Minister,
+    ImportantWebsite,
+    GrievancePortal,
+    EmergencyHelpline,
+    RuleRegulation,
+    ActOrdinance,
+    Announcement,
+    GovernmentForm,
+    Department,
+    Service,
+    Scheme,
+)
+
+# Create tables
+Base.metadata.create_all(bind=engine)
+
+# =========================================================================
+# 1. 42 GOVERNMENT DEPARTMENTS
+# =========================================================================
+DEPARTMENTS_DATA = [
+    {"name": "Agriculture - Farmers Welfare Department", "dep_id": "Mg==", "code": "AGR"},
+    {"name": "Animal Husbandry, Dairying, Fisheries and Fishermen Welfare Department", "dep_id": "Mw==", "code": "AHF"},
+    {"name": "Artificial Intelligence, Information Technology and Digital Services Department", "dep_id": "MTc=", "code": "ITD"},
+    {"name": "BC, MBC & Minorities Welfare Department", "dep_id": "NA==", "code": "BCMBC"},
+    {"name": "Commercial Taxes and Registration Department", "dep_id": "Ng==", "code": "CTR"},
+    {"name": "Co-operation, Food and Consumer Protection Department", "dep_id": "NQ==", "code": "CFCP"},
+    {"name": "Energy Department", "dep_id": "Nw==", "code": "ENE"},
+    {"name": "Environment, Climate Change and Forests Department", "dep_id": "OA==", "code": "ECCF"},
+    {"name": "Finance Department", "dep_id": "OQ==", "code": "FIN"},
+    {"name": "Handlooms, Handicrafts, Textiles and Khadi Department", "dep_id": "MTA=", "code": "HHTK"},
+    {"name": "Health and Family Welfare Department", "dep_id": "MTE=", "code": "HFW"},
+    {"name": "Higher Education Department", "dep_id": "MTI=", "code": "HED"},
+    {"name": "Highways and Minor Ports Department", "dep_id": "MTM=", "code": "HMP"},
+    {"name": "Hindu Religious and Charitable Endowments Department", "dep_id": "NDY=", "code": "HRCE"},
+    {"name": "Home, Prohibition and Excise Department", "dep_id": "MTQ=", "code": "HPE"},
+    {"name": "Housing and Urban Development Department", "dep_id": "MTU=", "code": "HUD"},
+    {"name": "Human Resources Management Department", "dep_id": "MjI=", "code": "HRM"},
+    {"name": "Industries, Investment Promotion & Commerce Department", "dep_id": "MTY=", "code": "IND"},
+    {"name": "Labour Welfare and Skill Development Department", "dep_id": "MTg=", "code": "LWSD"},
+    {"name": "Law Department", "dep_id": "MTk=", "code": "LAW"},
+    {"name": "Legislative Assembly Department", "dep_id": "MjA=", "code": "LEG"},
+    {"name": "Micro , Small and Medium Enterprises Department", "dep_id": "Mjk=", "code": "MSME"},
+    {"name": "Mudalvarin Mugavari Department", "dep_id": "NDM=", "code": "MMD"},
+    {"name": "Municipal Administration and Water Supply Department", "dep_id": "MjE=", "code": "MAWS"},
+    {"name": "Natural Resources Department", "dep_id": "NDU=", "code": "NRD"},
+    {"name": "Planning and Development Department", "dep_id": "MjM=", "code": "PND"},
+    {"name": "Public Department", "dep_id": "MjQ=", "code": "PUB"},
+    {"name": "Public (Elections) Department", "dep_id": "Mzg=", "code": "ELEC"},
+    {"name": "Public Works Department", "dep_id": "NDI=", "code": "PWD"},
+    {"name": "Revenue and Disaster Management Department", "dep_id": "MjY=", "code": "REV"},
+    {"name": "Rural Development and Panchayat Raj Department", "dep_id": "Mjc=", "code": "RDPR"},
+    {"name": "School Education Department", "dep_id": "Mjg=", "code": "SED"},
+    {"name": "Social Justice Department", "dep_id": "MQ==", "code": "SJD"},
+    {"name": "Social Reforms Department", "dep_id": "Mzk=", "code": "SRD"},
+    {"name": "Social Welfare and Women Empowerment Department", "dep_id": "MzA=", "code": "SWWE"},
+    {"name": "Special Programme Implementation", "dep_id": "NDE=", "code": "SPI"},
+    {"name": "Tamil Dev. and Information Department", "dep_id": "MzE=", "code": "TDID"},
+    {"name": "Tourism, Culture and Special Initiatives Department", "dep_id": "MzI=", "code": "TCS"},
+    {"name": "Transport Department", "dep_id": "MzM=", "code": "TRN"},
+    {"name": "Water Resources Department", "dep_id": "NDQ=", "code": "WRD"},
+    {"name": "Welfare of Differently Abled Persons", "dep_id": "MzU=", "code": "WDAP"},
+    {"name": "Youth Welfare and Sports Development Department", "dep_id": "MzQ=", "code": "YWSD"},
+]
+
+# =========================================================================
+# 2. 35 COUNCIL OF MINISTERS (May 2026 Authoritative List)
+# =========================================================================
+MINISTERS_DATA = [
+    {
+        "ranking": 1,
+        "name_en": "Thiru C. Joseph Vijay",
+        "name_ta": "திரு. சி. ஜோசப் விஜய்",
+        "portfolio_title_en": "Honourable Chief Minister",
+        "portfolio_title_ta": "மாண்புமிகு முதலமைச்சர்",
+        "portfolios_detail": "Public, General Administration, Indian Administrative Service, Indian Police Service, Indian Forest Service, District Revenue Officers, Police, Home, Special Programme Implementation, Special Initiatives, Poverty Alleviation and Rural Indebtedness, Youth Welfare, Welfare of Children, Aged, Differently Abled Persons, Municipal Administration, Urban and Water Supply.",
+        "is_cm": True
+    },
+    {
+        "ranking": 2,
+        "name_en": "Thiru N. Anand",
+        "name_ta": "திரு. என். ஆனந்த்",
+        "portfolio_title_en": "Minister for Rural Development and Water Resources",
+        "portfolio_title_ta": "ஊரக வளர்ச்சி மற்றும் நீர்வளத்துறை அமைச்சர்",
+        "portfolios_detail": "Rural Development, Panchayats and Panchayat Union, Irrigation, Irrigation Projects including Small Irrigation.",
+        "is_cm": False
+    },
+    {
+        "ranking": 3,
+        "name_en": "Thiru Aadhav Arjuna",
+        "name_ta": "திரு. ஆதவ் அர்ஜுனா",
+        "portfolio_title_en": "Minister for Public Works and Sports Development",
+        "portfolio_title_ta": "பொதுப்பணி மற்றும் விளையாட்டு மேம்பாட்டுத்துறை அமைச்சர்",
+        "portfolios_detail": "Public Works (Buildings, Highways and Minor Ports), Sports Development.",
+        "is_cm": False
+    },
+    {
+        "ranking": 4,
+        "name_en": "Dr. K.G. Arunraj",
+        "name_ta": "டாக்டர் கே.ஜி. அருண்ராஜ்",
+        "portfolio_title_en": "Minister for Health, Medical Education and Family Welfare",
+        "portfolio_title_ta": "மக்கள் நல்வாழ்வு, மருத்துவக் கல்வி மற்றும் குடும்ப நலத்துறை அமைச்சர்",
+        "portfolios_detail": "Health, Medical Education and Family Welfare.",
+        "is_cm": False
+    },
+    {
+        "ranking": 5,
+        "name_en": "Thiru K A. Sengottaiyan",
+        "name_ta": "திரு. கே. ஏ. செங்கோட்டையன்",
+        "portfolio_title_en": "Minister for Revenue and Disaster Management",
+        "portfolio_title_ta": "வருவாய் மற்றும் பேரிடர் மேலாண்மைத்துறை அமைச்சர்",
+        "portfolios_detail": "Revenue, District Revenue Establishment, Deputy Collectors, Disaster Management, Boodhan, Gramadhan and Legislative Assembly",
+        "is_cm": False
+    },
+    {
+        "ranking": 6,
+        "name_en": "Thiru P. Venkataramanan",
+        "name_ta": "திரு. பி. வெங்கடரமணன்",
+        "portfolio_title_en": "Minister for Food and Civil Supplies",
+        "portfolio_title_ta": "உணவு மற்றும் நுகர்பொருள் வழங்கல்துறை அமைச்சர்",
+        "portfolios_detail": "Food and Civil Supplies, Consumer Protection and Price Control.",
+        "is_cm": False
+    },
+    {
+        "ranking": 7,
+        "name_en": "Thiru C.T.R. Nirmal Kumar",
+        "name_ta": "திரு. சி.டி.ஆர். நிர்மல் குமார்",
+        "portfolio_title_en": "Minister for Energy Resources and Law",
+        "portfolio_title_ta": "எரிசக்தி மற்றும் சட்டத்துறை அமைச்சர்",
+        "portfolios_detail": "Electricity & Non-Conventional Energy Development, Law, Courts, Prisons and Prevention of Corruption, Governor, Elections and Passports.",
+        "is_cm": False
+    },
+    {
+        "ranking": 8,
+        "name_en": "Thiru Rajmohan",
+        "name_ta": "திரு. ராஜ்மோகன்",
+        "portfolio_title_en": "Minister for School Education, Tamil Development, Information and Publicity",
+        "portfolio_title_ta": "பள்ளிக் கல்வி, தமிழ் வளர்ச்சி, செய்தி மற்றும் விளம்பரத்துறை அமைச்சர்",
+        "portfolios_detail": "School Education, Archaeology, Tamil Official Language and Tamil Culture, Information & Publicity, Film Technology and Cinematograph Act, Newsprint Control, Stationery and Printing, Government Press.",
+        "is_cm": False
+    },
+    {
+        "ranking": 9,
+        "name_en": "Dr. TK. Prabhu",
+        "name_ta": "டாக்டர் டி.கே. பிரபு",
+        "portfolio_title_en": "Minister for Natural Resources",
+        "portfolio_title_ta": "இயற்கை வளங்கள் துறை அமைச்சர்",
+        "portfolios_detail": "Minerals and Mines.",
+        "is_cm": False
+    },
+    {
+        "ranking": 10,
+        "name_en": "Selvi S. Keerthana",
+        "name_ta": "செல்வி எஸ். கீர்த்தனா",
+        "portfolio_title_en": "Minister for Industries",
+        "portfolio_title_ta": "தொழில்துறை அமைச்சர்",
+        "portfolios_detail": "Industries, Investment Promotion.",
+        "is_cm": False
+    },
+    {
+        "ranking": 11,
+        "name_en": "Thiru P. Viswanathan",
+        "name_ta": "திரு. பி. விஸ்வநாதன்",
+        "portfolio_title_en": "Minister for Higher Education",
+        "portfolio_title_ta": "உயர்கல்வித்துறை அமைச்சர்",
+        "portfolios_detail": "Higher Education including Technical Education, Electronics, Science and Technology",
+        "is_cm": False
+    },
+    {
+        "ranking": 12,
+        "name_en": "Thiru S. Rajesh Kumar",
+        "name_ta": "திரு. எஸ். ராஜேஷ் குமார்",
+        "portfolio_title_en": "Minister for Tourism",
+        "portfolio_title_ta": "சுற்றுலாத்துறை அமைச்சர்",
+        "portfolios_detail": "Tourism and Tourism Development Corporation",
+        "is_cm": False
+    },
+    {
+        "ranking": 13,
+        "name_en": "Thiru A.M. Shahjahan",
+        "name_ta": "திரு. ஏ.எம். ஷாஜகான்",
+        "portfolio_title_en": "Minister for Minorities Welfare",
+        "portfolio_title_ta": "சிறுபான்மையினர் நலத்துறை அமைச்சர்",
+        "portfolios_detail": "Minorities Welfare and Wakf Board",
+        "is_cm": False
+    },
+    {
+        "ranking": 14,
+        "name_en": "Thiru Vanni Arasu",
+        "name_ta": "திரு. வன்னி அரசு",
+        "portfolio_title_en": "Minister for Social Justice",
+        "portfolio_title_ta": "சமூக நீதித்துறை அமைச்சர்",
+        "portfolios_detail": "Adi Dravidar Welfare and Hill Tribes",
+        "is_cm": False
+    },
+    {
+        "ranking": 15,
+        "name_en": "Thiru A. Vijay Tamilan Parthiban",
+        "name_ta": "திரு. ஏ. விஜய் தமிழன் பார்த்திபன்",
+        "portfolio_title_en": "Minister for Transport",
+        "portfolio_title_ta": "போக்குவரத்துத்துறை அமைச்சர்",
+        "portfolios_detail": "Motor Vehicle Acts – Administration, Transport, Nationalised Transport and Motor Vehicles Act",
+        "is_cm": False
+    },
+    {
+        "ranking": 16,
+        "name_en": "Thiru B. Rajkumar",
+        "name_ta": "திரு. பி. ராஜ்குமார்",
+        "portfolio_title_en": "Minister for Housing and Urban Development",
+        "portfolio_title_ta": "வீட்டுவசதி மற்றும் நகர்ப்புற வளர்ச்சித்துறை அமைச்சர்",
+        "portfolios_detail": "Housing, Rural Housing, Town Planning Projects and Housing Development, Accommodation Control, CMDA, Tamil Nadu Urban Habitat Development Board, Urban Planning and Urban Development",
+        "is_cm": False
+    },
+    {
+        "ranking": 17,
+        "name_en": "Thiru V. Sampath Kumar",
+        "name_ta": "திரு. வி. சம்பத் குமார்",
+        "portfolio_title_en": "Minister for Backward Classes Welfare",
+        "portfolio_title_ta": "பிற்படுத்தப்பட்டோர் நலத்துறை அமைச்சர்",
+        "portfolios_detail": "Backward Classes Welfare, Most Backward Classes Welfare and De-notified Communities Welfare",
+        "is_cm": False
+    },
+    {
+        "ranking": 18,
+        "name_en": "Thiru M. Vijay Balaji",
+        "name_ta": "திரு. எம். விஜய் பாலாஜி",
+        "portfolio_title_en": "Minister for Handlooms, Textiles and Khadi",
+        "portfolio_title_ta": "கைத்தறி, துணிநூல் மற்றும் கதர்த்துறை அமைச்சர்",
+        "portfolios_detail": "Handlooms and Textiles, Khadi and Village Industries Board",
+        "is_cm": False
+    },
+    {
+        "ranking": 19,
+        "name_en": "Thiru K. Vignesh",
+        "name_ta": "திரு. கே. விக்னேஷ்",
+        "portfolio_title_en": "Minister for Prohibition and Excise",
+        "portfolio_title_ta": "மதுவிலக்கு மற்றும் ஆயத்தீர்வைத்துறை அமைச்சர்",
+        "portfolios_detail": "Prohibition and Excise",
+        "is_cm": False
+    },
+    {
+        "ranking": 20,
+        "name_en": "Thiru K. Thennarasu",
+        "name_ta": "திரு. கே. தென்னரசு",
+        "portfolio_title_en": "Minister for Non-Resident Tamils Welfare",
+        "portfolio_title_ta": "வெளிநாடு வாழ் தமிழர் நலத்துறை அமைச்சர்",
+        "portfolios_detail": "Non-Resident Tamils Welfare, Refugees & evacuees",
+        "is_cm": False
+    },
+    {
+        "ranking": 21,
+        "name_en": "Thiru J. Mohamed Farvas",
+        "name_ta": "திரு. ஜே. முகமது பர்வாஸ்",
+        "portfolio_title_en": "Minister for Labour Welfare and Skill Development",
+        "portfolio_title_ta": "தொழிலாளர் நலன் மற்றும் திறன் மேம்பாட்டுத்துறை அமைச்சர்",
+        "portfolios_detail": "Labour Welfare, Population, Employment and Training, Census, Weights and Measures, Urban and Rural Employment and Bonded Labour Welfare",
+        "is_cm": False
+    },
+    {
+        "ranking": 22,
+        "name_en": "Thiru V. Gandhiraj",
+        "name_ta": "திரு. வி. காந்திராஜ்",
+        "portfolio_title_en": "Minister for Co-operation",
+        "portfolio_title_ta": "கூட்டுறவுத்துறை அமைச்சர்",
+        "portfolios_detail": "Co-operation",
+        "is_cm": False
+    },
+    {
+        "ranking": 23,
+        "name_en": "Tmt Jagadeshwari. K",
+        "name_ta": "திருமதி ஜெகதீஸ்வரி. கே",
+        "portfolio_title_en": "Minister for Social Welfare and Women Empowerment",
+        "portfolio_title_ta": "சமூக நலம் மற்றும் மகளிர் உரிமைத்துறை அமைச்சர்",
+        "portfolios_detail": "Social Welfare including Women Welfare, Orphanages and Correctional Administration and Beggar Homes and Social Reforms & Nutritious Meal Programme.",
+        "is_cm": False
+    },
+    {
+        "ranking": 24,
+        "name_en": "Thiru R. Vinoth",
+        "name_ta": "திரு. ஆர். வினோத்",
+        "portfolio_title_en": "Minister for Agriculture - Farmers Welfare",
+        "portfolio_title_ta": "வேளாண்மை - உழவர் நலத்துறை அமைச்சர்",
+        "portfolios_detail": "Agriculture, Agricultural Engineering, Agro Service Co-operatives, Horticulture, Sugar, Sugarcane Excise, Sugarcane Development and Waste Land Development",
+        "is_cm": False
+    },
+    {
+        "ranking": 25,
+        "name_en": "Tmt C. Vijayalakshmi",
+        "name_ta": "திருமதி சி. விஜயலட்சுமி",
+        "portfolio_title_en": "Minister for Milk and Dairy Development",
+        "portfolio_title_ta": "பால்வள மேம்பாட்டுத்துறை அமைச்சர்",
+        "portfolios_detail": "Milk and Dairy Development",
+        "is_cm": False
+    },
+    {
+        "ranking": 26,
+        "name_en": "Thiru D. Sarathkumar",
+        "name_ta": "திரு. டி. சரத்குமார்",
+        "portfolio_title_en": "Minister for Human Resources Management",
+        "portfolio_title_ta": "மனிதவள மேலாண்மைத்துறை அமைச்சர்",
+        "portfolios_detail": "Human Resources Management & Ex-Servicemen Welfare",
+        "is_cm": False
+    },
+    {
+        "ranking": 27,
+        "name_en": "Thiru Ramesh",
+        "name_ta": "திரு. ரமேஷ்",
+        "portfolio_title_en": "Minister for Hindu Religious and Charitable Endowments",
+        "portfolio_title_ta": "இந்து சமயம் மற்றும் அறநிலையத்துறை அமைச்சர்",
+        "portfolios_detail": "Hindu Religious and Charitable Endowments",
+        "is_cm": False
+    },
+    {
+        "ranking": 28,
+        "name_en": "Thiru P. Mathan Raja",
+        "name_ta": "திரு. பி. மதன் ராஜா",
+        "portfolio_title_en": "Minister for Micro, Small and Medium Enterprises",
+        "portfolio_title_ta": "குறு, சிறு மற்றும் நடுத்தரத் தொழில் நிறுவனங்கள் துறை அமைச்சர்",
+        "portfolios_detail": "Rural Industries including Cottage Industries, Small Industries.",
+        "is_cm": False
+    },
+    {
+        "ranking": 29,
+        "name_en": "Dr N. Marie Wilson",
+        "name_ta": "டாக்டர் என். மேரி வில்சன்",
+        "portfolio_title_en": "Minister for Finance, Planning and Development",
+        "portfolio_title_ta": "நிதி, திட்டமிடல் மற்றும் வளர்ச்சித்துறை அமைச்சர்",
+        "portfolios_detail": "Finance, Pensions and Pensionary Benefits, Planning & Development",
+        "is_cm": False
+    },
+    {
+        "ranking": 30,
+        "name_en": "Thiru A. Srinath",
+        "name_ta": "திரு. ஏ. ஸ்ரீநாத்",
+        "portfolio_title_en": "Minister for Fisheries - Fishermen Welfare",
+        "portfolio_title_ta": "மீன்வளம் - மீனவர் நலத்துறை அமைச்சர்",
+        "portfolios_detail": "Fisheries, Fisheries Development Corporation",
+        "is_cm": False
+    },
+    {
+        "ranking": 31,
+        "name_en": "Tmt S. Kamali",
+        "name_ta": "திருமதி எஸ். கமலி",
+        "portfolio_title_en": "Minister for Animal Husbandry",
+        "portfolio_title_ta": "கால்நடை பராமரிப்புத்துறை அமைச்சர்",
+        "portfolios_detail": "Animal Husbandry",
+        "is_cm": False
+    },
+    {
+        "ranking": 32,
+        "name_en": "Dr Kumar. R",
+        "name_ta": "டாக்டர் குமார். ஆர்",
+        "portfolio_title_en": "Minister for Artificial Intelligence, Information Technology and Digital Services",
+        "portfolio_title_ta": "செயற்கை நுண்ணறிவு, தகவல் தொழில்நுட்பவியல் மற்றும் டிஜிட்டல் சேவைகள் துறை அமைச்சர்",
+        "portfolios_detail": "Artificial Intelligence, Information Technology and Digital Services",
+        "is_cm": False
+    },
+    {
+        "ranking": 33,
+        "name_en": "Thiru R.V. Ranjithkumar",
+        "name_ta": "திரு. ஆர்.வி. ரஞ்சித்குமார்",
+        "portfolio_title_en": "Minister for Forests",
+        "portfolio_title_ta": "வனத்துறை அமைச்சர்",
+        "portfolios_detail": "Forests",
+        "is_cm": False
+    },
+    {
+        "ranking": 34,
+        "name_en": "Thiru D. Logesh Tamilselvan",
+        "name_ta": "திரு. டி. லோகேஷ் தமிழ்செல்வன்",
+        "portfolio_title_en": "Minister for Commercial Taxes and Registration",
+        "portfolio_title_ta": "வணிகவரி மற்றும் பதிவுத்துறை அமைச்சர்",
+        "portfolios_detail": "Commercial Taxes, Registration and Stamp Act, Debt Relief including legislation on Money lending, Chits and Registration of Companies",
+        "is_cm": False
+    },
+    {
+        "ranking": 35,
+        "name_en": "Dr V.K. Rajeev",
+        "name_ta": "டாக்டர் வி.கே. ராஜீவ்",
+        "portfolio_title_en": "Minister for Environment and Climate Change",
+        "portfolio_title_ta": "சுற்றுச்சூழல் மற்றும் காலநிலை மாற்றத்துறை அமைச்சர்",
+        "portfolios_detail": "Environment, Pollution Control Board, Climate Change",
+        "is_cm": False
+    }
+]
+
+# =========================================================================
+# 3. 8 EMERGENCY HELPLINES
+# =========================================================================
+HELPLINES_DATA = [
+    {"s_no": 1, "name": "Disaster Management Help Line (District Helpline)", "contact_no": "1077", "url": "https://tnsdma.tn.gov.in/pages/view/useful-links", "remarks": "TNSDMA District EOC"},
+    {"s_no": 2, "name": "The Tamil Nadu Generation and Distribution Corporation Limited (TANGEDCO)", "contact_no": "1912 (Toll Free) 24 x 7", "url": "https://www.tangedco.org/en/tangedco/reach-us/contact-information/", "remarks": "Electricity Failure related complaints"},
+    {"s_no": 3, "name": "Chennai Corporation Grievance Redressal", "contact_no": "1913 (Toll Free) 24 x 7", "url": "https://www.chennaicorporation.gov.in/complaints/index.htm", "remarks": "Chennai Corporation Related Complaints"},
+    {"s_no": 4, "name": "Crime Reporting & Police Assistance", "contact_no": "100 / 112", "url": "http://www.tnpolice.gov.in/", "remarks": "Police Complaints 24x7"},
+    {"s_no": 5, "name": "Chief Minister in your Constituency (CM Helpline)", "contact_no": "1100 / 044-25672345", "url": "https://cmhelpline.tnega.org/", "remarks": "Integrated Public Grievance Helpline"},
+    {"s_no": 6, "name": "Disaster Management Help Line (State Helpline)", "contact_no": "1070", "url": "https://tnsdma.tn.gov.in/pages/view/useful-links", "remarks": "State Emergency Operations Centre"},
+    {"s_no": 7, "name": "Ambulance & Emergency Medical Services", "contact_no": "108", "url": "http://www.tnhealth.org/", "remarks": "Free 24x7 Emergency Health Transport"},
+    {"s_no": 8, "name": "Chennai MetroWater Complaints Desk", "contact_no": "044-45674567 24 x 7", "url": "https://chennaimetrowater.in/login.html", "remarks": "Metro Water & Sewerage Complaints Chennai"}
+]
+
+# =========================================================================
+# 4. 15 GRIEVANCE PORTALS
+# =========================================================================
+GRIEVANCE_PORTALS = [
+    {"name_en": "Chief Minister in your Constituency (Mudalvarin Mugavari)", "url": "https://cmhelpline.tnega.org/portal/ta/home", "category": "State Leadership"},
+    {"name_en": "Chief Minister Special Cell - Online Petition Filing", "url": "http://cmcell.tn.gov.in/", "category": "Chief Minister Cell"},
+    {"name_en": "Petition Processing Portal (PPP)", "url": "https://gdp.tn.gov.in/", "category": "District Grievance"},
+    {"name_en": "Chennai Metropolitan Water Supply and Sewage Board", "url": "https://chennaimetrowater.in/login.html", "category": "Utilities"},
+    {"name_en": "TANGEDCO (Electricity Board) Consumer Grievances", "url": "https://www.tnebltd.gov.in/cgrfonline/", "category": "Electricity"},
+    {"name_en": "Greater Chennai Corporation 1913 Grievances", "url": "https://chennaicorporation.gov.in/gcc/", "category": "Municipal"},
+    {"name_en": "Civil Supplies & Consumer Protection (Ration Card)", "url": "https://consumer.tn.gov.in/", "category": "Civil Supplies"},
+    {"name_en": "State Human Rights Commission (SHRC)", "url": "https://shrc.tn.gov.in/", "category": "Human Rights"},
+    {"name_en": "Ministry of Personnel, Public Grievances and Pensions", "url": "https://persmin.gov.in/", "category": "Administrative Reforms"},
+    {"name_en": "District Administration Redressal Portals", "url": "https://www.tn.gov.in/website_directory/2", "category": "Collectorates"},
+    {"name_en": "Department of Administrative Reforms and Public Grievances", "url": "https://darpg.gov.in/", "category": "Governance"},
+    {"name_en": "Chennai Metropolitan Development Authority (CMDA)", "url": "http://www.cmdachennai.gov.in/contact_us.htm", "category": "Urban Planning"},
+    {"name_en": "CPGRAMS - Central Government / Inter-State Grievance Portal", "url": "https://pgportal.gov.in/", "category": "Central Inter-State"},
+    {"name_en": "Transport Department (RTO Complaints)", "url": "https://tnsta.gov.in/transport/contacts.do", "category": "Transport"},
+]
+
+# =========================================================================
+# 5. STATUTORY FORMS
+# =========================================================================
+FORMS_DATA = [
+    {"title": "Application form for the post of Sign Language Interpreter", "url": "https://cms.tn.gov.in/cms_migrated/document/forms/sign_language_interpretor_appl.pdf"},
+    {"title": "Buddhist, Jain and Sikh Pilgrimage - Application Form", "url": "https://cms.tn.gov.in/cms_migrated/document/forms/Buddhist_jain_sikh_pilgrimage_e_application.pdf"},
+    {"title": "Download DNS Request / SSL Application Form", "url": "https://cms.tn.gov.in/cms_migrated/document/forms/DNS_request_SSL_Application_Form-V1.pdf"},
+    {"title": "Download Mail Subscription Form", "url": "https://cms.tn.gov.in/cms_migrated/document/forms/Email-Application-Form-V1.1.pdf"},
+    {"title": "Full Time Ph.D Scholars Incentive Scheme Renewal Forms - 2024-25", "url": "https://cms.tn.gov.in/cms_migrated/document/forms/PhD_application_form_2024_2025.pdf"},
+    {"title": "Government Hostel Admission - Application Form (BC/MBC)", "url": "http://www.bcmbcmw.tn.gov.in/forms/form-hostel.pdf"},
+    {"title": "Pre-Registration of Pregnancy (PICME RCH ID)", "url": "https://picme.tn.gov.in/picme_public/"},
+    {"title": "Tamil Nadu Wakf Board Election Form-I Nomination", "url": "https://cms.tn.gov.in/cms_migrated/document/forms/TN_Waqf_Board_Election_Nomination_Form.pdf"}
+]
+
+# =========================================================================
+# 6. WHAT'S NEW & RECENT GAZETTES
+# =========================================================================
+WHATS_NEW_DATA = [
+    {"date": "October 16, 2026", "title": "Rain Water Harvesting Programme – Orders Issued", "url": "https://cms.tn.gov.in/cms_migrated/document/GO/maws_e_184_2026.pdf"},
+    {"date": "September 30, 2026", "title": "Announcements of Dairy Development Department - 2026-2027", "url": "https://cms.tn.gov.in/cms_migrated/document/announcements/dairy_t_ann_2026_27.pdf"},
+    {"date": "September 30, 2026", "title": "Announcements of Fisheries and Fishermen Welfare Department - 2026-2027", "url": "https://cms.tn.gov.in/cms_migrated/document/announcements/fisheries_t_ann_2026_27.pdf"},
+    {"date": "September 30, 2026", "title": "G.Os of Health and Family Welfare Department", "url": "https://www.tn.gov.in/go.php?dep_id=MTE=&year=MjAyNg=="},
+    {"date": "September 29, 2026", "title": "Government Press Releases Bulletin", "url": "https://www.tn.gov.in/press_release.php"},
+    {"date": "September 24, 2026", "title": "Local Fund Audit Department - Consolidated Audit Report 2024-25", "url": "https://cms.tn.gov.in/cms_migrated/document/docfiles/lfa_consolidated_audit_report_e_2024_25.pdf"},
+    {"date": "September 22, 2026", "title": "Empanelment of Inquiry Officers for Disciplinary Proceedings Against IAS Officers", "url": "https://cms.tn.gov.in/cms_migrated/document/whatsnew/Circular_ias_080926.pdf"},
+    {"date": "September 21, 2026", "title": "G.Os of Public Department - Secretariat Administration", "url": "https://cms.tn.gov.in/cms_migrated/document/GO/public_e_575_2026.pdf"},
+    {"date": "September 15, 2026", "title": "G.O of Finance Department - Expenditure Control", "url": "https://cms.tn.gov.in/cms_migrated/document/GO/fin_e_15120106_2026.pdf"},
+    {"date": "September 11, 2026", "title": "Policy Note of Rural Development and Panchayat Raj Department - 2026-27", "url": "https://cms.tn.gov.in/cms_migrated/document/docfiles/rd_e_pn_2026_27.pdf"},
+]
+
+# =========================================================================
+# 7. CONTACTS SUB-HIERARCHY (Matching User Image Reference)
+# =========================================================================
+CONTACT_SUBCATEGORIES = [
+    {"id": "secretaries", "label_en": "Secretaries", "label_ta": "தலைமைச் செயலாளர்கள்", "count": 45, "level": "State"},
+    {"id": "hods", "label_en": "HoD's", "label_ta": "துறைத் தலைவர்கள்", "count": 82, "level": "State"},
+    {"id": "psus", "label_en": "PSU's", "label_ta": "அரசு பொதுத்துறை நிறுவனங்கள்", "count": 64, "level": "State"},
+    {"id": "societies", "label_en": "Societies / Missions / Projects", "label_ta": "சங்கங்கள் / சிறப்பு திட்டங்கள்", "count": 52, "level": "State"},
+    {"id": "district_officials", "label_en": "District Officials", "label_ta": "மாவட்ட அதிகாரிகள்", "count": 38, "level": "District"},
+    {"id": "jailers", "label_en": "Jailers Officials", "label_ta": "சிறைத்துறை அலுவலர்கள்", "count": 28, "level": "District"},
+    {"id": "rdos", "label_en": "RDO Officials", "label_ta": "வருவாய் கோட்ட அலுவலர்கள்", "count": 86, "level": "Subdivision"},
+    {"id": "dros", "label_en": "DRO Officials", "label_ta": "மாவட்ட வருவாய் அலுவலர்கள்", "count": 38, "level": "District"},
+    {"id": "deos", "label_en": "DEO Officials", "label_ta": "மாவட்டக் கல்வி அலுவலர்கள்", "count": 120, "level": "District"},
+    {"id": "meos", "label_en": "MEO Officials", "label_ta": "வட்டாரக் கல்வி அலுவலர்கள்", "count": 414, "level": "Block"},
+    {"id": "mpdos", "label_en": "MPDO / BDO Officials", "label_ta": "வட்டார வளர்ச்சி அலுவலர்கள்", "count": 388, "level": "Block"},
+    {"id": "mros", "label_en": "MRO / Tahsildar Officials", "label_ta": "வட்டாட்சியர்கள் (Tahsildars)", "count": 312, "level": "Taluk"},
+    {"id": "shos", "label_en": "SHO Officials (Police)", "label_ta": "காவல் ஆய்வாளர்கள் (SHOs)", "count": 1450, "level": "Station"},
+    {"id": "pag", "label_en": "Office of Principal Accountant General", "label_ta": "தலைமைக் கணக்காயர் அலுவலகம்", "count": 14, "level": "Central/State"},
+    {"id": "hospitals", "label_en": "Government Hospitals", "label_ta": "அரசு மருத்துவமனைகள்", "count": 180, "level": "District/Taluk"},
+    {"id": "press", "label_en": "Press & Media Relations", "label_ta": "செய்தி மற்றும் மக்கள் தொடர்பு", "count": 38, "level": "District"},
+]
+
+def seed_database():
+    print("Beginning comprehensive master data ingestion into SQLite database...")
+    db = SessionLocal()
+
+    try:
+        # Seed 35 Ministers
+        print("Seeding 35 Council of Ministers...")
+        db.query(Minister).delete()
+        for min_data in MINISTERS_DATA:
+            minister_obj = Minister(
+                ranking=min_data["ranking"],
+                name_en=min_data["name_en"],
+                name_ta=min_data["name_ta"],
+                portfolio_title_en=min_data["portfolio_title_en"],
+                portfolio_title_ta=min_data["portfolio_title_ta"],
+                portfolios_detail=min_data["portfolios_detail"],
+                is_cm=min_data["is_cm"]
+            )
+            db.add(minister_obj)
+
+        # Seed Helplines
+        print("Seeding 8 Emergency Helplines...")
+        db.query(EmergencyHelpline).delete()
+        for h in HELPLINES_DATA:
+            hl_obj = EmergencyHelpline(
+                s_no=h["s_no"],
+                name=h["name"],
+                contact_no=h["contact_no"],
+                url=h["url"],
+                remarks=h["remarks"]
+            )
+            db.add(hl_obj)
+
+        # Seed Grievance Portals
+        print("Seeding 14 Grievance Portals...")
+        db.query(GrievancePortal).delete()
+        for g in GRIEVANCE_PORTALS:
+            g_obj = GrievancePortal(
+                name_en=g["name_en"],
+                url=g["url"],
+                category=g["category"]
+            )
+            db.add(g_obj)
+
+        # Seed Forms
+        print("Seeding Statutory Forms...")
+        db.query(GovernmentForm).delete()
+        for f in FORMS_DATA:
+            f_obj = GovernmentForm(
+                title_en=f["title"],
+                pdf_url=f["url"],
+                category="Statutory Forms"
+            )
+            db.add(f_obj)
+
+        db.commit()
+        print("Database transaction successfully committed!")
+
+    except Exception as e:
+        db.rollback()
+        print(f"Error seeding database: {e}")
+        raise e
+    finally:
+        db.close()
+
+def export_json_datasets():
+    print("Exporting canonical JSON datasets to web/src/data/...")
+    output_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../web/src/data"))
+    os.makedirs(output_dir, exist_ok=True)
+
+    files_to_write = {
+        "ministers.json": MINISTERS_DATA,
+        "departments_catalog.json": DEPARTMENTS_DATA,
+        "helplines.json": HELPLINES_DATA,
+        "grievance_portals.json": GRIEVANCE_PORTALS,
+        "forms.json": FORMS_DATA,
+        "whats_new.json": WHATS_NEW_DATA,
+        "contacts_subcategories.json": CONTACT_SUBCATEGORIES,
+    }
+
+    for filename, data in files_to_write.items():
+        filepath = os.path.join(output_dir, filename)
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        print(f"Wrote {len(data)} items to {filename}")
+
+if __name__ == "__main__":
+    seed_database()
+    export_json_datasets()
+    print("All master government datasets successfully ingested and exported!")

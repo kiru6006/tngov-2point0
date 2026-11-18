@@ -373,3 +373,85 @@ class DocumentChunk(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
     document = relationship("Document", back_populates="chunks")
+
+
+class Minister(Base):
+    __tablename__ = "ministers"
+
+    minister_id = Column(String(64), primary_key=True, default=generate_uuid)
+    ranking = Column(Integer, nullable=False)
+    name_en = Column(String(255), nullable=False)
+    name_ta = Column(String(255), nullable=False)
+    portfolio_title_en = Column(String(500), nullable=False)
+    portfolio_title_ta = Column(String(500), nullable=True)
+    portfolios_detail = Column(Text, nullable=False)
+    is_cm = Column(Boolean, default=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class ImportantWebsite(Base):
+    __tablename__ = "important_websites"
+
+    website_id = Column(String(64), primary_key=True, default=generate_uuid)
+    title_en = Column(String(500), nullable=False)
+    category = Column(String(100), default="Important Websites")
+    url = Column(String(500), nullable=False)
+    department = Column(String(255), nullable=True)
+
+
+class GrievancePortal(Base):
+    __tablename__ = "grievance_portals"
+
+    portal_id = Column(String(64), primary_key=True, default=generate_uuid)
+    name_en = Column(String(500), nullable=False)
+    url = Column(String(500), nullable=False)
+    category = Column(String(100), default="Grievances")
+
+
+class EmergencyHelpline(Base):
+    __tablename__ = "emergency_helplines"
+
+    helpline_id = Column(String(64), primary_key=True, default=generate_uuid)
+    s_no = Column(Integer, nullable=False)
+    name = Column(String(500), nullable=False)
+    contact_no = Column(String(100), nullable=False)
+    url = Column(String(500), nullable=True)
+    remarks = Column(String(500), nullable=True)
+
+
+class RuleRegulation(Base):
+    __tablename__ = "rules_regulations"
+
+    rule_id = Column(String(64), primary_key=True, default=generate_uuid)
+    title_en = Column(Text, nullable=False)
+    pdf_url = Column(String(500), nullable=False)
+    department = Column(String(255), nullable=True)
+    category = Column(String(100), default="Rules and Regulations")
+
+
+class ActOrdinance(Base):
+    __tablename__ = "acts_ordinances"
+
+    act_id = Column(String(64), primary_key=True, default=generate_uuid)
+    department = Column(String(255), nullable=False)
+    year = Column(String(50), nullable=True)
+    title_en = Column(Text, nullable=False)
+    pdf_url = Column(String(500), nullable=False)
+
+
+class Announcement(Base):
+    __tablename__ = "announcements"
+
+    announcement_id = Column(String(64), primary_key=True, default=generate_uuid)
+    title_en = Column(Text, nullable=False)
+    pdf_url = Column(String(500), nullable=False)
+    category = Column(String(100), default="Announcements")
+
+
+class GovernmentForm(Base):
+    __tablename__ = "government_forms"
+
+    form_id = Column(String(64), primary_key=True, default=generate_uuid)
+    title_en = Column(Text, nullable=False)
+    pdf_url = Column(String(500), nullable=False)
+    category = Column(String(100), default="Forms")

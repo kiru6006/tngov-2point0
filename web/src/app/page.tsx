@@ -230,15 +230,18 @@ export default function Home() {
           setFontSize={setFontSize}
         />
 
-        {/* 2. Government Identity & Primary Navigation with Mega Menu */}
+        {/* 2. Government Identity & Primary Navigation with Quick Access & Menus */}
         <GovernmentHeader
           lang={lang}
           highContrast={highContrast}
           onSearch={(q) => handleSearch(q)}
+          isHomepage={true}
         />
 
-        {/* Quick Access Action Strip */}
-        <QuickAccessBar lang={lang} />
+        {/* Quick Access Action Strip (Mobile/Tablet drawer & overflow fallback) */}
+        <div className="lg:hidden">
+          <QuickAccessBar lang={lang} />
+        </div>
       </header>
 
       {/* 2-COLUMN APPLICATION SHELL: COMPACT LEFT SIDEBAR + MAIN CONTENT AREA (P0 Architecture) */}

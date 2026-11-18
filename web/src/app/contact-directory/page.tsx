@@ -2,9 +2,10 @@
 
 import AppShell from "@/components/layout/AppShell";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import contactsData from "@/data/contacts.json";
+import ministersData from "@/data/ministers.json";
 import {
   Search,
   Phone,
@@ -78,6 +79,31 @@ export default function ContactDirectoryPage() {
 
   const officials = contactsData.officials;
   const districts = contactsData.districts;
+
+  // Sync category filter from URL subcat parameter
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const subcat = params.get("subcat");
+      if (subcat) {
+        if (subcat === "secretaries") setSearchQuery("Secretary");
+        else if (subcat === "hods") setSearchQuery("Director");
+        else if (subcat === "psus") setSearchQuery("Corporation");
+        else if (subcat === "district_officials") setActiveTab("district");
+        else if (subcat === "jailers") setSearchQuery("Prison");
+        else if (subcat === "rdos") setSearchQuery("Revenue Divisional Officer");
+        else if (subcat === "dros") setSearchQuery("DRO");
+        else if (subcat === "deos") setSearchQuery("Educational Officer");
+        else if (subcat === "meos") setSearchQuery("Education");
+        else if (subcat === "mpdos") setSearchQuery("Development");
+        else if (subcat === "mros") setSearchQuery("Tahsildar");
+        else if (subcat === "shos") setSearchQuery("Inspector");
+        else if (subcat === "pag") setSearchQuery("Accountant General");
+        else if (subcat === "hospitals") setSearchQuery("Hospital");
+        else if (subcat === "press") setSearchQuery("Information");
+      }
+    }
+  }, []);
 
   const filteredOfficials = officials.filter((off) => {
     const matchesSearch =
@@ -478,45 +504,115 @@ export default function ContactDirectoryPage() {
           </div>
         )}
 
-        {/* Tab 2: State Leadership */}
+        {/* Tab 2: State Leadership & Council of Ministers */}
         {activeTab === "leadership" && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {leadershipOfficials.map((off) => (
-              <div
-                key={off.id}
-                className="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex flex-col justify-between hover:border-blue-400 transition-all cursor-pointer"
-                onClick={() => setSelectedOfficial(off)}
-              >
+          <div className="space-y-6">
+            {/* Section A: Council of Ministers (Cabinet 2026) */}
+            <div>
+              <div className="flex items-center justify-between mb-3 border-b border-slate-200 pb-2">
                 <div>
-                  <div className="flex justify-between items-start gap-2 mb-2">
-                    <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded">
-                      {off.category || "Leadership"}
-                    </span>
-                    <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3" /> Verified
-                    </span>
-                  </div>
-                  <h3 className="font-extrabold text-slate-900 text-base">
-                    {lang === "ta" ? off.name_ta : off.name_en}
-                  </h3>
-                  <p className="text-xs font-semibold text-blue-900 mt-0.5">
-                    {lang === "ta" ? off.designation_ta : off.designation_en}
+                  <h2 className="text-base font-extrabold text-slate-900 flex items-center gap-2">
+                    <Crown className="w-5 h-5 text-amber-600" />
+                    <span>{lang === "ta" ? "மாண்புமிகு அமைச்சரவை (35)" : "Council of Ministers (Cabinet 2026)"}</span>
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    {lang === "ta"
+                      ? "தமிழ்நாடு அரசின் மாண்புமிகு முதலமைச்சர் மற்றும் அமைச்சரவை உறுப்பினர்கள்"
+                      : "Honourable Chief Minister and Council of Ministers with allocated statutory portfolios"}
                   </p>
-                  <p className="text-[11px] text-slate-500 mt-2">{off.office}</p>
                 </div>
-
-                <div className="pt-4 mt-4 border-t border-slate-100 flex flex-col gap-1.5 text-xs text-slate-700">
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-slate-400" />
-                    <span>{off.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-3.5 h-3.5 text-slate-400" />
-                    <span className="font-mono text-[11px]">{off.email}</span>
-                  </div>
-                </div>
+                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-md">
+                  Official Gazette 2026
+                </span>
               </div>
-            ))}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {ministersData.map((min: any) => (
+                  <div
+                    key={min.ranking}
+                    className={`bg-white rounded-xl border p-4 shadow-xs flex flex-col justify-between hover:shadow-md transition-all ${
+                      min.is_cm
+                        ? "border-amber-400 ring-2 ring-amber-100 bg-gradient-to-br from-amber-50/30 to-white md:col-span-2 lg:col-span-3"
+                        : "border-slate-200 hover:border-blue-400"
+                    }`}
+                  >
+                    <div>
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <span
+                          className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded ${
+                            min.is_cm
+                              ? "bg-amber-600 text-white"
+                              : "bg-slate-100 text-slate-700 border border-slate-200"
+                          }`}
+                        >
+                          {min.is_cm ? "Chief Minister" : `Minister #${min.ranking}`}
+                        </span>
+                        <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" /> Assigned
+                        </span>
+                      </div>
+                      <h3 className={`font-extrabold text-slate-900 ${min.is_cm ? "text-lg text-[#173B63]" : "text-sm"}`}>
+                        {lang === "ta" ? min.name_ta : min.name_en}
+                      </h3>
+                      <p className="text-xs font-bold text-[#087F8C] mt-0.5">
+                        {lang === "ta" ? min.portfolio_title_ta : min.portfolio_title_en}
+                      </p>
+                      <p className="text-[11px] text-slate-600 mt-2 bg-slate-50 p-2 rounded border border-slate-100 leading-relaxed">
+                        <strong className="text-slate-800">{lang === "ta" ? "பொறுப்புகள்: " : "Portfolios: "}</strong>
+                        {min.portfolios_detail}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Section B: Constitutional & Executive Leadership */}
+            <div className="pt-4 border-t border-slate-200">
+              <div className="mb-3">
+                <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">
+                  {lang === "ta" ? "அரசியலமைப்பு & தலைமை நிர்வாக அலுவலர்கள்" : "Constitutional & Executive Leadership"}
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {leadershipOfficials.map((off) => (
+                  <div
+                    key={off.id}
+                    className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs flex flex-col justify-between hover:border-blue-400 transition-all cursor-pointer"
+                    onClick={() => setSelectedOfficial(off)}
+                  >
+                    <div>
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200 px-2 py-0.5 rounded">
+                          {off.category || "Executive"}
+                        </span>
+                        <span className="text-[11px] text-emerald-700 font-bold flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" /> Verified
+                        </span>
+                      </div>
+                      <h4 className="font-extrabold text-slate-900 text-sm">
+                        {lang === "ta" ? off.name_ta : off.name_en}
+                      </h4>
+                      <p className="text-xs font-semibold text-blue-900 mt-0.5">
+                        {lang === "ta" ? off.designation_ta : off.designation_en}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-1">{off.office}</p>
+                    </div>
+
+                    <div className="pt-3 mt-3 border-t border-slate-100 flex flex-col gap-1 text-xs text-slate-700">
+                      <div className="flex items-center gap-2">
+                        <Phone className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{off.phone}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Mail className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="font-mono text-[11px]">{off.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         )}
 

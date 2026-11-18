@@ -1,0 +1,58 @@
+[
+  {
+    "s_no": 1,
+    "name": "Disaster Management Help Line (District Helpline)",
+    "contact_no": "1077",
+    "url": "https://tnsdma.tn.gov.in/pages/view/useful-links",
+    "remarks": "TNSDMA District EOC"
+  },
+  {
+    "s_no": 2,
+    "name": "The Tamil Nadu Generation and Distribution Corporation Limited (TANGEDCO)",
+    "contact_no": "1912 (Toll Free) 24 x 7",
+    "url": "https://www.tangedco.org/en/tangedco/reach-us/contact-information/",
+    "remarks": "Electricity Failure related complaints"
+  },
+  {
+    "s_no": 3,
+    "name": "Chennai Corporation Grievance Redressal",
+    "contact_no": "1913 (Toll Free) 24 x 7",
+    "url": "https://www.chennaicorporation.gov.in/complaints/index.htm",
+    "remarks": "Chennai Corporation Related Complaints"
+  },
+  {
+    "s_no": 4,
+    "name": "Crime Reporting & Police Assistance",
+    "contact_no": "100 / 112",
+    "url": "http://www.tnpolice.gov.in/",
+    "remarks": "Police Complaints 24x7"
+  },
+  {
+    "s_no": 5,
+    "name": "Chief Minister in your Constituency (CM Helpline)",
+    "contact_no": "1100 / 044-25672345",
+    "url": "https://cmhelpline.tnega.org/",
+    "remarks": "Integrated Public Grievance Helpline"
+  },
+  {
+    "s_no": 6,
+    "name": "Disaster Management Help Line (State Helpline)",
+    "contact_no": "1070",
+    "url": "https://tnsdma.tn.gov.in/pages/view/useful-links",
+    "remarks": "State Emergency Operations Centre"
+  },
+  {
+    "s_no": 7,
+    "name": "Ambulance & Emergency Medical Services",
+    "contact_no": "108",
+    "url": "http://www.tnhealth.org/",
+    "remarks": "Free 24x7 Emergency Health Transport"
+  },
+  {
+    "s_no": 8,
+    "name": "Chennai MetroWater Complaints Desk",
+    "contact_no": "044-45674567 24 x 7",
+    "url": "https://chennaimetrowater.in/login.html",
+    "remarks": "Metro Water & Sewerage Complaints Chennai"
+  }
+]

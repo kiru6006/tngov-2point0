@@ -14,6 +14,7 @@ import {
   List,
 } from "lucide-react";
 import AppShell from "@/components/layout/AppShell";
+import DEPARTMENTS_CATALOG from "@/data/departments_catalog.json";
 
 interface DepartmentInfo {
   id: string;
@@ -316,6 +317,43 @@ export default function DepartmentsPage() {
             ))}
           </div>
         )}
+        {/* Official Web Profiles Catalog for all 42 Government Departments */}
+        <div className="mt-8 pt-6 border-t border-slate-200">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+            <div>
+              <h2 className="text-sm sm:text-base font-extrabold text-slate-900 flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-[#087F8C]" />
+                <span>{lang === "ta" ? "அரசுத் துறை அதிகாரப்பூர்வ வலைத்தளங்கள் (42)" : "Official Government Department Web Profiles (42)"}</span>
+              </h2>
+              <p className="text-xs text-slate-500">
+                {lang === "ta"
+                  ? "தமிழ்நாடு அரசின் அனைத்து தலைமைச் செயலகத் துறைகளின் அதிகாரப்பூர்வ இணைப்புகள்"
+                  : "Direct links to all official Secretariat department portals and citizen charters"}
+              </p>
+            </div>
+            <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded">
+              tn.gov.in verified
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+            {DEPARTMENTS_CATALOG.map((dept) => (
+              <a
+                key={dept.dep_id}
+                href={`https://www.tn.gov.in/dept_profile.php?dep_id=${dept.dep_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-2.5 rounded-lg border border-slate-200 bg-white hover:border-[#087F8C] hover:bg-sky-50 text-slate-800 hover:text-[#173B63] transition-colors group shadow-2xs"
+              >
+                <div className="flex items-center gap-2 min-w-0 pr-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#087F8C] shrink-0" />
+                  <span className="font-semibold truncate">{dept.name}</span>
+                </div>
+                <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-[#087F8C] shrink-0" />
+              </a>
+            ))}
+          </div>
+        </div>
       </div>
     </AppShell>
   );

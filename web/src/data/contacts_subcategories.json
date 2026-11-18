@@ -1,0 +1,114 @@
+[
+  {
+    "id": "secretaries",
+    "label_en": "Secretaries",
+    "label_ta": "தலைமைச் செயலாளர்கள்",
+    "count": 45,
+    "level": "State"
+  },
+  {
+    "id": "hods",
+    "label_en": "HoD's",
+    "label_ta": "துறைத் தலைவர்கள்",
+    "count": 82,
+    "level": "State"
+  },
+  {
+    "id": "psus",
+    "label_en": "PSU's",
+    "label_ta": "அரசு பொதுத்துறை நிறுவனங்கள்",
+    "count": 64,
+    "level": "State"
+  },
+  {
+    "id": "societies",
+    "label_en": "Societies / Missions / Projects",
+    "label_ta": "சங்கங்கள் / சிறப்பு திட்டங்கள்",
+    "count": 52,
+    "level": "State"
+  },
+  {
+    "id": "district_officials",
+    "label_en": "District Officials",
+    "label_ta": "மாவட்ட அதிகாரிகள்",
+    "count": 38,
+    "level": "District"
+  },
+  {
+    "id": "jailers",
+    "label_en": "Jailers Officials",
+    "label_ta": "சிறைத்துறை அலுவலர்கள்",
+    "count": 28,
+    "level": "District"
+  },
+  {
+    "id": "rdos",
+    "label_en": "RDO Officials",
+    "label_ta": "வருவாய் கோட்ட அலுவலர்கள்",
+    "count": 86,
+    "level": "Subdivision"
+  },
+  {
+    "id": "dros",
+    "label_en": "DRO Officials",
+    "label_ta": "மாவட்ட வருவாய் அலுவலர்கள்",
+    "count": 38,
+    "level": "District"
+  },
+  {
+    "id": "deos",
+    "label_en": "DEO Officials",
+    "label_ta": "மாவட்டக் கல்வி அலுவலர்கள்",
+    "count": 120,
+    "level": "District"
+  },
+  {
+    "id": "meos",
+    "label_en": "MEO Officials",
+    "label_ta": "வட்டாரக் கல்வி அலுவலர்கள்",
+    "count": 414,
+    "level": "Block"
+  },
+  {
+    "id": "mpdos",
+    "label_en": "MPDO / BDO Officials",
+    "label_ta": "வட்டார வளர்ச்சி அலுவலர்கள்",
+    "count": 388,
+    "level": "Block"
+  },
+  {
+    "id": "mros",
+    "label_en": "MRO / Tahsildar Officials",
+    "label_ta": "வட்டாட்சியர்கள் (Tahsildars)",
+    "count": 312,
+    "level": "Taluk"
+  },
+  {
+    "id": "shos",
+    "label_en": "SHO Officials (Police)",
+    "label_ta": "காவல் ஆய்வாளர்கள் (SHOs)",
+    "count": 1450,
+    "level": "Station"
+  },
+  {
+    "id": "pag",
+    "label_en": "Office of Principal Accountant General",
+    "label_ta": "தலைமைக் கணக்காயர் அலுவலகம்",
+    "count": 14,
+    "level": "Central/State"
+  },
+  {
+    "id": "hospitals",
+    "label_en": "Government Hospitals",
+    "label_ta": "அரசு மருத்துவமனைகள்",
+    "count": 180,
+    "level": "District/Taluk"
+  },
+  {
+    "id": "press",
+    "label_en": "Press & Media Relations",
+    "label_ta": "செய்தி மற்றும் மக்கள் தொடர்பு",
+    "count": 38,
+    "level": "District"
+  }
+]

@@ -1,0 +1,212 @@
+[
+  {
+    "name": "Agriculture - Farmers Welfare Department",
+    "dep_id": "Mg==",
+    "code": "AGR"
+  },
+  {
+    "name": "Animal Husbandry, Dairying, Fisheries and Fishermen Welfare Department",
+    "dep_id": "Mw==",
+    "code": "AHF"
+  },
+  {
+    "name": "Artificial Intelligence, Information Technology and Digital Services Department",
+    "dep_id": "MTc=",
+    "code": "ITD"
+  },
+  {
+    "name": "BC, MBC & Minorities Welfare Department",
+    "dep_id": "NA==",
+    "code": "BCMBC"
+  },
+  {
+    "name": "Commercial Taxes and Registration Department",
+    "dep_id": "Ng==",
+    "code": "CTR"
+  },
+  {
+    "name": "Co-operation, Food and Consumer Protection Department",
+    "dep_id": "NQ==",
+    "code": "CFCP"
+  },
+  {
+    "name": "Energy Department",
+    "dep_id": "Nw==",
+    "code": "ENE"
+  },
+  {
+    "name": "Environment, Climate Change and Forests Department",
+    "dep_id": "OA==",
+    "code": "ECCF"
+  },
+  {
+    "name": "Finance Department",
+    "dep_id": "OQ==",
+    "code": "FIN"
+  },
+  {
+    "name": "Handlooms, Handicrafts, Textiles and Khadi Department",
+    "dep_id": "MTA=",
+    "code": "HHTK"
+  },
+  {
+    "name": "Health and Family Welfare Department",
+    "dep_id": "MTE=",
+    "code": "HFW"
+  },
+  {
+    "name": "Higher Education Department",
+    "dep_id": "MTI=",
+    "code": "HED"
+  },
+  {
+    "name": "Highways and Minor Ports Department",
+    "dep_id": "MTM=",
+    "code": "HMP"
+  },
+  {
+    "name": "Hindu Religious and Charitable Endowments Department",
+    "dep_id": "NDY=",
+    "code": "HRCE"
+  },
+  {
+    "name": "Home, Prohibition and Excise Department",
+    "dep_id": "MTQ=",
+    "code": "HPE"
+  },
+  {
+    "name": "Housing and Urban Development Department",
+    "dep_id": "MTU=",
+    "code": "HUD"
+  },
+  {
+    "name": "Human Resources Management Department",
+    "dep_id": "MjI=",
+    "code": "HRM"
+  },
+  {
+    "name": "Industries, Investment Promotion & Commerce Department",
+    "dep_id": "MTY=",
+    "code": "IND"
+  },
+  {
+    "name": "Labour Welfare and Skill Development Department",
+    "dep_id": "MTg=",
+    "code": "LWSD"
+  },
+  {
+    "name": "Law Department",
+    "dep_id": "MTk=",
+    "code": "LAW"
+  },
+  {
+    "name": "Legislative Assembly Department",
+    "dep_id": "MjA=",
+    "code": "LEG"
+  },
+  {
+    "name": "Micro , Small and Medium Enterprises Department",
+    "dep_id": "Mjk=",
+    "code": "MSME"
+  },
+  {
+    "name": "Mudalvarin Mugavari Department",
+    "dep_id": "NDM=",
+    "code": "MMD"
+  },
+  {
+    "name": "Municipal Administration and Water Supply Department",
+    "dep_id": "MjE=",
+    "code": "MAWS"
+  },
+  {
+    "name": "Natural Resources Department",
+    "dep_id": "NDU=",
+    "code": "NRD"
+  },
+  {
+    "name": "Planning and Development Department",
+    "dep_id": "MjM=",
+    "code": "PND"
+  },
+  {
+    "name": "Public Department",
+    "dep_id": "MjQ=",
+    "code": "PUB"
+  },
+  {
+    "name": "Public (Elections) Department",
+    "dep_id": "Mzg=",
+    "code": "ELEC"
+  },
+  {
+    "name": "Public Works Department",
+    "dep_id": "NDI=",
+    "code": "PWD"
+  },
+  {
+    "name": "Revenue and Disaster Management Department",
+    "dep_id": "MjY=",
+    "code": "REV"
+  },
+  {
+    "name": "Rural Development and Panchayat Raj Department",
+    "dep_id": "Mjc=",
+    "code": "RDPR"
+  },
+  {
+    "name": "School Education Department",
+    "dep_id": "Mjg=",
+    "code": "SED"
+  },
+  {
+    "name": "Social Justice Department",
+    "dep_id": "MQ==",
+    "code": "SJD"
+  },
+  {
+    "name": "Social Reforms Department",
+    "dep_id": "Mzk=",
+    "code": "SRD"
+  },
+  {
+    "name": "Social Welfare and Women Empowerment Department",
+    "dep_id": "MzA=",
+    "code": "SWWE"
+  },
+  {
+    "name": "Special Programme Implementation",
+    "dep_id": "NDE=",
+    "code": "SPI"
+  },
+  {
+    "name": "Tamil Dev. and Information Department",
+    "dep_id": "MzE=",
+    "code": "TDID"
+  },
+  {
+    "name": "Tourism, Culture and Special Initiatives Department",
+    "dep_id": "MzI=",
+    "code": "TCS"
+  },
+  {
+    "name": "Transport Department",
+    "dep_id": "MzM=",
+    "code": "TRN"
+  },
+  {
+    "name": "Water Resources Department",
+    "dep_id": "NDQ=",
+    "code": "WRD"
+  },
+  {
+    "name": "Welfare of Differently Abled Persons",
+    "dep_id": "MzU=",
+    "code": "WDAP"
+  },
+  {
+    "name": "Youth Welfare and Sports Development Department",
+    "dep_id": "MzQ=",
+    "code": "YWSD"
+  }
+]

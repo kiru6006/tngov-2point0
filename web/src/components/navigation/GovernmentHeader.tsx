@@ -14,45 +14,73 @@ import {
   Award,
   FileCheck2,
   PhoneCall,
+  GraduationCap,
+  Briefcase,
+  MapPin,
   ExternalLink,
+  ShieldAlert,
 } from "lucide-react";
 import { PRIMARY_NAVIGATION, QUICK_ACCESS_ITEMS } from "@/data/navigation";
-import AccessibleMegaMenu from "./AccessibleMegaMenu";
+import CONTACT_SUBCATEGORIES from "@/data/contacts_subcategories.json";
+import DEPARTMENTS_CATALOG from "@/data/departments_catalog.json";
 
 interface GovernmentHeaderProps {
   lang: "ta" | "en";
   highContrast: boolean;
   onSearch?: (query: string) => void;
+  isHomepage?: boolean;
 }
+
+const quickIconMap: Record<string, any> = {
+  FileText,
+  MapPin,
+  GraduationCap,
+  Briefcase,
+  Award,
+  PhoneCall,
+  FileCheck2,
+  ShieldAlert,
+};
 
 export default function GovernmentHeader({
   lang,
   highContrast,
   onSearch,
+  isHomepage = false,
 }: GovernmentHeaderProps) {
   const router = useRouter();
   const [headerSearch, setHeaderSearch] = useState("");
-  const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
+  const [contactsDropdownOpen, setContactsDropdownOpen] = useState(false);
+  const [departmentsDropdownOpen, setDepartmentsDropdownOpen] = useState(false);
+
   const headerRef = useRef<HTMLDivElement>(null);
+  const contactsRef = useRef<HTMLDivElement>(null);
+  const departmentsRef = useRef<HTMLDivElement>(null);
+
+  const basePath = process.env.NODE_ENV === "production" ? "/tngov-2point0" : "";
 
   // Close menus on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
-        setActiveMegaMenu(null);
+      if (contactsRef.current && !contactsRef.current.contains(event.target as Node)) {
+        setContactsDropdownOpen(false);
+      }
+      if (departmentsRef.current && !departmentsRef.current.contains(event.target as Node)) {
+        setDepartmentsDropdownOpen(false);
       }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Close mobile drawer on Escape key
+  // Close menus on Escape key
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
-        setActiveMegaMenu(null);
+        setContactsDropdownOpen(false);
+        setDepartmentsDropdownOpen(false);
         setMobileMenuOpen(false);
       }
     }
@@ -77,21 +105,29 @@ export default function GovernmentHeader({
   return (
     <div ref={headerRef} className="w-full relative bg-white border-b border-slate-200 shadow-xs z-30">
       {/* =========================================================================
-          LAYER B: MAIN HEADER WITH EMBLEM, BILINGUAL TITLES, SEARCH & ALL SERVICES
+          MAIN HEADER: EMBLEM, IDENTITY & DYNAMIC CONTENT AREA
+          - Homepage: Shows Quick Access items + Contacts & Departments dropdowns (no duplicate search)
+          - Sub-pages: Shows prominent search bar + direct action buttons
           ========================================================================= */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4 max-w-full overflow-hidden">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex flex-col lg:flex-row justify-between items-center gap-3 sm:gap-4 max-w-full">
         {/* Government Identity Branding */}
-        <div className="flex items-center justify-between w-full md:w-auto gap-2 min-w-0">
+        <div className="flex items-center justify-between w-full lg:w-auto gap-3 min-w-0">
           <Link
             href="/"
-            className="flex items-center gap-2 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#173B63] rounded-lg p-0.5 min-w-0"
+            className="flex items-center gap-2.5 sm:gap-3 group focus:outline-none focus:ring-2 focus:ring-[#173B63] rounded-lg p-0.5 min-w-0"
           >
-            <div
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center font-black text-white shadow-md text-sm sm:text-base shrink-0 tracking-wider transition-transform group-hover:scale-105 border border-slate-200"
-              style={{ backgroundColor: navyColor }}
-              aria-hidden="true"
-            >
-              TN
+            {/* Official Tamil Nadu Government Emblem */}
+            <div className="relative w-11 h-11 sm:w-13 sm:h-13 shrink-0 flex items-center justify-center p-0.5 bg-white rounded-full border border-slate-200 shadow-xs">
+              <img
+                src={`${basePath}/tn-emblem.png`}
+                alt={lang === "ta" ? "தமிழ்நாடு அரசு சின்னம்" : "Government of Tamil Nadu Emblem"}
+                className="w-full h-full object-contain transition-transform group-hover:scale-105"
+                onError={(e) => {
+                  if (!e.currentTarget.src.endsWith("/tn-emblem.png")) {
+                    e.currentTarget.src = "/tn-emblem.png";
+                  }
+                }}
+              />
             </div>
             <div className="min-w-0">
               <h1 className="text-sm sm:text-base md:text-lg font-extrabold tracking-tight text-slate-900 leading-tight truncate">
@@ -106,11 +142,11 @@ export default function GovernmentHeader({
             </div>
           </Link>
 
-          {/* Mobile Drawer Trigger (Explicitly Labelled Button) */}
-          <div className="flex items-center gap-1.5 sm:gap-2 md:hidden shrink-0">
+          {/* Mobile Drawer Trigger */}
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden shrink-0">
             <Link
               href="/services"
-              className="hidden sm:inline-flex px-2.5 py-1 text-xs font-bold rounded bg-[#E9F2F7] text-[#173B63] border border-slate-300"
+              className="px-2.5 py-1 text-xs font-bold rounded bg-[#E9F2F7] text-[#173B63] border border-slate-300"
             >
               {lang === "ta" ? "சேவைகள்" : "Services"}
             </Link>
@@ -128,46 +164,197 @@ export default function GovernmentHeader({
           </div>
         </div>
 
-        {/* Single Global Search Shortcut: header button triggers hero search focus */}
-        <div className="w-full md:w-auto flex-1 max-w-xl flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => {
-              const el = document.getElementById("hero-search-input");
-              if (el) {
-                el.focus();
-                el.scrollIntoView({ behavior: "smooth", block: "center" });
-              } else {
-                router.push("/search");
-              }
-            }}
-            className="flex-1 flex items-center justify-between px-3 py-2 text-xs bg-slate-50 hover:bg-white border border-slate-300 rounded-lg text-slate-500 shadow-2xs transition-all text-left"
-            title="Search government services (Focuses prominent search)"
-          >
-            <span className="flex items-center gap-2">
-              <Search className="w-4 h-4 text-slate-400" />
-              <span className="truncate">
-                {lang === "ta"
-                  ? "சேவை, சான்றிதழ், அரசாணை, அதிகாரி தேடுக..."
-                  : "Search service, certificate, G.O., officer..."}
-              </span>
-            </span>
-            <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] bg-slate-100 border border-slate-300 rounded text-slate-600 font-mono">
-              /
-            </kbd>
-          </button>
+        {/* =========================================================================
+            HEADER RIGHT CONTENT AREA:
+            HOMEPAGE vs SUBPAGE CONDITIONAL RENDERING
+            ========================================================================= */}
+        {isHomepage ? (
+          /* HOMEPAGE: No duplicate search. Quick Access buttons + Contacts & Departments Dropdowns */
+          <div className="w-full lg:w-auto flex-1 flex flex-wrap items-center justify-end gap-2 text-xs">
+            {/* Quick Access Menu Items Strip */}
+            <div className="hidden xl:flex items-center gap-1.5 mr-1 overflow-x-auto">
+              {QUICK_ACCESS_ITEMS.slice(0, 4).map((item) => {
+                const IconComp = quickIconMap[item.iconName] || FileText;
+                return (
+                  <Link
+                    key={item.id}
+                    href={item.href}
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded bg-slate-50 hover:bg-sky-50 text-slate-700 hover:text-[#173B63] border border-slate-200 font-medium text-[11px] whitespace-nowrap transition-colors"
+                  >
+                    <IconComp className="w-3 h-3 text-[#087F8C]" />
+                    <span>{lang === "ta" ? item.title_ta : item.title_en}</span>
+                  </Link>
+                );
+              })}
+            </div>
 
-          {/* Direct "All Services" Access Button (Prompt Requirement) */}
-          <Link
-            href="/services"
-            className="hidden sm:inline-flex items-center gap-1 px-3 py-2 text-xs font-bold text-white bg-[#087F8C] hover:bg-[#06626c] rounded-lg shadow-2xs whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-[#173B63]"
-          >
-            <span>{lang === "ta" ? "அனைத்து சேவைகள்" : "All Services"}</span>
-          </Link>
-        </div>
+            {/* Contacts Dropdown (Benchmark 16 Subcategories from reference screenshot) */}
+            <div ref={contactsRef} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setContactsDropdownOpen(!contactsDropdownOpen);
+                  setDepartmentsDropdownOpen(false);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#087F8C] hover:bg-[#06626c] text-white font-bold text-xs shadow-2xs border border-[#06626c] transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#087F8C]"
+                aria-expanded={contactsDropdownOpen}
+                aria-haspopup="true"
+              >
+                <Users className="w-3.5 h-3.5" />
+                <span>{lang === "ta" ? "தொடர்புகள்" : "Contacts"}</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform ${
+                    contactsDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {contactsDropdownOpen && (
+                <div
+                  className="absolute right-0 top-full mt-1.5 w-72 bg-white rounded-lg shadow-xl border border-slate-200 py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150 max-h-96 overflow-y-auto"
+                  role="menu"
+                >
+                  <div className="px-3 py-1.5 border-b border-slate-100 flex items-center justify-between">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                      {lang === "ta" ? "அரசு தொடர்பு வழிகாட்டி" : "Official Directory"}
+                    </span>
+                    <Link
+                      href="/contact-directory"
+                      onClick={() => setContactsDropdownOpen(false)}
+                      className="text-[11px] font-bold text-[#087F8C] hover:underline"
+                    >
+                      {lang === "ta" ? "அனைத்தும் →" : "View All →"}
+                    </Link>
+                  </div>
+                  <div className="py-1">
+                    {CONTACT_SUBCATEGORIES.map((cat) => (
+                      <Link
+                        key={cat.id}
+                        href={`/contact-directory?subcat=${cat.id}`}
+                        onClick={() => setContactsDropdownOpen(false)}
+                        className="flex items-center justify-between px-3.5 py-1.5 text-xs text-[#173B63] hover:bg-sky-50 hover:text-[#087F8C] font-semibold transition-colors"
+                        role="menuitem"
+                      >
+                        <span className="truncate">
+                          {lang === "ta" ? cat.label_ta : cat.label_en}
+                        </span>
+                        <span className="text-[10px] text-slate-400 font-mono ml-2 shrink-0">
+                          {cat.count}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Departments Dropdown (42 Official Departments Catalog) */}
+            <div ref={departmentsRef} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setDepartmentsDropdownOpen(!departmentsDropdownOpen);
+                  setContactsDropdownOpen(false);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-[#173B63]"
+                aria-expanded={departmentsDropdownOpen}
+                aria-haspopup="true"
+              >
+                <Building2 className="w-3.5 h-3.5 text-slate-600" />
+                <span>{lang === "ta" ? "துறைகள்" : "Departments"}</span>
+                <span className="text-[10px] px-1 bg-slate-200 text-slate-700 rounded font-mono">
+                  42
+                </span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-slate-500 transition-transform ${
+                    departmentsDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {departmentsDropdownOpen && (
+                <div
+                  className="absolute right-0 top-full mt-1.5 w-80 bg-white rounded-lg shadow-xl border border-slate-200 py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-150 max-h-96 overflow-y-auto"
+                  role="menu"
+                >
+                  <div className="px-3 py-1.5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                      {lang === "ta" ? "அரசுத் துறைகள் (42)" : "Government Departments (42)"}
+                    </span>
+                    <Link
+                      href="/departments"
+                      onClick={() => setDepartmentsDropdownOpen(false)}
+                      className="text-[11px] font-bold text-[#087F8C] hover:underline"
+                    >
+                      {lang === "ta" ? "அனைத்து துறைகள் →" : "All Departments →"}
+                    </Link>
+                  </div>
+                  <div className="py-1 divide-y divide-slate-50">
+                    {DEPARTMENTS_CATALOG.map((dept) => (
+                      <a
+                        key={dept.dep_id}
+                        href={`https://www.tn.gov.in/dept_profile.php?dep_id=${dept.dep_id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setDepartmentsDropdownOpen(false)}
+                        className="flex items-center justify-between px-3.5 py-1.5 text-xs text-slate-700 hover:bg-sky-50 hover:text-[#173B63] transition-colors group"
+                        role="menuitem"
+                      >
+                        <span className="truncate pr-2">{dept.name}</span>
+                        <ExternalLink className="w-3 h-3 text-slate-400 group-hover:text-[#087F8C] shrink-0" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Direct All Services CTA Button */}
+            <Link
+              href="/services"
+              className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-[#173B63] hover:bg-[#102a47] rounded-lg shadow-2xs whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#173B63]"
+            >
+              <span>{lang === "ta" ? "அனைத்து சேவைகள்" : "All Services"}</span>
+            </Link>
+          </div>
+        ) : (
+          /* SUB-PAGES: Top header search box is prominently available */
+          <div className="w-full lg:w-auto flex-1 max-w-xl flex items-center gap-2">
+            <form
+              onSubmit={handleSearchSubmit}
+              className="flex-1 relative flex items-center"
+              role="search"
+            >
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 pointer-events-none" />
+              <input
+                type="search"
+                value={headerSearch}
+                onChange={(e) => setHeaderSearch(e.target.value)}
+                placeholder={
+                  lang === "ta"
+                    ? "சேவை, சான்றிதழ், அரசாணை, அதிகாரி தேடுக..."
+                    : "Search service, certificate, G.O., officer..."
+                }
+                className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 focus:bg-white border border-slate-300 focus:border-[#173B63] rounded-lg focus:outline-none focus:ring-1 focus:ring-[#173B63] transition-all"
+                aria-label="Global Search"
+              />
+              <button
+                type="submit"
+                className="absolute right-1 px-2.5 py-1 text-[11px] font-bold text-white bg-[#173B63] hover:bg-[#102a47] rounded transition-colors"
+              >
+                {lang === "ta" ? "தேடு" : "Search"}
+              </button>
+            </form>
+
+            <Link
+              href="/services"
+              className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold text-white bg-[#087F8C] hover:bg-[#06626c] rounded-lg shadow-2xs whitespace-nowrap transition-colors focus:outline-none focus:ring-2 focus:ring-[#173B63]"
+            >
+              <span>{lang === "ta" ? "அனைத்து சேவைகள்" : "All Services"}</span>
+            </Link>
+          </div>
+        )}
       </div>
-
-      {/* Horizontal Layer C removed per P0 mandate: replaced by compact Left Sidebar (AppShell) to eliminate multi-row wrapping and overlapping mega-menu */}
 
       {/* =========================================================================
           MOBILE NAVIGATION DRAWER
@@ -177,20 +364,24 @@ export default function GovernmentHeader({
           role="dialog"
           aria-modal="true"
           aria-label="Mobile Navigation Drawer"
-          className="md:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-start animate-in fade-in duration-150"
+          className="lg:hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex flex-col justify-start animate-in fade-in duration-150"
         >
           <div className="w-full max-w-sm bg-white h-full shadow-2xl flex flex-col overflow-y-auto">
             {/* Drawer Header */}
             <div className="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-              <div className="flex items-center gap-2">
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-white text-xs"
-                  style={{ backgroundColor: navyColor }}
-                >
-                  TN
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-full bg-white p-0.5 border border-slate-200 flex items-center justify-center">
+                  <img
+                    src={`${basePath}/tn-emblem.png`}
+                    alt="TN Emblem"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = "/tn-emblem.png";
+                    }}
+                  />
                 </div>
                 <span className="font-extrabold text-sm text-slate-900">
-                  {lang === "ta" ? "வழிசெலுத்தல் மெனு" : "Navigation Menu"}
+                  {lang === "ta" ? "தமிழ்நாடு அரசு 2.0" : "Govt of Tamil Nadu 2.0"}
                 </span>
               </div>
               <button
@@ -203,7 +394,7 @@ export default function GovernmentHeader({
               </button>
             </div>
 
-            {/* Mobile Category Accordions */}
+            {/* Mobile Category Navigation */}
             <div className="p-4 flex-1 space-y-2">
               <Link
                 href="/"
@@ -213,6 +404,7 @@ export default function GovernmentHeader({
                 {lang === "ta" ? "முகப்பு (Home)" : "Home"}
               </Link>
 
+              {/* Canonical Primary Categories Accordion */}
               {PRIMARY_NAVIGATION.filter((n) => n.id !== "nav-home").map((nav) => {
                 const isExpanded = expandedMobileCategory === nav.id;
                 return (

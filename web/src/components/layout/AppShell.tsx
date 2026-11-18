@@ -69,6 +69,8 @@ export default function AppShell({
   // Global search input
   const [globalSearch, setGlobalSearch] = useState("");
 
+  const basePath = process.env.NODE_ENV === "production" ? "/tngov-2point0" : "";
+
   // Sync workspace if prop changes
   useEffect(() => {
     if (propWorkspace) setWorkspace(propWorkspace);
@@ -339,8 +341,15 @@ export default function AppShell({
             href="/"
             className="flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-[#004B87] rounded"
           >
-            <div className="w-8 h-8 rounded-full bg-[#004B87] text-white flex items-center justify-center font-bold text-xs shadow-sm flex-shrink-0">
-              TN
+            <div className="w-8 h-8 rounded-full bg-white border border-slate-200 p-0.5 flex items-center justify-center shadow-xs flex-shrink-0">
+              <img
+                src={`${basePath}/tn-emblem.png`}
+                alt="TN Emblem"
+                className="w-full h-full object-contain"
+                onError={(e) => {
+                  e.currentTarget.src = "/tn-emblem.png";
+                }}
+              />
             </div>
             <div className="flex flex-col">
               <span className="font-bold text-xs md:text-sm text-[#004B87] leading-tight">
@@ -629,8 +638,15 @@ export default function AppShell({
               {/* Header */}
               <div className="flex items-center justify-between p-3 border-b border-slate-200 bg-slate-50">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-full bg-[#004B87] text-white flex items-center justify-center font-bold text-xs">
-                    TN
+                  <div className="w-7 h-7 rounded-full bg-white border border-slate-200 p-0.5 flex items-center justify-center">
+                    <img
+                      src={`${basePath}/tn-emblem.png`}
+                      alt="TN Emblem"
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.src = "/tn-emblem.png";
+                      }}
+                    />
                   </div>
                   <span className="font-bold text-sm text-[#004B87]">
                     {lang === "ta" ? "தமிழ்நாடு அரசு 2.0" : "Govt of Tamil Nadu 2.0"}
@@ -753,8 +769,15 @@ export default function AppShell({
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 text-xs">
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-white text-[#004B87] flex items-center justify-center font-bold text-xs">
-                    TN
+                  <div className="w-6 h-6 rounded-full bg-white p-0.5 flex items-center justify-center">
+                    <img
+                      src={`${basePath}/tn-emblem.png`}
+                      alt="TN Emblem"
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        e.currentTarget.src = "/tn-emblem.png";
+                      }}
+                    />
                   </div>
                   <span className="font-bold text-sm text-white">
                     {lang === "ta" ? "தமிழ்நாடு அரசு" : "Government of Tamil Nadu"}
