@@ -1,5 +1,7 @@
 "use client";
 
+import AppShell from "@/components/layout/AppShell";
+
 import { useState } from "react";
 import Link from "next/link";
 import {
@@ -51,50 +53,28 @@ export default function AssistedAccessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 font-sans flex flex-col antialiased">
-      {/* Top Banner / Operator Identity */}
-      <header className="bg-[#002B49] text-white py-3 px-4 sm:px-6 shadow-md border-b-4 border-amber-500">
-        <div className="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 hover:text-white bg-slate-800/80 px-3 py-1.5 rounded-lg border border-slate-700"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>{lang === "ta" ? "பொது முகப்பு" : "Main Portal"}</span>
-            </Link>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="bg-amber-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider">
-                  e-Sevai Kiosk Mode
-                </span>
-                <h1 className="text-sm sm:text-base font-bold tracking-tight">
-                  {lang === "ta" ? "உதவி பெறும் சேவை மையம் (இ-சேவை முகப்பு)" : "Assisted Access Operator Console"}
-                </h1>
-              </div>
-              <p className="text-[11px] text-slate-300">
-                {lang === "ta"
-                  ? "மையம்: TN-ESEVAI-CHE-042 (கிண்டி மையம்) | ஆபரேட்டர்: எம். செந்தில்குமார் (நிலை: செயலில்)"
-                  : "Center: TN-ESEVAI-CHE-042 (Guindy Kiosk) | Operator: M. Senthilkumar (Active)"}
-              </p>
+    <AppShell activeWorkspace="official" lang={lang} onLanguageChange={setLang}>
+      <div className="p-4 md:p-5 max-w-5xl mx-auto w-full space-y-4">
+        {/* Operator Identity Banner */}
+        <div className="bg-[#002B49] text-white p-4 rounded-xl border-l-4 border-amber-500 shadow-xs flex flex-wrap justify-between items-center gap-3">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="bg-amber-500 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded uppercase tracking-wider">
+                e-Sevai Kiosk Mode
+              </span>
+              <h1 className="text-sm sm:text-base font-bold tracking-tight">
+                {lang === "ta" ? "உதவி பெறும் சேவை மையம் (இ-சேவை முகப்பு)" : "Assisted Access Operator Console"}
+              </h1>
             </div>
+            <p className="text-[11px] text-slate-300 mt-0.5">
+              Center: TN-ESEVAI-CHE-042 (Guindy Kiosk) | Operator: M. Senthilkumar (Active)
+            </p>
           </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setLang(lang === "ta" ? "en" : "ta")}
-              className="flex items-center gap-1 text-xs font-bold text-white bg-blue-900/60 hover:bg-blue-800 px-3 py-1.5 rounded-lg border border-blue-400/40"
-            >
-              <Globe className="w-3.5 h-3.5 text-amber-400" />
-              <span>{lang === "ta" ? "English View" : "தமிழ் பார்வை"}</span>
-            </button>
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-800 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span>TNeGA Gateway Connected</span>
-            </div>
+          <div className="flex items-center gap-1.5 text-xs text-emerald-400 bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-800 font-semibold">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>TNeGA Gateway Connected</span>
           </div>
         </div>
-      </header>
 
       {/* Progress Flow Steps */}
       <nav aria-label="Assisted workflow progress" className="bg-white border-b border-slate-200 py-3 px-4 shadow-sm">
@@ -477,6 +457,7 @@ export default function AssistedAccessPage() {
           </div>
         )}
       </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }

@@ -30,6 +30,8 @@ import {
   BarChart3,
   Activity,
   AlertCircle,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 
 import GovernmentUtilityBar from "@/components/navigation/GovernmentUtilityBar";
@@ -73,6 +75,7 @@ export default function Home() {
   const [fontSize, setFontSize] = useState<"sm" | "base" | "lg">("base");
   const [searchQuery, setSearchQuery] = useState("");
   const [inlineCategoryTab, setInlineCategoryTab] = useState("cat-cert");
+  const [popularServicesView, setPopularServicesView] = useState<"card" | "list">("card");
   const [selectedNoticeTab, setSelectedNoticeTab] = useState<"gos" | "notifications" | "circulars" | "tenders" | "recruitment" | "announcements">("gos");
   const [selectedDistrict, setSelectedDistrict] = useState("DIS-03"); // Chennai default
   const [dirSearchQuery, setDirSearchQuery] = useState("");
@@ -522,60 +525,128 @@ export default function Home() {
                 {lang === "ta" ? "விரைவு சேவைகள் (Quick Access Services)" : "Popular Citizen Services"}
               </h3>
             </div>
-            <Link
-              href="/services"
-              className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
-            >
-              <span>{lang === "ta" ? "அனைத்து 250+ சேவைகள்" : "View All 250+ Services"}</span>
-              <ChevronRight className="w-4 h-4" />
-            </Link>
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setPopularServicesView("card")}
+                  className={`p-1.5 rounded-md text-xs font-semibold transition-all ${
+                    popularServicesView === "card"
+                      ? "bg-white text-[#004B87] shadow-xs font-bold"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                  title="Card View (4 Col)"
+                >
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPopularServicesView("list")}
+                  className={`p-1.5 rounded-md text-xs font-semibold transition-all ${
+                    popularServicesView === "list"
+                      ? "bg-white text-[#004B87] shadow-xs font-bold"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                  title="List View (2 Col)"
+                >
+                  <List className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <Link
+                href="/services"
+                className="text-xs font-bold text-[#173B63] hover:text-[#087F8C] inline-flex items-center gap-1"
+              >
+                <span>{lang === "ta" ? "அனைத்து 250+ சேவைகள்" : "View All 250+ Services"}</span>
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {MOST_USED_SERVICES.map((srv) => {
-              const IconComp = iconMap[srv.icon] || FileText;
-              return (
-                <div
-                  key={srv.id}
-                  className="bg-white rounded-xl border border-slate-200 hover:border-[#173B63] p-4 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="p-2 rounded-lg bg-[#E9F2F7] text-[#173B63] group-hover:bg-[#173B63] group-hover:text-white transition-colors">
+          {popularServicesView === "card" ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {MOST_USED_SERVICES.map((srv) => {
+                const IconComp = iconMap[srv.icon] || FileText;
+                return (
+                  <div
+                    key={srv.id}
+                    className="bg-white rounded-xl border border-slate-200 hover:border-[#173B63] p-4 shadow-2xs hover:shadow-md transition-all flex flex-col justify-between group"
+                  >
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="p-2 rounded-lg bg-[#E9F2F7] text-[#173B63] group-hover:bg-[#173B63] group-hover:text-white transition-colors">
+                          <IconComp className="w-4 h-4" />
+                        </span>
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
+                          {lang === "ta" ? srv.fee_ta : srv.fee_en}
+                        </span>
+                      </div>
+
+                      <h4 className="font-bold text-sm text-slate-900 group-hover:text-[#173B63] line-clamp-1">
+                        {lang === "ta" ? srv.title_ta : srv.title_en}
+                      </h4>
+
+                      <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                        {lang === "ta" ? srv.dept_ta : srv.dept_en}
+                      </p>
+                    </div>
+
+                    <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                      <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                        <Clock className="w-3 h-3 text-slate-400" />
+                        <span>{lang === "ta" ? srv.sla_ta : srv.sla_en}</span>
+                      </span>
+
+                      <Link
+                        href={srv.href}
+                        className="font-bold text-xs text-[#087F8C] group-hover:text-[#173B63] inline-flex items-center gap-1"
+                      >
+                        <span>{lang === "ta" ? "விவரம்" : "Apply"}</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {MOST_USED_SERVICES.map((srv) => {
+                const IconComp = iconMap[srv.icon] || FileText;
+                return (
+                  <div
+                    key={srv.id}
+                    className="bg-white rounded-xl border border-slate-200 hover:border-[#173B63] p-3 shadow-2xs transition-all flex items-center justify-between gap-3 group"
+                  >
+                    <div className="flex items-center gap-3 min-w-0 flex-1">
+                      <span className="p-2 rounded-lg bg-[#E9F2F7] text-[#173B63] group-hover:bg-[#173B63] group-hover:text-white transition-colors shrink-0">
                         <IconComp className="w-4 h-4" />
                       </span>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-[#173B63] truncate">
+                          {lang === "ta" ? srv.title_ta : srv.title_en}
+                        </h4>
+                        <p className="text-[11px] text-slate-500 truncate">
+                          {lang === "ta" ? srv.dept_ta : srv.dept_en} • SLA: {lang === "ta" ? srv.sla_ta : srv.sla_en}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
                       <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
                         {lang === "ta" ? srv.fee_ta : srv.fee_en}
                       </span>
+                      <Link
+                        href={srv.href}
+                        className="font-bold text-xs text-[#087F8C] hover:text-[#173B63] inline-flex items-center gap-1 px-2.5 py-1 rounded bg-slate-50 hover:bg-slate-100 border border-slate-200"
+                      >
+                        <span>Apply</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </Link>
                     </div>
-
-                    <h4 className="font-bold text-sm text-slate-900 group-hover:text-[#173B63] line-clamp-1">
-                      {lang === "ta" ? srv.title_ta : srv.title_en}
-                    </h4>
-
-                    <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
-                      {lang === "ta" ? srv.dept_ta : srv.dept_en}
-                    </p>
                   </div>
-
-                  <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span className="text-[11px] text-slate-500 flex items-center gap-1">
-                      <Clock className="w-3 h-3 text-slate-400" />
-                      <span>{lang === "ta" ? srv.sla_ta : srv.sla_en}</span>
-                    </span>
-
-                    <Link
-                      href={srv.href}
-                      className="font-bold text-xs text-[#087F8C] group-hover:text-[#173B63] inline-flex items-center gap-1"
-                    >
-                      <span>{lang === "ta" ? "விவரம்" : "Apply"}</span>
-                      <ArrowRight className="w-3 h-3" />
-                    </Link>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </section>
 
         {/* =========================================================================

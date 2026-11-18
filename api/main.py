@@ -8,7 +8,7 @@ from fastapi import FastAPI, HTTPException, Query, Depends, status
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from sqlalchemy import or_
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from db.session import get_db, engine, Base
 from db.models import (
@@ -218,6 +218,11 @@ def list_contacts(
     # Position exists independently of Person. Transfers update assignments.
     q = (
         db.query(PositionAssignment)
+        .options(
+            joinedload(PositionAssignment.person),
+            joinedload(PositionAssignment.position).joinedload(Position.department),
+            joinedload(PositionAssignment.position).joinedload(Position.jurisdiction),
+        )
         .filter(PositionAssignment.is_current == True, PositionAssignment.workflow_status == "APPROVED")
         .join(Position, PositionAssignment.position_id == Position.position_id)
         .join(Person, PositionAssignment.person_id == Person.person_id)

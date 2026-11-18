@@ -1,5 +1,7 @@
 "use client";
 
+import AppShell from "@/components/layout/AppShell";
+
 import { useState } from "react";
 import Link from "next/link";
 import contactsData from "@/data/contacts.json";
@@ -29,6 +31,8 @@ import {
   Layers,
   MapPin,
   X,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 
 export default function ContactDirectoryPage() {
@@ -43,6 +47,8 @@ export default function ContactDirectoryPage() {
 
   // Profile modal state
   const [selectedOfficial, setSelectedOfficial] = useState<any | null>(null);
+  const [viewMode, setViewMode] = useState<"card" | "list">("card");
+  const [workspace, setWorkspace] = useState<"public" | "official">("public");
 
   // Maker-Checker state
   const [approvalQueue, setApprovalQueue] = useState([
@@ -119,49 +125,71 @@ export default function ContactDirectoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 font-sans flex flex-col">
-      {/* Top Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex justify-between items-center gap-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-700 hover:text-blue-900 bg-blue-50 px-2.5 py-1.5 rounded-lg border border-blue-100"
-            >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>{lang === "ta" ? "முகப்பு" : "Back to Home"}</span>
-            </Link>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded">
-                  P0 Master Registry
-                </span>
-                <h1 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
-                  {lang === "ta" ? "அரசு தொடர்பு கையேடு 2.0" : "Government Contact Directory 2.0"}
-                </h1>
-              </div>
-              <span className="text-[11px] text-slate-500 font-medium">
-                {lang === "ta"
-                  ? "பதவி & அதிகாரி தனித்துவப் பதிவு | இடமாறுதல் மேலாண்மை | தரக் கட்டுப்பாட்டு முகப்பு"
-                  : "Decoupled Position-Person Master Data | Transfer Management | Quality Dashboard"}
+    <AppShell
+      activeWorkspace={workspace}
+      onWorkspaceChange={setWorkspace}
+      lang={lang}
+      onLanguageChange={setLang}
+    >
+      <div className="p-4 md:p-5 max-w-7xl mx-auto w-full space-y-4">
+        {/* Breadcrumb & Title Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 pb-3">
+          <div>
+            <div className="flex items-center gap-1.5 text-xs text-slate-500 mb-1">
+              <Link href="/" className="hover:text-[#004B87]">
+                {lang === "ta" ? "முகப்பு" : "Home"}
+              </Link>
+              <span>/</span>
+              <span className="text-slate-800 font-semibold">
+                {lang === "ta" ? "அரசு தொடர்பு வழிகாட்டி" : "Contact Directory"}
               </span>
             </div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg md:text-xl font-bold text-slate-900 leading-tight">
+                {lang === "ta" ? "அரசு தொடர்பு கையேடு 2.0" : "Government Contact Directory 2.0"}
+              </h1>
+              <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+                845+ {lang === "ta" ? "பதவிகள்" : "Positions"}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {lang === "ta"
+                ? "பதவி & அதிகாரி தனித்துவப் பதிவு | இடமாறுதல் மேலாண்மை | தரக் கட்டுப்பாட்டு முகப்பு"
+                : "Decoupled Position-Person Master Data | Verified Incumbents | Quality Dashboard"}
+            </p>
           </div>
 
-          <div className="flex items-center gap-2">
+          {/* View Mode Toggle */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 self-start sm:self-auto">
             <button
-              onClick={() => setLang(lang === "ta" ? "en" : "ta")}
-              className="flex items-center gap-1 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg border border-slate-200"
+              type="button"
+              onClick={() => setViewMode("card")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                viewMode === "card"
+                  ? "bg-white text-[#004B87] shadow-xs font-bold"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+              title="Card View"
             >
-              <Globe className="w-3.5 h-3.5 text-blue-700" />
-              <span>{lang === "ta" ? "English" : "தமிழ்"}</span>
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>{lang === "ta" ? "அட்டைப் பார்வை" : "Cards View"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode("list")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all ${
+                viewMode === "list"
+                  ? "bg-white text-[#004B87] shadow-xs font-bold"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+              title="List View (Table / 2 Col)"
+            >
+              <List className="w-3.5 h-3.5" />
+              <span>{lang === "ta" ? "பட்டியல் பார்வை" : "List / Table"}</span>
             </button>
           </div>
         </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex flex-col gap-6">
+<main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 py-6 flex flex-col gap-6">
         {/* Navigation Tabs */}
         <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-2 text-xs sm:text-sm font-semibold">
           <button
@@ -303,83 +331,150 @@ export default function ContactDirectoryPage() {
               </div>
             </div>
 
-            {/* Results Table */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs border-collapse">
-                  <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
-                    <tr>
-                      <th className="p-3.5">{lang === "ta" ? "அதிகாரி & பதவி" : "Official & Designation"}</th>
-                      <th className="p-3.5">{lang === "ta" ? "துறை & அலுவலகம்" : "Department & Office"}</th>
-                      <th className="p-3.5">{lang === "ta" ? "மாவட்டம்" : "District"}</th>
-                      <th className="p-3.5">{lang === "ta" ? "தொடர்பு" : "Contact Details"}</th>
-                      <th className="p-3.5">{lang === "ta" ? "நிலை" : "Verification"}</th>
-                      <th className="p-3.5 text-right">{lang === "ta" ? "விவரம்" : "Profile"}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {filteredOfficials.map((off) => (
-                      <tr key={off.id} className="hover:bg-slate-50 transition-colors">
-                        <td className="p-3.5">
-                          <div className="font-bold text-slate-900 text-sm">
-                            {lang === "ta" ? off.name_ta : off.name_en}
-                          </div>
-                          <div className="text-slate-500 font-medium">
-                            {lang === "ta" ? off.designation_ta : off.designation_en}
-                          </div>
-                          <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                            {off.cadre}
+            {/* Results: Cards View vs List / Table View */}
+            {viewMode === "card" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                {filteredOfficials.map((off) => (
+                  <div
+                    key={off.id}
+                    className="bg-white rounded-xl border border-slate-200 p-4 shadow-xs hover:border-[#004B87] hover:shadow-sm transition-all flex flex-col justify-between gap-3 group"
+                  >
+                    <div>
+                      <div className="flex justify-between items-start gap-1.5 mb-1.5">
+                        <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                          {off.cadre}
+                        </span>
+                        {off.verified ? (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                            <CheckCircle className="w-3 h-3 text-emerald-600" />
+                            <span>Verified</span>
                           </span>
-                        </td>
-                        <td className="p-3.5">
-                          <div className="font-medium text-slate-800">
-                            {lang === "ta" ? off.department_ta : off.department_en}
-                          </div>
-                          <div className="text-[11px] text-slate-500">{off.office}</div>
-                        </td>
-                        <td className="p-3.5 font-medium text-slate-700">
-                          {lang === "ta" ? off.district_ta : off.district_en}
-                        </td>
-                        <td className="p-3.5 space-y-1">
-                          <div className="flex items-center gap-1.5 text-slate-700">
-                            <Phone className="w-3.5 h-3.5 text-slate-400" />
-                            <span>{off.phone}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5 text-slate-700">
-                            <Mail className="w-3.5 h-3.5 text-slate-400" />
-                            <span className="font-mono text-[11px]">{off.email}</span>
-                          </div>
-                        </td>
-                        <td className="p-3.5">
-                          {off.verified ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                              <CheckCircle className="w-3 h-3 text-emerald-600" />
-                              <span>{lang === "ta" ? "சரிபார்க்கப்பட்டது" : "Verified"}</span>
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                              <AlertTriangle className="w-3 h-3 text-amber-600" />
-                              <span>{lang === "ta" ? "நிலுவையில்" : "Pending"}</span>
-                            </span>
-                          )}
-                          <span className="block text-[10px] text-slate-400 mt-1 font-mono">
-                            {off.go_ref.slice(0, 18)}...
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200">
+                            <AlertTriangle className="w-3 h-3 text-amber-600" />
+                            <span>Pending</span>
                           </span>
-                        </td>
-                        <td className="p-3.5 text-right">
-                          <button
-                            onClick={() => setSelectedOfficial(off)}
-                            className="px-2.5 py-1 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors"
-                          >
-                            {lang === "ta" ? "சுயவிவரம்" : "View"}
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        )}
+                      </div>
+
+                      <h3 className="font-bold text-slate-900 group-hover:text-[#004B87] text-sm leading-snug transition-colors">
+                        {lang === "ta" ? off.name_ta : off.name_en}
+                      </h3>
+                      <p className="text-xs font-semibold text-slate-600 mt-0.5">
+                        {lang === "ta" ? off.designation_ta : off.designation_en}
+                      </p>
+                      <p className="text-[11px] text-slate-500 mt-1 truncate">
+                        {lang === "ta" ? off.department_ta : off.department_en} • {lang === "ta" ? off.district_ta : off.district_en}
+                      </p>
+
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 space-y-1 text-xs text-slate-600">
+                        <div className="flex items-center gap-1.5 truncate">
+                          <Phone className="w-3 h-3 text-slate-400 shrink-0" />
+                          <a href={`tel:${off.phone}`} className="font-mono text-[11px] text-blue-700 hover:underline">
+                            {off.phone}
+                          </a>
+                        </div>
+                        <div className="flex items-center gap-1.5 truncate">
+                          <Mail className="w-3 h-3 text-slate-400 shrink-0" />
+                          <a href={`mailto:${off.email}`} className="font-mono text-[11px] text-blue-700 hover:underline truncate">
+                            {off.email}
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                      <span className="text-[10px] text-slate-400 font-mono truncate max-w-[150px]">
+                        {off.go_ref}
+                      </span>
+                      <button
+                        onClick={() => setSelectedOfficial(off)}
+                        className="px-2.5 py-1 text-xs font-bold text-[#004B87] bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors"
+                      >
+                        {lang === "ta" ? "சுயவிவரம்" : "Profile"} →
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
+            ) : (
+              <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
+                      <tr>
+                        <th className="p-3.5">{lang === "ta" ? "அதிகாரி & பதவி" : "Official & Designation"}</th>
+                        <th className="p-3.5">{lang === "ta" ? "துறை & அலுவலகம்" : "Department & Office"}</th>
+                        <th className="p-3.5">{lang === "ta" ? "மாவட்டம்" : "District"}</th>
+                        <th className="p-3.5">{lang === "ta" ? "தொடர்பு" : "Contact Details"}</th>
+                        <th className="p-3.5">{lang === "ta" ? "நிலை" : "Verification"}</th>
+                        <th className="p-3.5 text-right">{lang === "ta" ? "விவரம்" : "Profile"}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {filteredOfficials.map((off) => (
+                        <tr key={off.id} className="hover:bg-slate-50 transition-colors">
+                          <td className="p-3.5">
+                            <div className="font-bold text-slate-900 text-sm">
+                              {lang === "ta" ? off.name_ta : off.name_en}
+                            </div>
+                            <div className="text-slate-500 font-medium">
+                              {lang === "ta" ? off.designation_ta : off.designation_en}
+                            </div>
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
+                              {off.cadre}
+                            </span>
+                          </td>
+                          <td className="p-3.5">
+                            <div className="font-medium text-slate-800">
+                              {lang === "ta" ? off.department_ta : off.department_en}
+                            </div>
+                            <div className="text-[11px] text-slate-500">{off.office}</div>
+                          </td>
+                          <td className="p-3.5 font-medium text-slate-700">
+                            {lang === "ta" ? off.district_ta : off.district_en}
+                          </td>
+                          <td className="p-3.5 space-y-1">
+                            <div className="flex items-center gap-1.5 text-slate-700">
+                              <Phone className="w-3.5 h-3.5 text-slate-400" />
+                              <span>{off.phone}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-slate-700">
+                              <Mail className="w-3.5 h-3.5 text-slate-400" />
+                              <span className="font-mono text-[11px]">{off.email}</span>
+                            </div>
+                          </td>
+                          <td className="p-3.5">
+                            {off.verified ? (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                                <CheckCircle className="w-3 h-3 text-emerald-600" />
+                                <span>{lang === "ta" ? "சரிபார்க்கப்பட்டது" : "Verified"}</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                                <AlertTriangle className="w-3 h-3 text-amber-600" />
+                                <span>{lang === "ta" ? "நிலுவையில்" : "Pending"}</span>
+                              </span>
+                            )}
+                            <span className="block text-[10px] text-slate-400 mt-1 font-mono">
+                              {off.go_ref.slice(0, 18)}...
+                            </span>
+                          </td>
+                          <td className="p-3.5 text-right">
+                            <button
+                              onClick={() => setSelectedOfficial(off)}
+                              className="px-2.5 py-1 text-xs font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg border border-blue-200 transition-colors"
+                            >
+                              {lang === "ta" ? "சுயவிவரம்" : "View"}
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -849,6 +944,7 @@ export default function ContactDirectoryPage() {
           </div>
         )}
       </main>
-    </div>
+      </div>
+    </AppShell>
   );
 }
