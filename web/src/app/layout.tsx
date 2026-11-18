@@ -10,15 +10,15 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className="h-full">
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 antialiased font-sans">
+    <html lang="en" className="h-full overflow-x-hidden">
+      <body className="min-h-full max-w-full overflow-x-hidden flex flex-col bg-slate-50 text-slate-900 antialiased font-sans">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-[#004B87] focus:text-white focus:rounded focus:outline-none"
         >
           Skip to main content / முதன்மைப் பகுதிக்குச் செல்க
         </a>
-        <main id="main-content" role="main" className="flex-1 flex flex-col">
+        <main id="main-content" role="main" className="flex-1 max-w-full overflow-x-hidden flex flex-col">
           {children}
         </main>
       </body>

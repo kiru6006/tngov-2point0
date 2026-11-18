@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   FileText,
@@ -15,13 +15,21 @@ import {
   PhoneCall,
   ExternalLink,
   ChevronRight,
+  ChevronLeft,
   CheckCircle2,
+  CheckCircle,
   GraduationCap,
   Briefcase,
   Download,
   ShieldCheck,
+  ShieldAlert,
   Landmark,
   Compass,
+  Home as HomeIcon,
+  LayoutDashboard,
+  BarChart3,
+  Activity,
+  AlertCircle,
 } from "lucide-react";
 
 import GovernmentUtilityBar from "@/components/navigation/GovernmentUtilityBar";
@@ -68,6 +76,57 @@ export default function Home() {
   const [selectedNoticeTab, setSelectedNoticeTab] = useState<"gos" | "notifications" | "circulars" | "tenders" | "recruitment" | "announcements">("gos");
   const [selectedDistrict, setSelectedDistrict] = useState("DIS-03"); // Chennai default
   const [dirSearchQuery, setDirSearchQuery] = useState("");
+
+  // Persist sidebar state & keyboard shortcut Ctrl+B
+  useEffect(() => {
+    const saved = localStorage.getItem("tngov_sidebar_collapsed");
+    if (saved !== null) {
+      setSidebarCollapsed(saved === "true");
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "b") {
+        e.preventDefault();
+        setSidebarCollapsed((prev) => {
+          const next = !prev;
+          localStorage.setItem("tngov_sidebar_collapsed", String(next));
+          return next;
+        });
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  // Left Sidebar Canonical Navigation (Single source of truth per P0 mandate)
+  const publicSidebarNav = [
+    { href: "/", label_en: "Home", label_ta: "முகப்பு", icon: HomeIcon, active: true },
+    { href: "/services", label_en: "Citizen Services", label_ta: "பொதுமக்கள் சேவைகள்", icon: FileText, badge: "64+" },
+    { href: "/schemes", label_en: "Schemes & Benefits", label_ta: "திட்டங்கள் & பயன்கள்", icon: Award },
+    { href: "/grievances", label_en: "Grievances (1100)", label_ta: "குறைதீர்ப்பு (1100)", icon: ShieldAlert, badge: "Track" },
+    { href: "/contact-directory", label_en: "Contact Directory", label_ta: "அரசு தொடர்பு வழிகாட்டி", icon: Users, badge: "857+" },
+    { href: "/departments", label_en: "Departments", label_ta: "அரசுத் துறைகள்", icon: Building2 },
+    { href: "/districts", label_en: "Districts (38)", label_ta: "மாவட்டங்கள்", icon: MapPin },
+    { href: "/documents", label_en: "Government Orders", label_ta: "அரசாணைகள் (G.O.)", icon: FileCheck2 },
+    { href: "/performance", label_en: "Govt Performance", label_ta: "செயல்திறன் அறிக்கை", icon: BarChart3 },
+    { href: "/about", label_en: "About Tamil Nadu", label_ta: "தமிழ்நாடு பற்றி", icon: Landmark },
+    { href: "#emergency-help", label_en: "Emergency & Help", label_ta: "அவசர உதவி எண்கள்", icon: PhoneCall },
+  ];
+
+  const officialSidebarNav = [
+    { href: "/", label_en: "Overview Dashboard", label_ta: "கண்காணிப்பு பலகை", icon: LayoutDashboard, active: true },
+    { href: "/grievances", label_en: "Grievance Queue", label_ta: "மனு மேலாண்மை வரிசை", icon: ShieldAlert, badge: "Active" },
+    { href: "/performance", label_en: "Department KPIs", label_ta: "செயல்திறன் குறிகாட்டிகள்", icon: BarChart3 },
+    { href: "/services", label_en: "Service Catalogs", label_ta: "சேவை அட்டவணை", icon: FileText },
+    { href: "/schemes", label_en: "Scheme Sanctions", label_ta: "திட்ட ஒப்புதல்கள்", icon: Award },
+    { href: "/contact-directory", label_en: "Officer Directory", label_ta: "அலுவலர் வழிகாட்டி", icon: Users },
+    { href: "/departments", label_en: "Line Departments", label_ta: "இணைப்புத் துறைகள்", icon: Building2 },
+    { href: "/documents", label_en: "Gazette & G.O. Repository", label_ta: "அரசாணை ஆவணங்கள்", icon: FileCheck2 },
+    { href: "/contact-directory#approval-queue", label_en: "Maker-Checker Queue", label_ta: "ஒப்புதல் சரிபார்ப்பு", icon: CheckCircle, badge: "Audit" },
+    { href: "/about", label_en: "Administrative Manual", label_ta: "நிர்வாகக் குறிப்பேடு", icon: Landmark },
+  ];
+
+  const activeSidebarNav = workspace === "official" ? officialSidebarNav : publicSidebarNav;
 
   const [aiResult, setAiResult] = useState<null | {
     title: string;
@@ -179,66 +238,195 @@ export default function Home() {
         <QuickAccessBar lang={lang} />
       </header>
 
-      {/* Main Content Landmark for Screen Readers and Skip-Links */}
-      <main id="main-content" className="flex-1 focus:outline-none">
-        {/* =========================================================================
-            SECTION 3: CITIZEN SEARCH HERO
-            ========================================================================= */}
-        <section
-          aria-label="Citizen Search Hero"
-          className="relative bg-gradient-to-b from-[#173B63] to-[#0f2844] text-white py-12 md:py-16 px-4 sm:px-6 shadow-inner"
+      {/* 2-COLUMN APPLICATION SHELL: COMPACT LEFT SIDEBAR + MAIN CONTENT AREA (P0 Architecture) */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* DESKTOP COMPACT LEFT SIDEBAR */}
+        <aside
+          aria-label="Main Navigation"
+          className={`hidden md:flex flex-col flex-shrink-0 transition-all duration-200 border-r select-none ${
+            sidebarCollapsed ? "w-[64px]" : "w-[220px]"
+          } ${
+            highContrast
+              ? "bg-black border-yellow-400 text-yellow-300"
+              : "bg-white border-slate-200 text-slate-700"
+          }`}
         >
-          <div className="max-w-4xl mx-auto text-center space-y-5">
-            <span className="inline-block px-3 py-1 text-xs font-semibold rounded-full bg-white/10 text-emerald-300 border border-emerald-400/30">
-              {lang === "ta"
-                ? "ஒருங்கிணைந்த தமிழ்நாடு அரசு டிஜிட்டல் நுழைவாயில் 2.0"
-                : "Tamil Nadu Unified Citizen Digital Gateway 2.0"}
-            </span>
-
-            <h2 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
-              {lang === "ta"
-                ? "அனைத்து அரசு சேவைகளும். ஒரே இடத்தில்."
-                : "All Government Services. One Place."}
-            </h2>
-
-            <p className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto">
-              {lang === "ta"
-                ? "சான்றிதழ்கள், நில ஆவணங்கள், அரசு நலத்திட்டங்கள், அரசாணைகள் மற்றும் 38 மாவட்டங்களின் சேவைகளை உடனடியாகப் பெறுங்கள்."
-                : "Search or browse statutory certificates, land records, welfare benefits, Government Orders, and verified public administration contacts."}
-            </p>
-
-            {/* Prominent Large Search Bar */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSearch(searchQuery);
-              }}
-              className="relative max-w-2xl mx-auto"
-              role="search"
-            >
-              <label htmlFor="hero-search-input" className="sr-only">
-                {lang === "ta" ? "அரசு சேவைகளைத் தேடுக" : "Search government services"}
-              </label>
-              <input
-                id="hero-search-input"
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder={
-                  lang === "ta"
-                    ? "உதாரணம்: வருமானச் சான்றிதழ், பட்டா மாறுதல், மகளிர் உரிமைத் தொகை..."
-                    : "e.g., Income Certificate, Patta Transfer, Pudhumai Penn, Collector..."
-                }
-                className="w-full pl-12 pr-28 py-3.5 text-slate-900 bg-white rounded-xl shadow-xl text-sm sm:text-base focus:outline-none focus:ring-4 focus:ring-amber-400/50"
+          {/* Workspace Indicator & Collapse Toggle */}
+          <div
+            className={`px-3 py-2 border-b border-slate-100 flex items-center ${
+              sidebarCollapsed ? "justify-center" : "justify-between"
+            }`}
+          >
+            {!sidebarCollapsed ? (
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-2 h-2 rounded-full ${
+                    workspace === "official" ? "bg-amber-500" : "bg-emerald-500"
+                  }`}
+                />
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  {workspace === "official"
+                    ? lang === "ta"
+                      ? "அரசு பணியகம்"
+                      : "Official Space"
+                    : lang === "ta"
+                    ? "மக்கள் தளம்"
+                    : "Citizen Portal"}
+                </span>
+              </div>
+            ) : (
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  workspace === "official" ? "bg-amber-500" : "bg-emerald-500"
+                }`}
+                title={workspace === "official" ? "Official" : "Citizen"}
               />
-              <Search className="w-5 h-5 text-slate-400 absolute left-4 top-4" />
-              <button
-                type="submit"
-                className="absolute right-2 top-2 bottom-2 px-5 bg-[#087F8C] hover:bg-[#06626c] text-white font-bold text-xs sm:text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+            )}
+            <button
+              type="button"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              title={`Toggle sidebar (Ctrl+B) - Currently ${sidebarCollapsed ? "Collapsed" : "Expanded"}`}
+              className="p-1 rounded hover:bg-slate-100 text-slate-500 transition-colors"
+              aria-label="Toggle Left Sidebar"
+            >
+              {sidebarCollapsed ? (
+                <ChevronRight className="w-3.5 h-3.5" />
+              ) : (
+                <ChevronLeft className="w-3.5 h-3.5" />
+              )}
+            </button>
+          </div>
+
+          {/* Navigation Links */}
+          <nav className="flex-1 overflow-y-auto py-2 px-1.5 space-y-0.5">
+            {activeSidebarNav.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  title={sidebarCollapsed ? (lang === "ta" ? item.label_ta : item.label_en) : undefined}
+                  className={`flex items-center rounded-md px-2.5 py-2 text-xs font-medium transition-colors group ${
+                    item.active
+                      ? highContrast
+                        ? "bg-yellow-400 text-black font-bold"
+                        : "bg-blue-50 text-[#004B87] font-semibold border-l-4 border-[#004B87]"
+                      : highContrast
+                      ? "hover:bg-slate-900 text-yellow-200"
+                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  } ${sidebarCollapsed ? "justify-center" : "gap-3"}`}
+                >
+                  <Icon
+                    className={`w-4 h-4 flex-shrink-0 ${
+                      item.active
+                        ? highContrast
+                          ? "text-black"
+                          : "text-[#004B87]"
+                        : "text-slate-400 group-hover:text-slate-600"
+                    }`}
+                  />
+                  {!sidebarCollapsed && (
+                    <span className="flex-1 truncate">
+                      {lang === "ta" ? item.label_ta : item.label_en}
+                    </span>
+                  )}
+                  {!sidebarCollapsed && item.badge && (
+                    <span
+                      className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                        item.active
+                          ? "bg-[#004B87] text-white"
+                          : "bg-slate-200 text-slate-700"
+                      }`}
+                    >
+                      {item.badge}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
+        </aside>
+
+        {/* Main Content Landmark for Screen Readers and Skip-Links */}
+        <main id="main-content" className="flex-1 min-w-0 overflow-y-auto focus:outline-none">
+          {/* =========================================================================
+              SECTION 3: CITIZEN SEARCH HERO (Compact & Single Prominent Search)
+              ========================================================================= */}
+          <section
+            aria-label="Citizen Search Hero"
+            className="relative bg-gradient-to-b from-[#173B63] to-[#0f2844] text-white py-6 md:py-8 px-4 sm:px-6 shadow-inner"
+          >
+            <div className="max-w-4xl mx-auto text-center space-y-4">
+              {/* Workspace Switcher Pill */}
+              <div className="inline-flex items-center gap-1 bg-white/10 p-1 rounded-full border border-white/20 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setWorkspace("public")}
+                  className={`px-3 py-1 rounded-full font-semibold transition-colors ${
+                    workspace === "public"
+                      ? "bg-white text-[#173B63] shadow-xs"
+                      : "text-slate-200 hover:text-white"
+                  }`}
+                >
+                  {lang === "ta" ? "பொதுமக்கள் தளம்" : "Citizen Portal"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setWorkspace("official")}
+                  className={`px-3 py-1 rounded-full font-semibold transition-colors ${
+                    workspace === "official"
+                      ? "bg-amber-400 text-slate-900 shadow-xs"
+                      : "text-slate-200 hover:text-white"
+                  }`}
+                >
+                  {lang === "ta" ? "அரசு பணியகம்" : "Official Workspace"}
+                </button>
+              </div>
+
+              <h2 className="text-xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
+                {lang === "ta"
+                  ? "அனைத்து அரசு சேவைகளும். ஒரே இடத்தில்."
+                  : "All Government Services. One Place."}
+              </h2>
+
+              <p className="text-slate-300 text-xs sm:text-sm max-w-2xl mx-auto">
+                {lang === "ta"
+                  ? "சான்றிதழ்கள், நில ஆவணங்கள், அரசு நலத்திட்டங்கள், அரசாணைகள் மற்றும் 38 மாவட்டங்களின் சேவைகளை உடனடியாகப் பெறுங்கள்."
+                  : "Search or browse statutory certificates, land records, welfare benefits, Government Orders, and verified public administration contacts."}
+              </p>
+
+              {/* Single Prominent Global Search Bar */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSearch(searchQuery);
+                }}
+                className="relative max-w-2xl mx-auto"
+                role="search"
               >
-                {lang === "ta" ? "தேடுக" : "Search"}
-              </button>
-            </form>
+                <label htmlFor="hero-search-input" className="sr-only">
+                  {lang === "ta" ? "அரசு சேவைகளைத் தேடுக" : "Search government services"}
+                </label>
+                <input
+                  id="hero-search-input"
+                  type="search"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder={
+                    lang === "ta"
+                      ? "உதாரணம்: வருமானச் சான்றிதழ், பட்டா மாறுதல், மகளிர் உரிமைத் தொகை..."
+                      : "e.g., Income Certificate, Patta Transfer, Pudhumai Penn, Collector..."
+                  }
+                  className="w-full pl-12 pr-28 py-3 text-slate-900 bg-white rounded-xl shadow-xl text-xs sm:text-sm focus:outline-none focus:ring-4 focus:ring-amber-400/50"
+                />
+                <Search className="w-5 h-5 text-slate-400 absolute left-4 top-3.5" />
+                <button
+                  type="submit"
+                  className="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-[#087F8C] hover:bg-[#06626c] text-white font-bold text-xs rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-amber-400"
+                >
+                  {lang === "ta" ? "தேடுக" : "Search"}
+                </button>
+              </form>
 
             {/* Suggested Searches & Quick All Services Link */}
             <div className="flex flex-wrap items-center justify-center gap-2 pt-2 text-xs">
@@ -1240,6 +1428,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+      </div>
 
       {/* =========================================================================
           SECTION 17: COMPREHENSIVE FOOTER & SITEMAP

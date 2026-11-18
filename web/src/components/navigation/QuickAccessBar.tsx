@@ -36,9 +36,9 @@ export default function QuickAccessBar({ lang }: QuickAccessBarProps) {
   return (
     <section
       aria-label="Frequently Used Citizen Services Quick Bar"
-      className="w-full bg-[#E9F2F7] border-b border-slate-200 py-2 px-4 sm:px-6 shadow-xs overflow-x-auto"
+      className="w-full max-w-full bg-[#E9F2F7] border-b border-slate-200 py-2 px-3 sm:px-6 shadow-xs overflow-x-auto"
     >
-      <div className="max-w-7xl mx-auto flex items-center justify-start md:justify-center gap-2 sm:gap-2.5 shrink-0">
+      <div className="max-w-7xl mx-auto flex items-center justify-start md:justify-center gap-2 sm:gap-2.5 w-max">
         <span className="text-[11px] uppercase tracking-wider font-extrabold text-[#173B63] whitespace-nowrap pl-1 pr-2 border-r border-slate-300 hidden lg:inline">
           {lang === "ta" ? "விரைவு சேவைகள்:" : "Quick Access:"}
         </span>
