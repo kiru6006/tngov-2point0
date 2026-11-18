@@ -130,7 +130,7 @@ export default function AppShell({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [collapsed]);
 
-  // Public Left Navigation Items (11 items)
+  // Public Left Navigation Items (11 items with mapped homepage sections)
   const publicNavItems = [
     {
       href: "/",
@@ -138,6 +138,10 @@ export default function AppShell({
       label_ta: "முகப்பு",
       icon: Home,
       exact: true,
+      subsections: [
+        { href: "/#popular-services", label_en: "Popular Services", label_ta: "விரைவு சேவைகள்" },
+        { href: "/#welfare-schemes", label_en: "Welfare Schemes", label_ta: "நலத்திட்டங்கள்" },
+      ],
     },
     {
       href: "/services",
@@ -145,12 +149,22 @@ export default function AppShell({
       label_ta: "பொதுமக்கள் சேவைகள்",
       icon: FileText,
       badge: "64+",
+      subsections: [
+        { href: "/#popular-services", label_en: "Priority Services", label_ta: "முக்கிய சேவைகள்" },
+        { href: "/#services-by-category", label_en: "14 Domains", label_ta: "14 முதன்மை பிரிவுகள்" },
+        { href: "/#service-action-panel", label_en: "Action Panel", label_ta: "நேரடி நடவடிக்கை பலகை" },
+        { href: "/#life-situations", label_en: "Life Stages", label_ta: "வாழ்க்கை சூழல்" },
+      ],
     },
     {
       href: "/schemes",
       label_en: "Schemes & Benefits",
       label_ta: "திட்டங்கள் & பயன்கள்",
       icon: Award,
+      subsections: [
+        { href: "/#welfare-schemes", label_en: "Flagship Schemes", label_ta: "அரசு திட்டங்கள்" },
+        { href: "/#egov-portals", label_en: "e-Gov Portals", label_ta: "மின்-ஆளுமை போர்டல்" },
+      ],
     },
     {
       href: "/grievances",
@@ -158,6 +172,9 @@ export default function AppShell({
       label_ta: "குறைதீர்ப்பு (1100)",
       icon: ShieldAlert,
       badge: "Track",
+      subsections: [
+        { href: "/#emergency-help", label_en: "CM 1100 Helpline", label_ta: "1100 உதவி மையம்" },
+      ],
     },
     {
       href: "/contact-directory",
@@ -165,24 +182,39 @@ export default function AppShell({
       label_ta: "அரசு தொடர்பு வழிகாட்டி",
       icon: Users,
       badge: "845+",
+      subsections: [
+        { href: "/#contact-directory-preview", label_en: "Directory Search", label_ta: "தொடர்பு தேடல்" },
+        { href: "/contact-directory?tab=leadership", label_en: "Cabinet Ministers (35)", label_ta: "அமைச்சரவை (35)" },
+      ],
     },
     {
       href: "/departments",
       label_en: "Departments",
       label_ta: "அரசுத் துறைகள்",
       icon: Building2,
+      subsections: [
+        { href: "/#districts-departments", label_en: "Districts & Depts", label_ta: "மாவட்டங்கள் & துறைகள்" },
+        { href: "/departments", label_en: "42 Department Profiles", label_ta: "42 துறை விவரங்கள்" },
+      ],
     },
     {
       href: "/districts",
       label_en: "Districts",
       label_ta: "மாவட்டங்கள் (38)",
       icon: MapPin,
+      subsections: [
+        { href: "/#districts-departments", label_en: "38 Collectorates", label_ta: "38 ஆட்சியரகங்கள்" },
+      ],
     },
     {
       href: "/documents",
       label_en: "Government Orders",
       label_ta: "அரசாணைகள் (G.O.)",
       icon: FileCheck2,
+      subsections: [
+        { href: "/#orders-notices", label_en: "Orders & Notices", label_ta: "அரசாணைகள் பலகை" },
+        { href: "/#announcements", label_en: "TNPSC Recruitment", label_ta: "வேலைவாய்ப்பு அறிவிப்பு" },
+      ],
     },
     {
       href: "/performance",
@@ -195,6 +227,10 @@ export default function AppShell({
       label_en: "About Tamil Nadu",
       label_ta: "தமிழ்நாடு பற்றி",
       icon: Landmark,
+      subsections: [
+        { href: "/#governance-admin", label_en: "Constitutional Governance", label_ta: "அரசியலமைப்பு கட்டமைப்பு" },
+        { href: "/#tourism", label_en: "Heritage & Tourism", label_ta: "சுற்றுலா & கலாச்சாரம்" },
+      ],
     },
     {
       href: "/#emergency-help",
@@ -555,47 +591,64 @@ export default function AppShell({
             {currentNav.map((item) => {
               const active = isRouteActive(item.href, item.exact);
               const Icon = item.icon;
+              const hasSub = !collapsed && (item as any).subsections && (item as any).subsections.length > 0;
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={collapsed ? (lang === "ta" ? item.label_ta : item.label_en) : undefined}
-                  className={`flex items-center rounded-md px-2.5 py-2 text-xs font-medium transition-colors group relative ${
-                    active
-                      ? highContrast
-                        ? "bg-yellow-400 text-black font-bold"
-                        : "bg-blue-50 text-[#004B87] font-semibold border-l-4 border-[#004B87]"
-                      : highContrast
-                      ? "hover:bg-slate-900 text-yellow-200"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  } ${collapsed ? "justify-center" : "gap-3"}`}
-                >
-                  <Icon
-                    className={`w-4 h-4 flex-shrink-0 ${
+                <div key={item.href} className="space-y-0.5">
+                  <Link
+                    href={item.href}
+                    title={collapsed ? (lang === "ta" ? item.label_ta : item.label_en) : undefined}
+                    className={`flex items-center rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors group relative ${
                       active
                         ? highContrast
-                          ? "text-black"
-                          : "text-[#004B87]"
-                        : "text-slate-400 group-hover:text-slate-600"
-                    }`}
-                  />
-                  {!collapsed && (
-                    <span className="flex-1 truncate">
-                      {lang === "ta" ? item.label_ta : item.label_en}
-                    </span>
-                  )}
-                  {!collapsed && item.badge && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                          ? "bg-yellow-400 text-black font-bold"
+                          : "bg-blue-50 text-[#004B87] font-semibold border-l-4 border-[#004B87]"
+                        : highContrast
+                        ? "hover:bg-slate-900 text-yellow-200"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    } ${collapsed ? "justify-center" : "gap-2.5"}`}
+                  >
+                    <Icon
+                      className={`w-4 h-4 flex-shrink-0 ${
                         active
-                          ? "bg-[#004B87] text-white"
-                          : "bg-slate-200 text-slate-700"
+                          ? highContrast
+                            ? "text-black"
+                            : "text-[#004B87]"
+                          : "text-slate-400 group-hover:text-slate-600"
                       }`}
-                    >
-                      {item.badge}
-                    </span>
+                    />
+                    {!collapsed && (
+                      <span className="flex-1 truncate">
+                        {lang === "ta" ? item.label_ta : item.label_en}
+                      </span>
+                    )}
+                    {!collapsed && item.badge && (
+                      <span
+                        className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                          active
+                            ? "bg-[#004B87] text-white"
+                            : "bg-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+
+                  {/* Subsections linking to homepage anchor targets */}
+                  {hasSub && (
+                    <div className="pl-6 pr-1 py-0.5 space-y-0.5 border-l border-slate-100 ml-3">
+                      {(item as any).subsections.map((sub: any, sIdx: number) => (
+                        <Link
+                          key={sIdx}
+                          href={sub.href}
+                          className="block px-2 py-0.5 text-[11px] text-slate-500 hover:text-[#004B87] hover:bg-slate-50 rounded transition-colors truncate"
+                        >
+                          › {lang === "ta" ? sub.label_ta : sub.label_en}
+                        </Link>
+                      ))}
+                    </div>
                   )}
-                </Link>
+                </div>
               );
             })}
           </nav>

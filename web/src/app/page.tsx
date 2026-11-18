@@ -103,16 +103,101 @@ export default function Home() {
 
   // Left Sidebar Canonical Navigation (Single source of truth per P0 mandate)
   const publicSidebarNav = [
-    { href: "/", label_en: "Home", label_ta: "முகப்பு", icon: HomeIcon, active: true },
-    { href: "/services", label_en: "Citizen Services", label_ta: "பொதுமக்கள் சேவைகள்", icon: FileText, badge: "64+" },
-    { href: "/schemes", label_en: "Schemes & Benefits", label_ta: "திட்டங்கள் & பயன்கள்", icon: Award },
-    { href: "/grievances", label_en: "Grievances (1100)", label_ta: "குறைதீர்ப்பு (1100)", icon: ShieldAlert, badge: "Track" },
-    { href: "/contact-directory", label_en: "Contact Directory", label_ta: "அரசு தொடர்பு வழிகாட்டி", icon: Users, badge: "857+" },
-    { href: "/departments", label_en: "Departments", label_ta: "அரசுத் துறைகள்", icon: Building2 },
-    { href: "/districts", label_en: "Districts (38)", label_ta: "மாவட்டங்கள்", icon: MapPin },
-    { href: "/documents", label_en: "Government Orders", label_ta: "அரசாணைகள் (G.O.)", icon: FileCheck2 },
+    {
+      href: "/",
+      label_en: "Home",
+      label_ta: "முகப்பு",
+      icon: HomeIcon,
+      active: true,
+      subsections: [
+        { href: "#popular-services", label_en: "Popular Services", label_ta: "விரைவு சேவைகள்" },
+        { href: "#welfare-schemes", label_en: "Welfare Schemes", label_ta: "நலத்திட்டங்கள்" },
+      ],
+    },
+    {
+      href: "/services",
+      label_en: "Citizen Services",
+      label_ta: "பொதுமக்கள் சேவைகள்",
+      icon: FileText,
+      badge: "64+",
+      subsections: [
+        { href: "#popular-services", label_en: "Priority Services", label_ta: "முக்கிய சேவைகள்" },
+        { href: "#services-by-category", label_en: "14 Domains", label_ta: "14 முதன்மை பிரிவுகள்" },
+        { href: "#service-action-panel", label_en: "Action Panel", label_ta: "நேரடி நடவடிக்கை பலகை" },
+        { href: "#life-situations", label_en: "Life Stages", label_ta: "வாழ்க்கை சூழல்" },
+      ],
+    },
+    {
+      href: "/schemes",
+      label_en: "Schemes & Benefits",
+      label_ta: "திட்டங்கள் & பயன்கள்",
+      icon: Award,
+      subsections: [
+        { href: "#welfare-schemes", label_en: "Flagship Schemes", label_ta: "அரசு திட்டங்கள்" },
+        { href: "#egov-portals", label_en: "e-Gov Portals", label_ta: "மின்-ஆளுமை போர்டல்" },
+      ],
+    },
+    {
+      href: "/grievances",
+      label_en: "Grievances (1100)",
+      label_ta: "குறைதீர்ப்பு (1100)",
+      icon: ShieldAlert,
+      badge: "Track",
+      subsections: [
+        { href: "#emergency-help", label_en: "CM 1100 Helpline", label_ta: "1100 உதவி மையம்" },
+      ],
+    },
+    {
+      href: "/contact-directory",
+      label_en: "Contact Directory",
+      label_ta: "அரசு தொடர்பு வழிகாட்டி",
+      icon: Users,
+      badge: "857+",
+      subsections: [
+        { href: "#contact-directory-preview", label_en: "Directory Search", label_ta: "தொடர்பு தேடல்" },
+        { href: "/contact-directory?tab=leadership", label_en: "Ministers Cabinet (35)", label_ta: "அமைச்சரவை (35)" },
+      ],
+    },
+    {
+      href: "/departments",
+      label_en: "Departments",
+      label_ta: "அரசுத் துறைகள்",
+      icon: Building2,
+      subsections: [
+        { href: "#districts-departments", label_en: "Districts & Depts", label_ta: "மாவட்டங்கள் & துறைகள்" },
+        { href: "/departments", label_en: "42 Department Profiles", label_ta: "42 துறை விவரங்கள்" },
+      ],
+    },
+    {
+      href: "/districts",
+      label_en: "Districts (38)",
+      label_ta: "மாவட்டங்கள்",
+      icon: MapPin,
+      subsections: [
+        { href: "#districts-departments", label_en: "38 Collectorates", label_ta: "38 ஆட்சியரகங்கள்" },
+      ],
+    },
+    {
+      href: "/documents",
+      label_en: "Government Orders",
+      label_ta: "அரசாணைகள் (G.O.)",
+      icon: FileCheck2,
+      subsections: [
+        { href: "#orders-notices", label_en: "Orders & Notices", label_ta: "அரசாணைகள் பலகை" },
+        { href: "#announcements", label_en: "TNPSC Recruitment", label_ta: "வேலைவாய்ப்பு அறிவிப்பு" },
+      ],
+    },
     { href: "/performance", label_en: "Govt Performance", label_ta: "செயல்திறன் அறிக்கை", icon: BarChart3 },
-    { href: "/about", label_en: "About Tamil Nadu", label_ta: "தமிழ்நாடு பற்றி", icon: Landmark },
+    {
+      href: "/about",
+      label_en: "About Tamil Nadu",
+      label_ta: "தமிழ்நாடு பற்றி",
+      icon: Landmark,
+      subsections: [
+        { href: "#governance-admin", label_en: "Constitutional Governance", label_ta: "அரசியலமைப்பு கட்டமைப்பு" },
+        { href: "#tourism", label_en: "Heritage & Tourism", label_ta: "சுற்றுலா & கலாச்சாரம்" },
+      ],
+    },
     { href: "#emergency-help", label_en: "Emergency & Help", label_ta: "அவசர உதவி எண்கள்", icon: PhoneCall },
   ];
 
@@ -303,51 +388,67 @@ export default function Home() {
             </button>
           </div>
 
-          {/* Navigation Links */}
-          <nav className="flex-1 overflow-y-auto py-2 px-1.5 space-y-0.5">
-            {activeSidebarNav.map((item) => {
+          {/* Navigation Links with Section Mapping */}
+          <nav className="flex-1 overflow-y-auto py-2 px-1.5 space-y-1">
+            {activeSidebarNav.map((item: any) => {
               const Icon = item.icon;
               return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  title={sidebarCollapsed ? (lang === "ta" ? item.label_ta : item.label_en) : undefined}
-                  className={`flex items-center rounded-md px-2.5 py-2 text-xs font-medium transition-colors group ${
-                    item.active
-                      ? highContrast
-                        ? "bg-yellow-400 text-black font-bold"
-                        : "bg-blue-50 text-[#004B87] font-semibold border-l-4 border-[#004B87]"
-                      : highContrast
-                      ? "hover:bg-slate-900 text-yellow-200"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-                  } ${sidebarCollapsed ? "justify-center" : "gap-3"}`}
-                >
-                  <Icon
-                    className={`w-4 h-4 flex-shrink-0 ${
+                <div key={item.href} className="space-y-0.5">
+                  <Link
+                    href={item.href}
+                    title={sidebarCollapsed ? (lang === "ta" ? item.label_ta : item.label_en) : undefined}
+                    className={`flex items-center rounded-md px-2.5 py-1.5 text-xs font-medium transition-colors group ${
                       item.active
                         ? highContrast
-                          ? "text-black"
-                          : "text-[#004B87]"
-                        : "text-slate-400 group-hover:text-slate-600"
-                    }`}
-                  />
-                  {!sidebarCollapsed && (
-                    <span className="flex-1 truncate">
-                      {lang === "ta" ? item.label_ta : item.label_en}
-                    </span>
-                  )}
-                  {!sidebarCollapsed && item.badge && (
-                    <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                          ? "bg-yellow-400 text-black font-bold"
+                          : "bg-blue-50 text-[#004B87] font-semibold border-l-4 border-[#004B87]"
+                        : highContrast
+                        ? "hover:bg-slate-900 text-yellow-200"
+                        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    } ${sidebarCollapsed ? "justify-center" : "gap-2.5"}`}
+                  >
+                    <Icon
+                      className={`w-4 h-4 flex-shrink-0 ${
                         item.active
-                          ? "bg-[#004B87] text-white"
-                          : "bg-slate-200 text-slate-700"
+                          ? highContrast
+                            ? "text-black"
+                            : "text-[#004B87]"
+                          : "text-slate-400 group-hover:text-slate-600"
                       }`}
-                    >
-                      {item.badge}
-                    </span>
+                    />
+                    {!sidebarCollapsed && (
+                      <span className="flex-1 truncate">
+                        {lang === "ta" ? item.label_ta : item.label_en}
+                      </span>
+                    )}
+                    {!sidebarCollapsed && item.badge && (
+                      <span
+                        className={`text-[10px] px-1.5 py-0.2 rounded font-bold ${
+                          item.active
+                            ? "bg-[#004B87] text-white"
+                            : "bg-slate-200 text-slate-700"
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </Link>
+
+                  {/* Section In-Page Submenu Links */}
+                  {!sidebarCollapsed && item.subsections && item.subsections.length > 0 && (
+                    <div className="pl-6 pr-1 py-0.5 space-y-0.5 border-l border-slate-100 ml-3">
+                      {item.subsections.map((sub: any, sIdx: number) => (
+                        <a
+                          key={sIdx}
+                          href={sub.href}
+                          className="block px-2 py-0.5 text-[11px] text-slate-500 hover:text-[#004B87] hover:bg-slate-50 rounded transition-colors truncate"
+                        >
+                          › {lang === "ta" ? sub.label_ta : sub.label_en}
+                        </a>
+                      ))}
+                    </div>
                   )}
-                </Link>
+                </div>
               );
             })}
           </nav>
@@ -359,8 +460,9 @@ export default function Home() {
               SECTION 3: CITIZEN SEARCH HERO (Compact & Single Prominent Search)
               ========================================================================= */}
           <section
+            id="hero-search"
             aria-label="Citizen Search Hero"
-            className="relative bg-gradient-to-b from-[#173B63] to-[#0f2844] text-white py-6 md:py-8 px-4 sm:px-6 shadow-inner"
+            className="relative bg-gradient-to-b from-[#173B63] to-[#0f2844] text-white py-6 md:py-8 px-4 sm:px-6 shadow-inner scroll-mt-20"
           >
             <div className="max-w-4xl mx-auto text-center space-y-4">
               {/* Workspace Switcher Pill */}
@@ -512,12 +614,48 @@ export default function Home() {
           </div>
         </section>
 
+        {/* Quick In-Page Section Jump Navigation Strip */}
+        <nav
+          aria-label="Homepage Sections Quick Navigation"
+          className="sticky top-0 z-30 bg-white/95 backdrop-blur-xs border-b border-slate-200 py-2 px-3 sm:px-6 shadow-2xs"
+        >
+          <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 overflow-x-auto">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 shrink-0 hidden sm:inline">
+              {lang === "ta" ? "பிரிவுகளுக்கு செல்ல:" : "Jump to Section:"}
+            </span>
+            <div className="flex items-center gap-1.5 overflow-x-auto py-0.5">
+              {[
+                { id: "popular-services", label_en: "Popular Services", label_ta: "விரைவு சேவைகள்" },
+                { id: "services-by-category", label_en: "14 Domains", label_ta: "சேவைப் பிரிவுகள்" },
+                { id: "service-action-panel", label_en: "Action Panel", label_ta: "நேரடி சேவைகள்" },
+                { id: "life-situations", label_en: "Life Stages", label_ta: "வாழ்க்கை சூழல்" },
+                { id: "welfare-schemes", label_en: "Schemes", label_ta: "நலத்திட்டங்கள்" },
+                { id: "governance-admin", label_en: "Governance", label_ta: "அரசு கட்டமைப்பு" },
+                { id: "contact-directory-preview", label_en: "Contacts", label_ta: "தொடர்பு கையேடு" },
+                { id: "districts-departments", label_en: "38 Districts", label_ta: "மாவட்டங்கள்" },
+                { id: "orders-notices", label_en: "G.O.s & Notices", label_ta: "அரசாணைகள்" },
+                { id: "egov-portals", label_en: "e-Gov", label_ta: "மின்-ஆளுமை" },
+                { id: "emergency-help", label_en: "24x7 Helplines", label_ta: "அவசர உதவி" },
+              ].map((sec) => (
+                <a
+                  key={sec.id}
+                  href={`#${sec.id}`}
+                  className="px-2.5 py-1 rounded-md text-[11px] font-bold text-slate-700 bg-slate-100 hover:bg-[#173B63] hover:text-white border border-slate-200 whitespace-nowrap transition-colors shrink-0"
+                >
+                  {lang === "ta" ? sec.label_ta : sec.label_en}
+                </a>
+              ))}
+            </div>
+          </div>
+        </nav>
+
         {/* =========================================================================
             SECTION 4: POPULAR SERVICES (QUICK ACCESS SERVICES)
             ========================================================================= */}
         <section
+          id="popular-services"
           aria-label="Popular Services"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20"
         >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
             <div>
@@ -656,8 +794,9 @@ export default function Home() {
             SECTION 5: BROWSE ALL SERVICES BY CATEGORY
             ========================================================================= */}
         <section
+          id="services-by-category"
           aria-label="Browse All Services by Category"
-          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
+          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6 scroll-mt-20"
         >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
@@ -725,7 +864,7 @@ export default function Home() {
         <section
           id="service-action-panel"
           aria-label="Service Action Panel"
-          className="bg-[#E9F2F7] border-b border-slate-200 py-10 px-4 sm:px-6"
+          className="bg-[#E9F2F7] border-b border-slate-200 py-10 px-4 sm:px-6 scroll-mt-20"
         >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-300 gap-2">
@@ -816,8 +955,9 @@ export default function Home() {
             SECTION 7: BROWSE BY LIFE SITUATION (UP BENCHMARK PATTERN)
             ========================================================================= */}
         <section
+          id="life-situations"
           aria-label="Browse by Life Situation"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20"
         >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
             <div>
@@ -871,8 +1011,9 @@ export default function Home() {
             SECTION 8: GOVERNMENT CONTACT DIRECTORY (P0 MODULE)
             ========================================================================= */}
         <section
+          id="contact-directory-preview"
           aria-label="Government Contact Directory"
-          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
+          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6 scroll-mt-20"
         >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
@@ -949,8 +1090,9 @@ export default function Home() {
             SECTION 9: GOVERNMENT & ADMINISTRATION (THREE CONSTITUTIONAL PILLARS)
             ========================================================================= */}
         <section
+          id="governance-admin"
           aria-label="Government and Administration"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20"
         >
           <div className="mb-6 pb-2 border-b border-slate-200">
             <span className="text-xs font-extrabold uppercase tracking-wider text-[#087F8C]">
@@ -1007,8 +1149,9 @@ export default function Home() {
             SECTION 10: DEPARTMENTS AND DISTRICTS (38 DISTRICTS INTERACTIVE EXPLORER)
             ========================================================================= */}
         <section
+          id="districts-departments"
           aria-label="Departments and Districts"
-          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
+          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6 scroll-mt-20"
         >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
@@ -1095,8 +1238,9 @@ export default function Home() {
             SECTION 11: GOVERNMENT ORDERS AND DOCUMENTS
             ========================================================================= */}
         <section
+          id="orders-notices"
           aria-label="Government Orders and Documents"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20"
         >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
             <div>
@@ -1197,7 +1341,7 @@ export default function Home() {
         <section
           id="egov-portals"
           aria-label="e-Governance Portal Directory"
-          className="bg-[#E9F2F7] border-y border-slate-200 py-10 px-4 sm:px-6"
+          className="bg-[#E9F2F7] border-y border-slate-200 py-10 px-4 sm:px-6 scroll-mt-20"
         >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-300 gap-2">
@@ -1265,8 +1409,9 @@ export default function Home() {
             SECTION 13: SCHEMES AND BENEFITS
             ========================================================================= */}
         <section
+          id="welfare-schemes"
           aria-label="Schemes and Benefits"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20"
         >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
             <div>
@@ -1320,7 +1465,7 @@ export default function Home() {
         <section
           id="announcements"
           aria-label="Announcements and Recruitment"
-          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6"
+          className="bg-white border-y border-slate-200 py-10 px-4 sm:px-6 scroll-mt-20"
         >
           <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
@@ -1387,7 +1532,7 @@ export default function Home() {
         <section
           id="tourism"
           aria-label="Tourism and Culture"
-          className="max-w-7xl mx-auto px-4 sm:px-6 py-10"
+          className="max-w-7xl mx-auto px-4 sm:px-6 py-10 scroll-mt-20"
         >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 pb-2 border-b border-slate-200 gap-2">
             <div>
@@ -1452,7 +1597,7 @@ export default function Home() {
         <section
           id="emergency-help"
           aria-label="Emergency and Grievance Help"
-          className="bg-white border-t border-slate-200 py-10 px-4 sm:px-6"
+          className="bg-white border-t border-slate-200 py-10 px-4 sm:px-6 scroll-mt-20"
         >
           <div className="max-w-7xl mx-auto">
             <div className="mb-6 pb-2 border-b border-slate-200">

@@ -19,6 +19,7 @@ import {
   MapPin,
   ExternalLink,
   ShieldAlert,
+  Compass,
 } from "lucide-react";
 import { PRIMARY_NAVIGATION, QUICK_ACCESS_ITEMS } from "@/data/navigation";
 import CONTACT_SUBCATEGORIES from "@/data/contacts_subcategories.json";
@@ -54,10 +55,12 @@ export default function GovernmentHeader({
   const [expandedMobileCategory, setExpandedMobileCategory] = useState<string | null>(null);
   const [contactsDropdownOpen, setContactsDropdownOpen] = useState(false);
   const [departmentsDropdownOpen, setDepartmentsDropdownOpen] = useState(false);
+  const [sectionsDropdownOpen, setSectionsDropdownOpen] = useState(false);
 
   const headerRef = useRef<HTMLDivElement>(null);
   const contactsRef = useRef<HTMLDivElement>(null);
   const departmentsRef = useRef<HTMLDivElement>(null);
+  const sectionsRef = useRef<HTMLDivElement>(null);
 
   const basePath = process.env.NODE_ENV === "production" ? "/tngov-2point0" : "";
 
@@ -70,6 +73,9 @@ export default function GovernmentHeader({
       if (departmentsRef.current && !departmentsRef.current.contains(event.target as Node)) {
         setDepartmentsDropdownOpen(false);
       }
+      if (sectionsRef.current && !sectionsRef.current.contains(event.target as Node)) {
+        setSectionsDropdownOpen(false);
+      }
     }
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -81,6 +87,7 @@ export default function GovernmentHeader({
       if (e.key === "Escape") {
         setContactsDropdownOpen(false);
         setDepartmentsDropdownOpen(false);
+        setSectionsDropdownOpen(false);
         setMobileMenuOpen(false);
       }
     }
@@ -186,6 +193,175 @@ export default function GovernmentHeader({
                   </Link>
                 );
               })}
+            </div>
+
+            {/* In-Page Sections Dropdown: Direct Navigation to Homepage Sections */}
+            <div ref={sectionsRef} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setSectionsDropdownOpen(!sectionsDropdownOpen);
+                  setContactsDropdownOpen(false);
+                  setDepartmentsDropdownOpen(false);
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-[#173B63]"
+                aria-expanded={sectionsDropdownOpen}
+                aria-haspopup="true"
+              >
+                <Compass className="w-3.5 h-3.5 text-slate-600" />
+                <span>{lang === "ta" ? "பிரிவுகள்" : "Sections"}</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 text-slate-500 transition-transform ${
+                    sectionsDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {sectionsDropdownOpen && (
+                <div
+                  className="absolute right-0 top-full mt-1.5 w-80 bg-white rounded-lg shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150 max-h-96 overflow-y-auto"
+                  role="menu"
+                >
+                  <div className="px-3 py-1.5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-slate-700">
+                      {lang === "ta" ? "முகப்பு பக்கப் பிரிவுகள்" : "Homepage Sections Navigation"}
+                    </span>
+                  </div>
+                  <div className="p-2 space-y-2.5 text-xs">
+                    {/* Citizen Services Domain */}
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#087F8C] block px-2 pb-1">
+                        {lang === "ta" ? "பொதுமக்கள் சேவைகள்" : "Citizen Services"}
+                      </span>
+                      <div className="space-y-0.5">
+                        <a
+                          href="#popular-services"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "விரைவு சேவைகள்" : "Popular Services"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#popular-services</span>
+                        </a>
+                        <a
+                          href="#services-by-category"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "14 முதன்மை சேவைப் பிரிவுகள்" : "14 Service Categories"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#services-by-category</span>
+                        </a>
+                        <a
+                          href="#service-action-panel"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "நேரடி சேவை பலகை (AP Pattern)" : "Service Action Panel"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#service-action-panel</span>
+                        </a>
+                        <a
+                          href="#life-situations"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "வாழ்க்கை சூழல் சேவைகள்" : "Life Situation Discovery"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#life-situations</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Schemes & Portals */}
+                    <div className="pt-1 border-t border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#087F8C] block px-2 pb-1">
+                        {lang === "ta" ? "நலத்திட்டங்கள் & போர்டல்கள்" : "Schemes & Portals"}
+                      </span>
+                      <div className="space-y-0.5">
+                        <a
+                          href="#welfare-schemes"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "முக்கிய நலத்திட்டங்கள்" : "Welfare & Benefits"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#welfare-schemes</span>
+                        </a>
+                        <a
+                          href="#egov-portals"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "டிஜிட்டல் மின்-ஆளுமை தளங்கள்" : "e-Gov Portal Directory"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#egov-portals</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Administration & Directory */}
+                    <div className="pt-1 border-t border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#087F8C] block px-2 pb-1">
+                        {lang === "ta" ? "நிர்வாகம் & தொடர்புகள்" : "Administration & Directory"}
+                      </span>
+                      <div className="space-y-0.5">
+                        <a
+                          href="#governance-admin"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "அரசியலமைப்பு தூண்கள்" : "Constitutional Governance"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#governance-admin</span>
+                        </a>
+                        <a
+                          href="#contact-directory-preview"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "அரசு தொடர்பு கையேடு" : "Contact Directory Preview"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#contact-directory-preview</span>
+                        </a>
+                        <a
+                          href="#districts-departments"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "38 மாவட்டங்கள் வழிகாட்டி" : "38 Districts & Departments"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#districts-departments</span>
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Notices & Helplines */}
+                    <div className="pt-1 border-t border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#087F8C] block px-2 pb-1">
+                        {lang === "ta" ? "அரசாணைகள் & அவசர உதவி" : "Notices & Helplines"}
+                      </span>
+                      <div className="space-y-0.5">
+                        <a
+                          href="#orders-notices"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "அரசாணைகள் பலகை" : "Government Orders & Notices"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#orders-notices</span>
+                        </a>
+                        <a
+                          href="#announcements"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-slate-700 hover:bg-sky-50 hover:text-[#173B63] rounded font-medium transition-colors"
+                        >
+                          <span>{lang === "ta" ? "ஆட்சேர்ப்பு & செய்திகள்" : "Jobs & Announcements"}</span>
+                          <span className="text-[10px] text-slate-400 font-mono">#announcements</span>
+                        </a>
+                        <a
+                          href="#emergency-help"
+                          onClick={() => setSectionsDropdownOpen(false)}
+                          className="flex items-center justify-between px-2.5 py-1 text-red-700 hover:bg-red-50 rounded font-bold transition-colors"
+                        >
+                          <span>{lang === "ta" ? "24x7 அவசர உதவி எண்கள்" : "24x7 Emergency Helplines"}</span>
+                          <span className="text-[10px] text-red-500 font-mono">#emergency-help</span>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Contacts Dropdown (Benchmark 16 Subcategories from reference screenshot) */}
